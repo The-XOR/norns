@@ -73,6 +73,14 @@ typedef enum {
     EVENT_SYSTEM_CMD,
     // reset the lua state
     EVENT_RESET_LVM,
+  // push2 added
+    EVENT_PUSH2_ADD,
+    // push2 removed
+    EVENT_PUSH2_REMOVE,
+    // push2 event
+    EVENT_PUSH2_EVENT,
+    // push2 touch
+    EVENT_PUSH2_TOUCH,
     // quit the event loop
     EVENT_QUIT,
     // crow add
@@ -300,6 +308,29 @@ struct event_softcut_render {
     float* data;
 };
 
+struct event_push2_add {
+    struct event_common common;
+    void *dev;
+}; // +4
+
+struct event_push2_remove {
+    struct event_common common;
+    uint32_t id;
+}; // +4
+
+struct event_push2_event {
+    struct event_common common;
+    void *dev;
+    uint8_t op;
+}; // +8
+
+struct event_push2_touch {
+    struct event_common common;
+    uint8_t n;
+    uint8_t val;
+}; // +8
+
+
 union event_data {
     uint32_t type;
     struct event_exec_code_line exec_code_line;
@@ -334,4 +365,8 @@ union event_data {
     struct event_crow_event crow_event;
     struct event_system_cmd system_cmd;
     struct event_softcut_render softcut_render;
+    struct event_push2_add push2_add;
+    struct event_push2_remove push2_remove;
+    struct event_push2_event push2_event;
+    struct event_push2_touch push2_touch;
 };

@@ -28,6 +28,7 @@
 #include "clocks/clock_link.h"
 #include "device_crow.h"
 #include "device_hid.h"
+#include "device_push2.h"
 #include "device_midi.h"
 #include "device_monome.h"
 #include "events.h"
@@ -52,6 +53,7 @@
 //------
 //---- global lua state!
 lua_State *lvm;
+
 
 void w_run_code(const char *code) {
     l_dostring(lvm, code, "w_run_code");
@@ -340,6 +342,8 @@ void w_init(void) {
 
     // crow
     lua_register_norns("crow_send", &_crow_send);
+
+	dev_push2_register(lvm);
 
     // util
     lua_register_norns("system_cmd", &_system_cmd);
@@ -1215,14 +1219,24 @@ int _midi_send(lua_State *l) {
  */
 int _grid_set_led(lua_State *l) {
     lua_check_num_args(4);
-    luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
-    struct dev_monome *md = lua_touserdata(l, 1);
-    int x = (int)luaL_checkinteger(l, 2) - 1; // convert from 1-base
-    int y = (int)luaL_checkinteger(l, 3) - 1; // convert from 1-base
-    int z = (int)luaL_checkinteger(l, 4);     // don't convert value!
-    dev_monome_grid_set_led(md, x, y, z);
-    lua_settop(l, 0);
-    return 0;
+    
+   luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
+  struct dev_common *dev = lua_touserdata(l, 1);
+  switch (dev->type) {
+    case DEV_TYPE_PUSH2: {
+      return push2_grid_set_led(l);
+    } 
+    case DEV_TYPE_MONOME:
+    default: {
+      struct dev_monome *md = lua_touserdata(l, 1);
+      int x = (int) luaL_checkinteger(l, 2) - 1; // convert from 1-base
+      int y = (int) luaL_checkinteger(l, 3) - 1; // convert from 1-base
+      int z = (int) luaL_checkinteger(l, 4); // don't convert value!
+      dev_monome_grid_set_led(md, x, y, z);
+      lua_settop(l, 0);
+    }
+  }
+  return 0;
 }
 
 int _arc_set_led(lua_State *l) {
@@ -1245,12 +1259,21 @@ int _arc_set_led(lua_State *l) {
  */
 int _grid_all_led(lua_State *l) {
     lua_check_num_args(2);
-    luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
-    struct dev_monome *md = lua_touserdata(l, 1);
-    int z = (int)luaL_checkinteger(l, 2); // don't convert value!
-    dev_monome_all_led(md, z);
-    lua_settop(l, 0);
-    return 0;
+  luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
+  struct dev_common *dev = lua_touserdata(l, 1);
+  switch (dev->type) {
+    case DEV_TYPE_PUSH2: {
+      return push2_grid_all_led(l);
+    } 
+    case DEV_TYPE_MONOME:
+    default: {
+      struct dev_monome *md = (struct dev_monome*) dev;
+      int z = (int) luaL_checkinteger(l, 2); // don't convert value!
+      dev_monome_all_led(md, z);
+      lua_settop(l, 0);
+      return 0;
+    }
+  }
 }
 
 int _arc_all_led(lua_State *l) {
@@ -1280,11 +1303,21 @@ int _grid_set_rotation(lua_State *l) {
 int _monome_refresh(lua_State *l) {
     lua_check_num_args(1);
     luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
-    struct dev_monome *md = lua_touserdata(l, 1);
+   struct dev_common *dev = lua_touserdata(l, 1);
+  switch (dev->type) {
+    case DEV_TYPE_PUSH2: {
+      return push2_grid_refresh(l);
+    } 
+    case DEV_TYPE_MONOME:
+    default: {
+   struct dev_monome *md = lua_touserdata(l, 1);
     dev_monome_refresh(md);
     lua_settop(l, 0);
     return 0;
 }
+}
+}
+
 
 /***
  * monome: intensity
@@ -1309,9 +1342,18 @@ int _monome_intensity(lua_State *l) {
 int _grid_rows(lua_State *l) {
     lua_check_num_args(1);
     luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
-    struct dev_monome *md = lua_touserdata(l, 1);
-    lua_pushinteger(l, dev_monome_grid_rows(md));
-    return 1;
+   struct dev_common *dev = lua_touserdata(l, 1);
+  switch (dev->type) {
+    case DEV_TYPE_PUSH2: {
+      return push2_grid_rows(l);
+    } 
+    case DEV_TYPE_MONOME:
+    default: {
+      struct dev_monome *md = (struct dev_monome*) dev;
+      lua_pushinteger(l, dev_monome_grid_rows(md));
+      return 1;
+    }
+  }
 }
 
 /***
@@ -1321,10 +1363,19 @@ int _grid_rows(lua_State *l) {
  */
 int _grid_cols(lua_State *l) {
     lua_check_num_args(1);
-    luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
-    struct dev_monome *md = lua_touserdata(l, 1);
-    lua_pushinteger(l, dev_monome_grid_cols(md));
-    return 1;
+   luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
+  struct dev_common *dev = lua_touserdata(l, 1);
+  switch (dev->type) {
+    case DEV_TYPE_PUSH2: {
+      return push2_grid_cols(l);
+    } 
+    case DEV_TYPE_MONOME:
+    default: {
+      struct dev_monome *md = (struct dev_monome*) dev;
+      lua_pushinteger(l, dev_monome_grid_cols(md));
+      return 1;
+    }
+  }
 }
 
 //-- audio processing controls
@@ -1745,6 +1796,74 @@ void w_handle_midi_event(int id, uint8_t *data, size_t nbytes) {
         lua_rawseti(lvm, -2, i + 1);
     }
     l_report(lvm, l_docall(lvm, 2, 0));
+}
+
+void w_handle_push2_add(void *p) {
+  struct dev_push2  *dev = (struct dev_push2 *)p;
+  struct dev_common *base = (struct dev_common *)p;
+  int id = base->id;
+
+  // its a push2
+  _push_norns_func("push2", "add");
+  lua_pushinteger(lvm, id + 1); // convert to 1-base
+  lua_pushstring(lvm, base->name);
+  lua_pushlightuserdata(lvm, dev);
+  l_report(lvm, l_docall(lvm, 3, 0));
+
+  // its also a midi controller 
+  _push_norns_func("midi", "add");
+  lua_pushinteger(lvm, id + 1 + PUSH2_DEV_OFFSET); // convert to 1-base
+  lua_pushstring(lvm, base->name);
+  lua_pushlightuserdata(lvm, dev);
+  l_report(lvm, l_docall(lvm, 3, 0));
+
+  // and it might be a grid
+  const char *serial = "Push2";
+  const char *name =  "Push2";
+  _push_norns_func("monome", "add");
+  lua_pushinteger(lvm, id + 1 + PUSH2_DEV_OFFSET); // convert to 1-base
+  lua_pushstring(lvm, serial);
+  lua_pushstring(lvm, name);
+  lua_pushlightuserdata(lvm, dev);
+  l_report(lvm, l_docall(lvm, 4, 0));
+}
+
+void w_handle_push2_remove(int id) {
+  _push_norns_func("push2", "remove");
+  lua_pushinteger(lvm, id + 1); // convert to 1-base
+  l_report(lvm, l_docall(lvm, 1, 0));
+
+
+  _push_norns_func("midi", "remove");
+  lua_pushinteger(lvm, id + 1 + PUSH2_DEV_OFFSET); // convert to 1-base
+  l_report(lvm, l_docall(lvm, 1, 0));
+
+
+  _push_norns_func("monome", "remove");
+  lua_pushinteger(lvm, id + 1 + PUSH2_DEV_OFFSET); // convert to 1-base
+  l_report(lvm, l_docall(lvm, 1, 0));
+}
+
+void w_handle_push2_event(void *p, uint8_t op) {
+  // currently, only used internally to handle mode switch, 
+  // in a threadsafe manner, later could allow mode switching from lua
+  struct dev_push2  *dev = (struct dev_push2 *)p;
+  dev_push2_event(dev,op);
+}
+
+
+void w_handle_push2_touch(const int n, const int val) {
+  // -- lua_getglobal(lvm, "norns");
+  // -- lua_getfield(lvm, -1, "touch");
+  // -- lua_remove(lvm, -2);
+
+  //TODO enable touch handling
+  if(n==0xFFFFF ) {
+    _push_norns_func("push2", "touch");
+    lua_pushinteger(lvm, n);
+    lua_pushinteger(lvm, val);
+    l_report(lvm, l_docall(lvm, 2, 0));
+  }
 }
 
 void w_handle_osc_event(char *from_host, char *from_port, char *path, lo_message msg) {

@@ -39,6 +39,9 @@ _norns.hid.event = function(id, ev_type, ev_code, value) end
 -- midi callbacks (defined in midi.lua).
 _norns.midi = {}
 
+-- push2 callbacks (defined in push2.lua)
+_norns.push2 = {}
+
 -- osc callbacks (defined in osc.lua)
 _norns.osc = {}
 

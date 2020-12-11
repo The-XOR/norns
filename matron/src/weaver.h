@@ -45,6 +45,10 @@ extern void w_handle_midi_event(int id, uint8_t *data, size_t nbytes);
 extern void w_handle_crow_add(void *dev);
 extern void w_handle_crow_remove(int id);
 extern void w_handle_crow_event(void *dev, int id);
+extern void w_handle_push2_add(void *dev);
+extern void w_handle_push2_remove(int id);
+extern void w_handle_push2_event(void*, uint8_t op);
+extern void w_handle_push2_touch(const int n, const int val);
 
 extern void w_handle_osc_event(char *from_host, char *from_port, char *path, lo_message msg);
 
@@ -84,6 +88,7 @@ extern void w_handle_poll_softcut_phase(int idx, float val);
 extern void w_handle_softcut_render(int idx, float sec_per_sample, float start, size_t size, float* data);
 
 extern void w_handle_engine_loaded();
+
 
 // callbacks for ACK and timeout of sclang startup
 extern void w_handle_startup_ready_ok();

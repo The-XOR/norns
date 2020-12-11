@@ -59,7 +59,7 @@ static void handle_device(struct udev_device *dev);
 static device_t check_dev_type(struct udev_device *dev);
 static const char *get_alsa_midi_node(struct udev_device *dev);
 static const char *get_device_name(struct udev_device *dev);
-
+static device_t getdevicetype(struct udev_device *dev, device_t dt);
 //--------------------------------
 //---- extern function definitions
 
@@ -195,7 +195,7 @@ void handle_device(struct udev_device *dev) {
             device_t t = check_dev_type(dev);
 
             if (t >= 0 && t < DEV_TYPE_COUNT_PHYSICAL) {
-                dev_list_add(t, node, get_device_name(dev));
+                dev_list_add(getdevicetype(dev, t), node, get_device_name(dev));
             }
         }
     } else {
@@ -207,11 +207,11 @@ void handle_device(struct udev_device *dev) {
                 const char *alsa_node = get_alsa_midi_node(dev);
 
                 if (alsa_node != NULL) {
-                    dev_list_add(DEV_TYPE_MIDI, alsa_node, get_device_name(dev));
+                    dev_list_add(getdevicetype(dev, DEV_TYPE_MIDI), alsa_node, get_device_name(dev));
                 }
             } else if (strcmp(action, "remove") == 0) {
                 if (node != NULL) {
-                    dev_list_remove(DEV_TYPE_MIDI, node);
+                    dev_list_remove(getdevicetype(dev, DEV_TYPE_MIDI), node);
                 }
             }
         } else {
@@ -219,9 +219,9 @@ void handle_device(struct udev_device *dev) {
 
             if (t >= 0 && t < DEV_TYPE_COUNT_PHYSICAL) {
                 if (strcmp(action, "add") == 0) {
-                    dev_list_add(t, node, get_device_name(dev));
+                    dev_list_add(getdevicetype(dev, t), node, get_device_name(dev));
                 } else if (strcmp(action, "remove") == 0) {
-                    dev_list_remove(t, node);
+                    dev_list_remove(getdevicetype(dev, t), node);
                 }
             }
         }
@@ -291,4 +291,15 @@ const char *get_device_name(struct udev_device *dev) {
     }
 
     return strdup(current_name);
+}
+
+static device_t getdevicetype(struct udev_device *dev, device_t dt) {
+    if(dt==DEV_TYPE_MIDI) {
+        char* name = (char*) get_device_name(dev);
+        if(name && strcmp(name,"Ableton Push 2")==0) {
+            dt = DEV_TYPE_PUSH2;
+        }
+        free(name);
+    }
+    return dt;
 }

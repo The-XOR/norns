@@ -72,6 +72,7 @@ static cairo_operator_t ops[NUM_OPS] = {
     CAIRO_OPERATOR_HSL_LUMINOSITY
 };
 
+static cairo_t *crmain;
 static cairo_surface_t *surface;
 static cairo_surface_t *surfacefb;
 static cairo_surface_t *image;
@@ -83,6 +84,33 @@ static FT_Library value;
 static FT_Error status;
 static FT_Face face[NUM_FONTS];
 static double text_xy[2];
+
+#define SCREEN_FB_FMT   CAIRO_FORMAT_ARGB32
+	#define SCREEN_FMT      CAIRO_FORMAT_ARGB32
+	#define SCREEN_X 1024
+	#define SCREEN_Y 600
+	#define SCREEN_SCALE 8
+	
+
+#ifndef SCREEN_FB_FMT
+#define SCREEN_FB_FMT CAIRO_FORMAT_RGB16_565
+#endif
+
+#ifndef SCREEN_FMT
+#define SCREEN_FMT CAIRO_FORMAT_ARGB32
+#endif
+
+#ifndef SCREEN_X 
+#define SCREEN_X 128
+#endif 
+
+#ifndef SCREEN_Y
+#define SCREEN_Y 64
+#endif
+
+#ifndef SCREEN_SCALE
+#define SCREEN_SCALE 1.0
+#endif
 
 typedef struct _cairo_linuxfb_device {
     int fb_fd;
@@ -151,8 +179,8 @@ cairo_surface_t *cairo_linuxfb_surface_create() {
 
     /* Create the cairo surface which will be used to draw to */
     surface = cairo_image_surface_create_for_data(
-        device->fb_data, CAIRO_FORMAT_RGB16_565, device->fb_vinfo.xres, device->fb_vinfo.yres,
-        cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, device->fb_vinfo.xres));
+        device->fb_data, SCREEN_FB_FMT, device->fb_vinfo.xres, device->fb_vinfo.yres,
+        cairo_format_stride_for_width(SCREEN_FB_FMT, device->fb_vinfo.xres));
     cairo_surface_set_user_data(surface, NULL, device, &cairo_linuxfb_surface_destroy);
 
     return surface;
@@ -184,16 +212,37 @@ void screen_display_png(const char *filename, double x, double y) {
     cairo_surface_destroy(image);
 }
 
+void screen_context(void** pcr, void **pcrfb) {
+    *pcr = cr;
+    *pcrfb = crfb;
+}
+
+extern void screen_cr(void *newcr,void *newcrfb);
+
 void screen_init(void) {
+fprintf(stderr, "screen_init\n");
     surfacefb = cairo_linuxfb_surface_create();
     if (surfacefb == NULL) {
         return;
     }
+fprintf(stderr, "cairo create\n");
     crfb = cairo_create(surfacefb);
 
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128, 64);
-    cr = cairo_create(surface);
+    surface = cairo_image_surface_create(SCREEN_FMT, SCREEN_X,SCREEN_Y);
+    crmain = cairo_create(surface);
+ 
+	// config buffer
+fprintf(stderr, "config buffer\n");
+    cairo_set_operator(crfb, CAIRO_OPERATOR_SOURCE);
+    cairo_set_source_surface(crfb, surface, 0, 0);
+ 
+ cairo_scale(crmain,SCREEN_SCALE,SCREEN_SCALE); 
+fprintf(stderr, "screen_cr\n");  
+    screen_cr(crmain,crfb);
 
+}
+
+void screen_cr(void *newcr,void *newcrfb) {
     status = FT_Init_FreeType(&value);
     if (status != 0) {
         fprintf(stderr, "ERROR (screen) freetype init\n");
@@ -273,12 +322,12 @@ void screen_init(void) {
     strcpy(font_path[i++], "bmp/unscii-8-thin.pcf");
 
     assert(i == NUM_FONTS);
-
+/*
     fprintf(stderr, "fonts: \n");
     for (int i = 0; i < NUM_FONTS; ++i) {
         fprintf(stderr, "  %d: %s\n", i, font_path[i]);
     }
-
+*/
     char filename[256];
 
     for (int i = 0; i < NUM_FONTS; i++) {
@@ -298,6 +347,7 @@ void screen_init(void) {
         }
     }
 
+    cr = (cairo_t*) newcr;
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
     cairo_paint(cr);
     cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
@@ -311,14 +361,12 @@ void screen_init(void) {
     cairo_set_font_face(cr, ct[0]);
     cairo_set_font_size(cr, 8.0);
 
-    // config buffer
-    cairo_set_operator(crfb, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface(crfb, surface, 0, 0);
+   crfb = (cairo_t*) newcrfb;
 }
 
 void screen_deinit(void) {
     CHECK_CR
-    cairo_destroy(cr);
+    cairo_destroy(crmain);
     cairo_surface_destroy(surface);
     cairo_destroy(crfb);
     cairo_surface_destroy(surfacefb);
@@ -368,10 +416,10 @@ void screen_aa(int s) {
 
 void screen_level(int z) {
     CHECK_CR
-    if(z<0)
+	if(z<0)
         z=0;
     else if(z>15)
-        z=15;
+        z=15;	
     cairo_set_source_rgb(cr, c[z], c[z], c[z]);
 }
 
