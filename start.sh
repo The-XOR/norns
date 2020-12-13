@@ -1,3 +1,5 @@
-cd "$(dirname "$0")"
-./crone.sh > /dev/null &
-./matron.sh > /dev/null &
+#!/bin/bash
+cd /home/patch/norns/
+./crone.sh  &
+./matron.sh &
+/maiden/start.sh &

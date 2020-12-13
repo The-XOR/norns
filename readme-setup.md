@@ -4,7 +4,7 @@
 
 ### packages
 ```
-sudo apt-get install libevdev-dev liblo-dev libudev-dev libcairo2-dev liblua5.3-dev libavahi-compat-libdnssd-dev libasound2-dev libncurses5-dev libncursesw5-dev libsndfile1-dev libusb-1.0.1-dev
+sudo apt-get install libevdev-dev liblo-dev libudev-dev libcairo2-dev liblua5.3-dev libavahi-compat-libdnssd-dev libasound2-dev libncurses5-dev libncursesw5-dev libsndfile1-dev libusb-1.0.0-dev libboost1.67-all-dev
 ```
 
 ### sources
@@ -28,7 +28,7 @@ sudo apt install libmonome-dev libnanomsg-dev supercollider-language supercollid
 ## building norns
 
 ```
-git clone https://github.com/monome/norns.git
+git clone https://github.com/The-XOR/norns.git
 cd norns
 git submodule update --init --recursive
 ./waf configure
@@ -47,9 +47,14 @@ popd
 
 ## configure
 
-- add `/usr/local/lib` to library search paths (if libmonome is installed from sources.)
-the recommended way to do this is by editing `/etc/ld.so.conf`. (use of the `LD_LIBRARY_PATH` variable is deprecated, since it willl override binary-specific settings.)
+- modifcare /etc/jackrd RIMUOVENDO -X seq
 
+Rimuovere tutte le connessioni MIDI (per esempio da touchosc) verso push2
+Esempio:
+
+aconnect -d 131:0 24:0
+dove 131 e' il driver rtmidiout do touchosc bridge
+e 24 e' ableton push2
 
 ## launching components
 

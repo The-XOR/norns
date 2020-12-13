@@ -1,3 +1,4 @@
+#!/bin/bash
 killall matron
 killall sclang
 killall scsynth
