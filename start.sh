@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 cd /home/patch/norns/
-./crone.sh  &
-./matron.sh &
-/maiden/start.sh &
+aconnect -d 'RtMidiOut Client' 'Ableton Push 2'
+/home/patch/norns/crone.sh  &
+/home/patch/norns/matron.sh &
+/home/patch/maiden/start.sh &

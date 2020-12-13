@@ -1,3 +1,3 @@
-#!/bin/bash
-
-./build/ws-wrapper/ws-wrapper ws://*:5555 ./build/matron/matron
+#!/bin/sh
+cd /home/patch/norns/
+/home/patch/norns/build/ws-wrapper/ws-wrapper ws://*:5555 /home/patch/norns/build/matron/matron

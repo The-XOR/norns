@@ -52,9 +52,9 @@ popd
 Rimuovere tutte le connessioni MIDI (per esempio da touchosc) verso push2
 Esempio:
 
-aconnect -d 131:0 24:0
-dove 131 e' il driver rtmidiout do touchosc bridge
-e 24 e' ableton push2
+aconnect -d 'RtMidiOut Client' 'Ableton Push 2'
+dove RtMidiOut Client e' il driver rtmidiout do touchosc bridge
+
 
 ## launching components
 

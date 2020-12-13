@@ -42,6 +42,7 @@
   <li><a href="../modules/crow.html">crow</a></li>
   <li><a href="../modules/core.crow.ii_actions.html">core.crow.ii_actions</a></li>
   <li><a href="../modules/core.crow.ii_events.html">core.crow.ii_events</a></li>
+  <li><a href="../modules/core.push2.html">core.push2</a></li>
   <li><a href="../modules/softcut.html">softcut</a></li>
   <li><a href="../modules/lib.container.defaulttable.html">lib.container.defaulttable</a></li>
   <li><a href="../modules/lib.container.deque.html">lib.container.deque</a></li>
@@ -159,6 +160,14 @@
 	<td class="name" nowrap><a href="#s_to_hms">s_to_hms (s)</a></td>
 	<td class="summary">format string, seconds to h:m:s.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#degs_to_rads">degs_to_rads (degrees)</a></td>
+	<td class="summary">convert degrees to radians</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#rads_to_degs">rads_to_degs (radians)</a></td>
+	<td class="summary">convert radians to degrees</td>
+	</tr>
 </table>
 
 <br/>
@@ -225,7 +234,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">directory</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          path to directory
         </li>
     </ul>
@@ -233,7 +242,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
 
     </ol>
 
@@ -252,7 +261,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          filepath
         </li>
     </ul>
@@ -279,7 +288,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">path</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
 
         </li>
     </ul>
@@ -300,7 +309,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">cmd</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          command
         </li>
         <li><span class="parameter">raw</span>
@@ -329,11 +338,11 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">s</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          string to examine
         </li>
         <li><span class="parameter">start</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          string to search for
         </li>
     </ul>
@@ -360,7 +369,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">s</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          string to trim
         </li>
         <li><span class="parameter">width</span>
@@ -372,7 +381,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         trimmed string
     </ol>
 
@@ -656,8 +665,62 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         seconds : seconds in h:m:s
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "degs_to_rads"></a>
+    <strong>degs_to_rads (degrees)</strong>
+    </dt>
+    <dd>
+    convert degrees to radians
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">degrees</span>
+            <span class="types"><span class="type">number</span></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        radians
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "rads_to_degs"></a>
+    <strong>rads_to_degs (radians)</strong>
+    </dt>
+    <dd>
+    convert radians to degrees
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">radians</span>
+            <span class="types"><span class="type">number</span></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        degrees
     </ol>
 
 
@@ -671,7 +734,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2020-10-20 12:49:33 </i>
+<i style="float:right;">Last updated 2020-12-13 15:07:35 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

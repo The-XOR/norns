@@ -33,6 +33,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Fields">Fields</a></li>
 </ul>
 
 
@@ -42,11 +43,11 @@
   <li><a href="../modules/crow.html">crow</a></li>
   <li><a href="../modules/core.crow.ii_actions.html">core.crow.ii_actions</a></li>
   <li><a href="../modules/core.crow.ii_events.html">core.crow.ii_events</a></li>
-  <li><a href="../modules/core.push2.html">core.push2</a></li>
+  <li><strong>core.push2</strong></li>
   <li><a href="../modules/softcut.html">softcut</a></li>
   <li><a href="../modules/lib.container.defaulttable.html">lib.container.defaulttable</a></li>
   <li><a href="../modules/lib.container.deque.html">lib.container.deque</a></li>
-  <li><strong>lib.container.observable</strong></li>
+  <li><a href="../modules/lib.container.observable.html">lib.container.observable</a></li>
   <li><a href="../modules/lib.container.watchtable.html">lib.container.watchtable</a></li>
   <li><a href="../modules/lib.container.weaktable.html">lib.container.weaktable</a></li>
   <li><a href="../modules/er.html">er</a></li>
@@ -89,40 +90,46 @@
 
 <div id="content">
 
-<h1>Module <code>lib.container.observable</code></h1>
-<p>Create an Observable value (object).</p>
-<p>
-<p> An observable value notifies registered observers each time the value is set.
-</p>
+<h1>Module <code>core.push2</code></h1>
+<p>push2 devices</p>
+<p></p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#Observable:set">Observable:set (value, quiet)</a></td>
-	<td class="summary">Set the value</td>
+	<td class="name" nowrap><a href="#new">new (id, name, dev)</a></td>
+	<td class="summary">constructor</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Observable:__call">Observable:__call ()</a></td>
-	<td class="summary">Return the current value (short hand for the 'value' method)</td>
+	<td class="name" nowrap><a href="#add">add (dev)</a></td>
+	<td class="summary">static callback when any push2 device is added;
+ user scripts can redefine</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Observable:value">Observable:value ()</a></td>
-	<td class="summary">Return the current value</td>
+	<td class="name" nowrap><a href="#remove">remove (dev)</a></td>
+	<td class="summary">static callback when any push2 device is removed;
+ user scripts can redefine</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Observable:register">Observable:register (observer, handler)</a></td>
-	<td class="summary">Register an observer of value changes
-<p> An observer is identified by a key which can be any type (number, string,
- table, etc).</td>
+	<td class="name" nowrap><a href="#reconnect">reconnect ()</a></td>
+	<td class="summary">call add() for currently available devices
+ when scripts are restarted</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Observable:unregister">Observable:unregister (observer)</a></td>
-	<td class="summary">Unregister an observer of value changes</td>
+	<td class="name" nowrap><a href="#_norns.push2.add">_norns.push2.add (id, name, dev)</a></td>
+	<td class="summary">add a device</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Observable:notify_observers">Observable:notify_observers ()</a></td>
-	<td class="summary">Notify registered observers of current value (normally called by `set`).</td>
+	<td class="name" nowrap><a href="#_norns.push2.remove">_norns.push2.remove (id)</a></td>
+	<td class="summary">remove a device</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#array">array</a></td>
+	<td class="summary">send push2 event to device</td>
 	</tr>
 </table>
 
@@ -134,22 +141,26 @@
 
     <dl class="function">
     <dt>
-    <a name = "Observable:set"></a>
-    <strong>Observable:set (value, quiet)</strong>
+    <a name = "new"></a>
+    <strong>new (id, name, dev)</strong>
     </dt>
     <dd>
-    Set the value
+    constructor
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">value</span>
-            <span class="types"><span class="type">anything</span></span>
-         New value for observable.
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">integer</span></span>
+         : arbitrary numeric identifier
         </li>
-        <li><span class="parameter">quiet</span>
-            <span class="types"><span class="type">boolean</span></span>
-         If true, do not notify observers.
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         : name
+        </li>
+        <li><span class="parameter">dev</span>
+            <span class="types"><span class="type">userdata</span></span>
+         : opaque pointer to device
         </li>
     </ul>
 
@@ -159,69 +170,18 @@
 
 </dd>
     <dt>
-    <a name = "Observable:__call"></a>
-    <strong>Observable:__call ()</strong>
+    <a name = "add"></a>
+    <strong>add (dev)</strong>
     </dt>
     <dd>
-    Return the current value (short hand for the 'value' method)
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">anything</span></span>
-
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Observable:value"></a>
-    <strong>Observable:value ()</strong>
-    </dt>
-    <dd>
-    Return the current value
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">anything</span></span>
-
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Observable:register"></a>
-    <strong>Observable:register (observer, handler)</strong>
-    </dt>
-    <dd>
-    Register an observer of value changes
-<p> An observer is identified by a key which can be any type (number, string,
- table, etc).  Registering an observer replaces any previous registration
- associated with that key.
-<p> The handler is a function which is passed one argument, the new value. If
- `handler` is not provided it is assumed that the `observer` is an object with
- a `notify` method and the `notify` method is called with the new value.
-
+    static callback when any push2 device is added;
+ user scripts can redefine
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">observer</span>
-            <span class="types"><span class="type">anything</span></span>
-         Identity of observer.
-        </li>
-        <li><span class="parameter">handler</span>
-            <span class="types"><span class="type">function</span></span>
-         New value callback, optional.
+        <li><span class="parameter">dev</span>
+         : a push2 table
         </li>
     </ul>
 
@@ -231,40 +191,107 @@
 
 </dd>
     <dt>
-    <a name = "Observable:unregister"></a>
-    <strong>Observable:unregister (observer)</strong>
+    <a name = "remove"></a>
+    <strong>remove (dev)</strong>
     </dt>
     <dd>
-    Unregister an observer of value changes
+    static callback when any push2 device is removed;
+ user scripts can redefine
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">observer</span>
-            <span class="types"><span class="type">anything</span></span>
-         Identity of observer.
+        <li><span class="parameter">dev</span>
+         : a push2 table
         </li>
     </ul>
 
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">boolean</span></span>
-        true if the observer was known and unregistered.
-    </ol>
 
 
 
 
 </dd>
     <dt>
-    <a name = "Observable:notify_observers"></a>
-    <strong>Observable:notify_observers ()</strong>
+    <a name = "reconnect"></a>
+    <strong>reconnect ()</strong>
     </dt>
     <dd>
-    Notify registered observers of current value (normally called by `set`).
+    call add() for currently available devices
+ when scripts are restarted
 
 
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "_norns.push2.add"></a>
+    <strong>_norns.push2.add (id, name, dev)</strong>
+    </dt>
+    <dd>
+    add a device
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">id</span>
+
+        </li>
+        <li><span class="parameter">name</span>
+
+        </li>
+        <li><span class="parameter">dev</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "_norns.push2.remove"></a>
+    <strong>_norns.push2.remove (id)</strong>
+    </dt>
+    <dd>
+    remove a device
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">id</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "array"></a>
+    <strong>array</strong>
+    </dt>
+    <dd>
+    send push2 event to device
+
+
+    <ul>
+        <li><span class="parameter">array</span>
+
+ function push2:send(data)
+   push2_send(self.dev, data)
+ end
+        </li>
+    </ul>
 
 
 
