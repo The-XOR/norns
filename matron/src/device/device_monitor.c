@@ -97,6 +97,8 @@ void dev_monitor_init(void) {
     if (s) {
         fprintf(stderr, "error initializing thread attributes\n");
     }
+    fprintf(stderr, "watch_loop thread started\n");
+
     s = pthread_create(&watch_tid, &attr, watch_loop, NULL);
     if (s) {
         fprintf(stderr, "error creating thread\n");
@@ -121,10 +123,12 @@ int dev_monitor_scan(void) {
         return 1;
     }
 
+    fprintf(stderr, "dev_monitor_scan\n");
+
     for (int i = 0; i < DEV_TYPE_COUNT_PHYSICAL; i++) {
         struct udev_enumerate *ue;
         struct udev_list_entry *devices, *dev_list_entry;
-
+        fprintf(stderr, "dev_monitor_scan: dev %s\n",w[i].sub_name);
         ue = udev_enumerate_new(udev);
         udev_enumerate_add_match_subsystem(ue, w[i].sub_name);
         udev_enumerate_scan_devices(ue);
@@ -188,7 +192,7 @@ void handle_device(struct udev_device *dev) {
     const char *action = udev_device_get_action(dev);
     const char *node = udev_device_get_devnode(dev);
     const char *subsys = udev_device_get_subsystem(dev);
-
+                    
     if (action == NULL) {
         // scan
         if (node != NULL) {
@@ -283,23 +287,26 @@ const char *get_device_name(struct udev_device *dev) {
 
     while (current_name == NULL) {
         current_name = (char *)udev_device_get_sysattr_value(current_dev, "product");
+        fprintf(stderr, "Checking device name %s\n",current_name);
         current_dev = udev_device_get_parent(current_dev);
 
         if (current_dev == NULL) {
             break;
         }
     }
-
     return strdup(current_name);
 }
 
 static device_t getdevicetype(struct udev_device *dev, device_t dt) {
     if(dt==DEV_TYPE_MIDI) {
         char* name = (char*) get_device_name(dev);
+        fprintf(stderr, "Checking midi device name %s\n", name);
         if(name && strcmp(name,"Ableton Push 2")==0) {
             dt = DEV_TYPE_PUSH2;
+
         }
         free(name);
     }
+    fprintf(stderr, "midi device type is %i\n", dt);
     return dt;
 }

@@ -57,7 +57,7 @@ void *hello_loop(void *p) {
     (void)p;
 
     thread_running = true;
-
+    fprintf(stderr, "**** IN THREAD! *****\n");
     while (!ok && !timeout) {
 
         norns_hello(1);
@@ -71,6 +71,7 @@ void *hello_loop(void *p) {
         count++;
         // fprintf(stderr, "%d\n", count);
     }
+    fprintf(stderr, "**** STOPPING THREAD! *****\n");
 
     // fadeout
     while (norns_hello(0)) {
@@ -96,17 +97,24 @@ void start_thread() {
     if (res != 0) {
         fprintf(stderr, "error creating pthread attributes\n");
         return;
+    } else{
+        fprintf(stderr, "pthread attributes created successfully\n");
+
     }
     res = pthread_create(&tid, &attr, &hello_loop, NULL);
     if (res != 0) {
         fprintf(stderr, "error creating pthread\n");
-    }
+    } else
+        fprintf(stderr, "pthread created\n");
 }
 
 void norns_hello_start() {
     if (thread_running) {
+        fprintf(stderr, "thread is already running\n");
+
         return;
     }
+    fprintf(stderr, "norns_hello_start\n");
 
     srand(time(NULL));
     screen_aa(0);
@@ -127,6 +135,7 @@ void norns_hello_start() {
     timeout = 0;
     ok = 0;
 
+    fprintf(stderr, "starting thread\n");
     start_thread();
 }
 
@@ -140,7 +149,6 @@ int norns_hello(int live) {
         black.x = 60 + rand() % 8;
         black.y = 28 + rand() % 8;
     }
-
     screen_clear();
     // screen_line_width(1.0); // FIXME: for some reason setting this disables drawing
 
@@ -172,6 +180,7 @@ int norns_hello(int live) {
             light[i].dy = (rand() % 32 - 16) / 96.0;
         }
     }
+
     screen_update();
 
     return alive;

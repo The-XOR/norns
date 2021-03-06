@@ -23,7 +23,7 @@ union dev *dev_new(device_t type, const char *path, const char *name, bool multi
     if (d == NULL) {
         return NULL;
     }
-
+    fprintf(stderr, "Creating dev_new of type %i\n",type);
     // initialize the base class
     d->base.type = type;
     d->base.path = path ? strdup(path) : NULL;
@@ -62,7 +62,7 @@ union dev *dev_new(device_t type, const char *path, const char *name, bool multi
         }
         break;    
     default:
-        fprintf(stderr, "calling device.c:dev_new() with unkmown device type; this is an error!");
+        fprintf(stderr, "calling device.c:dev_new() with unknown device type; this is an error!");
         goto err_init;
     }
     // start the thread

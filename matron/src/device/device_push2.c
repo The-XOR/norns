@@ -187,6 +187,8 @@ pthread_mutex_t push2_midilock;
 int dev_push2_init(void *self) {
     struct dev_push2 *push2 = (struct dev_push2 *) self;
     struct dev_common *base = (struct dev_common *) self;
+    
+    fprintf(stderr, "*** push2: GOOD NEWS!\n");
 
     base->start = &dev_push2_start;
     base->deinit = &dev_push2_deinit;

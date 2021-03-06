@@ -85,7 +85,10 @@ int main(int argc, char **argv) {
 
     dev_list_init();
     dev_list_add(DEV_TYPE_MIDI_VIRTUAL, NULL, "virtual");
+    fprintf(stderr, "dev_monitor_init...\n");
     dev_monitor_init();
+    dev_monitor_scan(); //OCIO: DEVE ESSERE ESEGUITA PRIMA DEL THREAD PRINCIPALE!
+    // (push2 fa da schermo, che deve essere inizializzato poiche' usato dal thread)
 
     // now is a good time to set our cleanup
     atexit(cleanup);
@@ -93,8 +96,6 @@ int main(int argc, char **argv) {
     input_init();
     // i/o subsystems are ready; run user startup routine
     w_startup();
-    // scan for connected input devices
-    dev_monitor_scan();
 
     // blocks until quit
     event_loop();
