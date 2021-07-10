@@ -16,7 +16,7 @@ static struct args a = {
     .loc_port = "8888",
     .ext_port = "57120",
     .crone_port = "9999",
-    .framebuffer = "/dev/fb0",
+    .framebuffer = "/dev/fb1",
 };
 
 int args_parse(int argc, char **argv) {

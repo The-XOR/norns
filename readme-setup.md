@@ -1,7 +1,7 @@
 # norns setup
 
 ## build prerequisites
-
+norns/matron/src/args.c : Impostare il famebuffer da usare
 ### packages
 ```
 sudo apt-get install libevdev-dev liblo-dev libudev-dev libcairo2-dev liblua5.3-dev libavahi-compat-libdnssd-dev libasound2-dev libncurses5-dev libncursesw5-dev libsndfile1-dev
@@ -20,7 +20,7 @@ or use the debian repository as follows:
 
 ```
 curl https://keybase.io/artfwo/pgp_keys.asc | sudo apt-key add -
-echo "deb https://package.monome.org/ stretch main" | sudo tee /etc/apt/sources.list.d/norns.list
+echo "deb https://package.monome.org/ buster main" | sudo tee /etc/apt/sources.list.d/norns.list
 sudo apt update
 sudo apt install libmonome-dev libnanomsg-dev supercollider-language supercollider-server supercollider-dev
 ```
