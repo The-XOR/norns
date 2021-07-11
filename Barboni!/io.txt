@@ -13,3 +13,8 @@ O_RESET			gpio06		31
 MOSI			SPI_MOSI	19
 SCK				SPI_SCLK	23
 O_DC[RS]		gpio05		29
+
+Collegamenti encoders:
+I gpio "B" sono i pin "data" 
+I gpio "A" sono i pin "clock"
+I gpio "K" sono i pin "sw"
