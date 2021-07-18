@@ -18,6 +18,8 @@
 #include <unistd.h>
 
 #include "args.h"
+#define MAGNIFY_WIDTH    2
+#define MAGNIFY_HEIGHT   3
 
 // skip this if you don't want every screen module call to perform null checks
 #ifndef CHECK_CR
@@ -169,6 +171,7 @@ void screen_display_png(const char *filename, double x, double y) {
     // fprintf(stderr, "loading: %s\n", filename);
 
     image = cairo_image_surface_create_from_png(filename);
+    cairo_surface_set_device_scale(image, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     if (cairo_surface_status(image)) {
         fprintf(stderr, "display_png: %s\n", cairo_status_to_string(cairo_surface_status(image)));
         return;
@@ -189,9 +192,11 @@ void screen_init(void) {
     if (surfacefb == NULL) {
         return;
     }
+    cairo_surface_set_device_scale(surfacefb, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     crfb = cairo_create(surfacefb);
 
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128, 64);
+    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128*MAGNIFY_WIDTH, 64*MAGNIFY_HEIGHT);
+    cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     cr = cairo_create(surface);
 
     status = FT_Init_FreeType(&value);

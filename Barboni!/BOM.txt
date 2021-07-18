@@ -1,0 +1,18 @@
+Materiali da barbone utilizzati:
+
+LCD: 
+Waveshare 2.8 pollici LCD Touch Display Modulo per Raspberry Pi Pico, 2.8" LCD SPI IPS Schermo Tattile 
+320×240, 262K Colori Display, Controller Touch Resistivo XPT2046, Driver ST7789
+
+Amazon: https://www.amazon.it/gp/product/B094N94PN2/ref=ppx_yo_dt_b_asin_title_o02_s00?ie=UTF8&psc=1
+
+Encoders:
+Hikig KY-040 - Modulo encoder rotativo con 15 × 16,5 mm, con tappo a manopola per Arduino (confezione da 5) HKT1062
+
+Amazon: https://www.amazon.it/gp/product/B07D356LRH/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1
+
+Audio:
+Behringer UCA222
+(Va bene qualsiasi scheda audio con supporto ALSA, al massimo ci sarà da modificare asound.rc)
+
+Raspberry PI3
