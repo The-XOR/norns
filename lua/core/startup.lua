@@ -29,7 +29,6 @@ paramset = require 'core/paramset'
 params = paramset.new()
 norns.pmap = require 'core/pmap'
 
-
 -- load menu
 require 'core/menu'
 
@@ -106,4 +105,7 @@ print("start_audio(): ")
 -- start the process of syncing with crone boot
 _norns.start_audio()
 
-
+-- load matron mods and invoke system hooks
+local mods = require 'core/mods'
+mods.load_enabled()
+mods.load(mods.scan() or {}, true) -- only load enabled mods

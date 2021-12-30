@@ -1,12 +1,31 @@
 --- Script class
 -- @module script
 
+local hook = require 'core/hook'
+
 local Script = {}
 
 --- reset script environment.
 -- ie redirect draw, key, enc functions, stop timers, clear engine, etc.
 Script.clear = function()
   print("# script clear")
+
+  if cleanup ~= nil then
+    local ok, err
+    ok, err = pcall(cleanup)
+    if not ok then
+      print("### cleanup failed with error: "..err)
+    end
+  end
+
+  -- allow mods to do cleanup
+  hook.script_post_cleanup()
+
+  -- unload asl package entry so `require 'asl'` works
+  -- todo(pq): why is this not needed generally (e.g., for 'ui', 'util', etc.)?
+  if package.loaded['asl'] ~= nil then
+    package.loaded['asl'] = nil
+  end
 
   -- script local state
   local state = { }
@@ -122,7 +141,6 @@ Script.load = function(filename)
     filename = string.sub(filename,1,1) == "/" and filename or _path["dust"]..filename
     path, scriptname = filename:match("^(.*)/([^.]*).*$")
     name = string.sub(path, string.len(_path["code"]) + 1)
-    
     -- append scriptname to the name if it doesn't match directory name in case multiple scripts reside in the same directory
     -- ex: we/study/study1, we/study/study2, ...
     if string.sub(name, -#scriptname) ~= scriptname then
@@ -132,27 +150,15 @@ Script.load = function(filename)
     end
   end
 
-  print("# script load: " .. filename)
-
   local f=io.open(filename,"r")
   if f==nil then
-    print("file not found: "..filename)
+    print("# script load failed, file not found: " .. filename)
   else
     io.close(f)
-    local ok, err
-    ok, err = pcall(cleanup)
-    if ok then print("# cleanup")
-    else
-      print("### cleanup failed with error: "..err)
-    end
-
-    -- unload asl package entry so `require 'asl'` works
-    -- todo(pq): why is this not needed generally (e.g., for 'ui', 'util', etc.)?
-    if package.loaded['asl'] ~= nil then
-      package.loaded['asl'] = nil
-    end
 
     Script.clear() -- clear script variables and functions
+
+    print("# script load: " .. filename)
 
     norns.state.script = filename
     norns.state.name = name
@@ -198,6 +204,9 @@ end
 
 --- load engine, execute script-specified init (if present).
 Script.run = function()
+  -- allow mods to do initialization
+  hook.script_pre_init()
+
   print("# script run")
   if engine.name ~= nil then
     print("loading engine: " .. engine.name)

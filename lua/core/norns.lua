@@ -10,6 +10,7 @@ local engine = require 'core/engine'
 local poll = require 'core/poll'
 local tab = require 'tabutil'
 local util = require 'util'
+local hook = require 'core/hook'
 
 -- Global Functions.
 
@@ -177,6 +178,7 @@ end
 
 -- shutdown
 norns.shutdown = function()
+  hook.system_pre_shutdown()
   print("SLEEP")
   --TODO fade out screen then run the shutdown script
   norns.state.clean_shutdown = true
@@ -221,6 +223,8 @@ _norns.system_cmd_capture = function(cap)
   end
 end
 
+norns.system_glob = _norns.system_glob
+
 -- audio reset
 _norns.reset = function()
   os.execute("sudo systemctl restart norns-sclang.service")
@@ -232,4 +236,14 @@ end
 -- but before I/O event loop starts ticking (see readme-script.md)
 _startup = function()
   require('core/startup')
+end
+
+_post_startup = function()
+   print('_norns._post_startup')
+   hook.system_post_startup()
+end
+
+-- qol dev tools
+norns.rerun = function()
+  norns.script.load(norns.state.script)
 end

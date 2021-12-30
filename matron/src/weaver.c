@@ -11,6 +11,7 @@
 #include <string.h>
 
 // linux / posix
+#include <glob.h>
 #include <pthread.h>
 #include <signal.h>
 #include <sys/time.h>
@@ -32,6 +33,7 @@
 #include "device_midi.h"
 #include "device_monome.h"
 #include "events.h"
+#include "event_custom.h"
 #include "hello.h"
 #include "i2c.h"
 #include "lua_eval.h"
@@ -52,7 +54,7 @@
 
 //------
 //---- global lua state!
-lua_State *lvm;
+static lua_State *lvm;
 
 void w_run_code(const char *code) {
     l_dostring(lvm, code, "w_run_code");
@@ -77,6 +79,8 @@ static int _grid_all_led(lua_State *l);
 static int _grid_rows(lua_State *l);
 static int _grid_cols(lua_State *l);
 static int _grid_set_rotation(lua_State *l);
+static int _grid_tilt_enable(lua_State *l);
+static int _grid_tilt_disable(lua_State *l);
 
 static int _arc_set_led(lua_State *l);
 static int _arc_all_led(lua_State *l);
@@ -225,6 +229,7 @@ static int _sound_file_inspect(lua_State *l);
 
 // util
 static int _system_cmd(lua_State *l);
+static int _system_glob(lua_State *l);
 
 // reset LVM
 static int _reset_lvm(lua_State *l);
@@ -240,6 +245,9 @@ static int _clock_crow_in_div(lua_State *l);
 #if HAVE_ABLETON_LINK
 static int _clock_link_set_tempo(lua_State *l);
 static int _clock_link_set_quantum(lua_State *l);
+static int _clock_link_set_transport_stop(lua_State *l);
+static int _clock_link_set_transport_start(lua_State *l);
+static int _clock_link_set_start_stop_sync(lua_State *l);
 #endif
 static int _clock_set_source(lua_State *l);
 static int _clock_get_time_beats(lua_State *l);
@@ -264,7 +272,7 @@ static inline void _push_norns_func(const char *field, const char *func) {
 //// extern function definitions
 
 void w_init(void) {
-    fprintf(stderr, "starting lua vm\n");
+    fprintf(stderr, "starting main lua vm\n");
     lvm = luaL_newstate();
     luaL_openlibs(lvm);
     lua_pcall(lvm, 0, 0, 0);
@@ -346,6 +354,7 @@ void w_init(void) {
 
     // util
     lua_register_norns("system_cmd", &_system_cmd);
+    lua_register_norns("system_glob", &_system_glob);
 
     // low-level monome grid control
     lua_register_norns("grid_set_led", &_grid_set_led);
@@ -353,6 +362,8 @@ void w_init(void) {
     lua_register_norns("grid_rows", &_grid_rows);
     lua_register_norns("grid_cols", &_grid_cols);
     lua_register_norns("grid_set_rotation", &_grid_set_rotation);
+    lua_register_norns("grid_tilt_enable", &_grid_tilt_enable);
+    lua_register_norns("grid_tilt_disable", &_grid_tilt_disable);
     lua_register_norns("arc_set_led", &_arc_set_led);
     lua_register_norns("arc_all_led", &_arc_all_led);
     lua_register_norns("monome_refresh", &_monome_refresh);
@@ -454,6 +465,9 @@ void w_init(void) {
 #if HAVE_ABLETON_LINK
     lua_register_norns("clock_link_set_tempo", &_clock_link_set_tempo);
     lua_register_norns("clock_link_set_quantum", &_clock_link_set_quantum);
+    lua_register_norns("clock_link_set_transport_start", &_clock_link_set_transport_start);
+    lua_register_norns("clock_link_set_transport_stop", &_clock_link_set_transport_stop);
+    lua_register_norns("clock_link_set_start_stop_sync", &_clock_link_set_start_stop_sync);
 #endif
     lua_register_norns("clock_set_source", &_clock_set_source);
     lua_register_norns("clock_get_time_beats", &_clock_get_time_beats);
@@ -483,8 +497,12 @@ void w_init(void) {
 // run startup code
 // audio backend should be running
 void w_startup(void) {
-    fprintf(stderr, "running startup\n");
     lua_getglobal(lvm, "_startup");
+    l_report(lvm, l_docall(lvm, 0, 0));
+}
+
+void w_post_startup(void) {
+    lua_getglobal(lvm, "_post_startup");
     l_report(lvm, l_docall(lvm, 0, 0));
 }
 
@@ -502,13 +520,6 @@ void w_reset_lvm() {
 //----------------------------------
 //---- static definitions
 //
-
-#define STRING_NUM(n) #n
-#define LUA_ARG_ERROR(n) "error: requires " STRING_NUM(n) " arguments"
-#define lua_check_num_args(n)                   \
-    if (lua_gettop(l) != n) {                   \
-        return luaL_error(l, LUA_ARG_ERROR(n)); \
-    }
 
 int _reset_lvm(lua_State *l) {
     lua_check_num_args(0);
@@ -1276,6 +1287,35 @@ int _grid_set_rotation(lua_State *l) {
 }
 
 /***
+ * grid: enable tilt
+ * @param dev grid device
+ * @param id sensor number
+ */
+int _grid_tilt_enable(lua_State *l) {
+    lua_check_num_args(2);
+    luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
+    struct dev_monome *md = lua_touserdata(l, 1);
+    int id = (int)luaL_checkinteger(l, 2); // don't convert value!
+    dev_monome_tilt_enable(md, id);
+    lua_settop(l, 0);
+    return 0;
+}
+/***
+ * grid: disable tilt
+ * @param dev grid device
+ * @param id sensor number
+ */
+int _grid_tilt_disable(lua_State *l) {
+    lua_check_num_args(2);
+    luaL_checktype(l, 1, LUA_TLIGHTUSERDATA);
+    struct dev_monome *md = lua_touserdata(l, 1);
+    int id = (int)luaL_checkinteger(l, 2); // don't convert value!
+    dev_monome_tilt_disable(md, id);
+    lua_settop(l, 0);
+    return 0;
+}
+
+/***
  * monome: refresh
  * @function monome_refresh
  * @param dev grid device
@@ -1587,6 +1627,24 @@ int _clock_link_set_quantum(lua_State *l) {
     clock_link_set_quantum(quantum);
     return 0;
 }
+
+
+int _clock_link_set_transport_start(lua_State *l) {
+    clock_link_set_transport_start();
+    return 0;
+}
+
+int _clock_link_set_transport_stop(lua_State *l) {
+    clock_link_set_transport_stop();
+    return 0;
+}
+
+int _clock_link_set_start_stop_sync(lua_State *l) {
+    lua_check_num_args(1);
+    bool enabled = lua_toboolean(l, 1);
+    clock_link_set_start_stop_sync(enabled);
+    return 0;
+}
 #endif
 
 int _clock_set_source(lua_State *l) {
@@ -1627,6 +1685,16 @@ void w_handle_monome_remove(int id) {
 
 void w_handle_grid_key(int id, int x, int y, int state) {
     _call_grid_handler(id, x, y, state > 0);
+}
+
+void w_handle_grid_tilt(int id, int sensor, int x, int y, int z) {
+    _push_norns_func("grid", "tilt");
+    lua_pushinteger(lvm, id + 1); // convert to 1-base
+    lua_pushinteger(lvm, sensor + 1);  // convert to 1-base
+    lua_pushinteger(lvm, x + 1);  // convert to 1-base
+    lua_pushinteger(lvm, y + 1);  // convert to 1-base
+    lua_pushinteger(lvm, z + 1);
+    l_report(lvm, l_docall(lvm, 5, 0));
 }
 
 void w_handle_arc_encoder_delta(int id, int n, int delta) {
@@ -2087,6 +2155,12 @@ void w_handle_system_cmd(char *capture) {
     l_report(lvm, l_docall(lvm, 1, 0));
 }
 
+void w_handle_custom_weave(struct event_custom *ev) {
+    // call the externally defined `op` function passing in the current lua
+    // state
+    ev->ops->weave(lvm, ev->value, ev->context);
+}
+
 // helper: set poll given by lua to given state
 static int poll_set_state(lua_State *l, bool val) {
     lua_check_num_args(1);
@@ -2366,24 +2440,28 @@ int _cut_buffer_copy_stereo(lua_State *l) {
 }
 
 int _cut_buffer_read_mono(lua_State *l) {
-    lua_check_num_args(6);
+    lua_check_num_args(8);
     const char *s = luaL_checkstring(l, 1);
     float start_src = (float)luaL_checknumber(l, 2);
     float start_dst = (float)luaL_checknumber(l, 3);
     float dur = (float)luaL_checknumber(l, 4);
     int ch_src = (int)luaL_checkinteger(l, 5) - 1;
     int ch_dst = (int)luaL_checkinteger(l, 6) - 1;
-    o_cut_buffer_read_mono((char *)s, start_src, start_dst, dur, ch_src, ch_dst);
+    float preserve = (float)luaL_checknumber(l, 7);
+    float mix = (float)luaL_checknumber(l, 8);
+    o_cut_buffer_read_mono((char *)s, start_src, start_dst, dur, ch_src, ch_dst, preserve, mix);
     return 0;
 }
 
 int _cut_buffer_read_stereo(lua_State *l) {
-    lua_check_num_args(4);
+    lua_check_num_args(6);
     const char *s = luaL_checkstring(l, 1);
     float start_src = (float)luaL_checknumber(l, 2);
     float start_dst = (float)luaL_checknumber(l, 3);
     float dur = (float)luaL_checknumber(l, 4);
-    o_cut_buffer_read_stereo((char *)s, start_src, start_dst, dur);
+    float preserve = (float)luaL_checknumber(l, 5);
+    float mix = (float)luaL_checknumber(l, 6);
+    o_cut_buffer_read_stereo((char *)s, start_src, start_dst, dur, preserve, mix);
     return 0;
 }
 
@@ -2564,6 +2642,33 @@ int _system_cmd(lua_State *l) {
     const char *cmd = luaL_checkstring(l, 1);
     system_cmd((char *)cmd);
     return 0;
+}
+
+int _system_glob(lua_State *l) {
+    lua_check_num_args(1);
+    const char *pattern = luaL_checkstring(l, 1);
+
+    int glob_status = 0;
+    int glob_flags = GLOB_MARK | GLOB_TILDE | GLOB_BRACE;
+    glob_t g;
+
+    unsigned int i;
+
+    glob_status = glob(pattern, glob_flags, NULL, &g);
+
+    if (glob_status != 0) {
+        lua_pushnil(l);
+        lua_pushinteger(l, glob_status);
+        return 2;
+    }
+
+    lua_newtable(l);
+    for(i=1; i<=g.gl_pathc; i++) {
+        lua_pushstring(l, g.gl_pathv[i-1]);
+        lua_rawseti(l, -2, i);
+    }
+    globfree(&g);
+    return 1;
 }
 
 int _platform(lua_State *l) {

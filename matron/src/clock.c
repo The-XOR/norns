@@ -12,19 +12,25 @@
 #include "clocks/clock_midi.h"
 #include "clocks/clock_scheduler.h"
 #include "events.h"
+#include "screen.h"
 
 static clock_source_t clock_source;
 static jack_client_t *jack_client;
 static jack_nframes_t jack_sample_rate;
 
 void clock_init() {
-    if ((jack_client = jack_client_open("matron-clock", JackNoStartServer, NULL)) == 0) {
-        fprintf(stderr, "failed to create JACK client\n");
-    }
+  if ((jack_client = jack_client_open("matron-clock", JackNoStartServer, NULL)) == 0) {
+    fprintf(stderr, "failed to create JACK client\n");
+    screen_clear();
+    screen_level(15);
+    screen_move(0,60);
+    screen_text("jack fail.");
+    screen_update();
+  }
 
-    jack_sample_rate = jack_get_sample_rate(jack_client);
+  jack_sample_rate = jack_get_sample_rate(jack_client);
 
-    clock_set_source(CLOCK_SOURCE_INTERNAL);
+  clock_set_source(CLOCK_SOURCE_INTERNAL);
 }
 
 void clock_deinit() {
@@ -143,6 +149,12 @@ void clock_reschedule_sync_events_from_source(clock_source_t source) {
 }
 
 void clock_set_source(clock_source_t source) {
+    if (clock_source != source && source == CLOCK_SOURCE_LINK) {
+        clock_link_join_session();
+    } else if (clock_source != source && clock_source == CLOCK_SOURCE_LINK) {
+        clock_link_leave_session();
+    }
+
     clock_source = source;
     clock_scheduler_reschedule_sync_events();
 }

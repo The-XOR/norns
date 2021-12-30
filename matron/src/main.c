@@ -12,6 +12,7 @@
 #include "clocks/clock_internal.h"
 #include "clocks/clock_link.h"
 #include "clocks/clock_midi.h"
+#include "config.h"
 #include "clocks/clock_scheduler.h"
 #include "device.h"
 #include "device_hid.h"
@@ -20,7 +21,6 @@
 #include "device_monitor.h"
 #include "device_monome.h"
 #include "events.h"
-#include "gpio.h"
 #include "hello.h"
 #include "i2c.h"
 #include "input.h"
@@ -40,9 +40,9 @@ void cleanup(void) {
     osc_deinit();
     o_deinit();
     w_deinit();
-    gpio_deinit();
+
+    config_deinit();
     i2c_deinit();
-    screen_deinit();
     battery_deinit();
     stat_deinit();
     clock_deinit();
@@ -59,15 +59,12 @@ int main(int argc, char **argv) {
     printf("platform: %d\n",platform());
 
     events_init(); // <-- must come first!
-    screen_init();
+    if (config_init()) {
+        fprintf(stderr, "configuration failed\n");
+        return -1;
+    }
 
     metros_init();
-
-#ifdef __arm__
-    // gpio_init() hangs for too long when cross-compiling norns
-    // desktop for dev - just disable on x86 for now
-    gpio_init();
-#endif
 
     battery_init();
     stat_init();
@@ -83,23 +80,44 @@ int main(int argc, char **argv) {
 #endif
     clock_scheduler_init();
 
+    fprintf(stderr, "init oracle...\n");
     o_init(); // oracle (audio)
 
+    fprintf(stderr, "init weaver...\n");
     w_init(); // weaver (scripting)
 
     dev_list_init();
     dev_list_add(DEV_TYPE_MIDI_VIRTUAL, NULL, "virtual");
+
+    fprintf(stderr, "init dev_monitor...\n");
     dev_monitor_init();
 
     // now is a good time to set our cleanup
+    fprintf(stderr, "setting cleanup...\n");
     atexit(cleanup);
+
+
+    fprintf(stderr, "init input...\n");
     // start reading input to interpreter
     input_init();
+
+    
+    fprintf(stderr, "running startup...\n");
     // i/o subsystems are ready; run user startup routine
     w_startup();
+
     // scan for connected input devices
+    fprintf(stderr, "scanning devices...\n");
     dev_monitor_scan();
 
+    // handle all resulting events, then run "post-startup"
+    fprintf(stderr, "handling pending events...\n");
+    event_handle_pending();
+
+    fprintf(stderr, "running post-startup...\n");
+    w_post_startup();
+    
+    
     // blocks until quit
     event_loop();
 }

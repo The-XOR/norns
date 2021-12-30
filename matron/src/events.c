@@ -11,12 +11,12 @@
 #include "battery.h"
 #include "device_monome.h"
 #include "events.h"
-#include "gpio.h"
 #include "oracle.h"
 #include "stat.h"
 #include "weaver.h"
 
 #include "event_types.h"
+#include "event_custom.h"
 
 //----------------------------
 //--- types and variables
@@ -97,14 +97,23 @@ void events_init(void) {
     pthread_cond_init(&evq.nonempty, NULL);
 }
 
-union event_data *event_data_new(event_t type) {
+MATRON_API union event_data *event_data_new(event_t type) {
     // FIXME: better not to allocate here, use object pool
     union event_data *ev = calloc(1, sizeof(union event_data));
     ev->type = type;
     return ev;
 }
 
-void event_data_free(union event_data *ev) {
+MATRON_API union event_data *event_custom_new(struct event_custom_ops *ops, void *value, void *context) {
+    assert(ops != NULL);
+    union event_data *ev = event_data_new(EVENT_CUSTOM);
+    ev->custom.ops = ops;
+    ev->custom.value = value;
+    ev->custom.context = context;
+    return ev;
+}
+
+MATRON_API void event_data_free(union event_data *ev) {
     switch (ev->type) {
     case EVENT_EXEC_CODE_LINE:
         free(ev->exec_code_line.line);
@@ -127,12 +136,17 @@ void event_data_free(union event_data *ev) {
     case EVENT_SOFTCUT_RENDER:
         free(ev->softcut_render.data);
         break;
+    case EVENT_CUSTOM:
+        if (ev->custom.ops->free) {
+            ev->custom.ops->free(ev->custom.value, ev->custom.context);
+        }
+        break;
     }
     free(ev);
 }
 
 // add an event to the q and signal if necessary
-void event_post(union event_data *ev) {
+MATRON_API void event_post(union event_data *ev) {
     assert(ev != NULL);
     pthread_mutex_lock(&evq.lock);
     if (evq.size == 0) {
@@ -212,6 +226,9 @@ static void handle_event(union event_data *ev) {
         break;
     case EVENT_GRID_KEY:
         w_handle_grid_key(ev->grid_key.id, ev->grid_key.x, ev->grid_key.y, ev->grid_key.state);
+        break;
+    case EVENT_GRID_TILT:
+        w_handle_grid_tilt(ev->grid_tilt.id, ev->grid_tilt.sensor, ev->grid_tilt.x, ev->grid_tilt.y, ev->grid_tilt.z);
         break;
     case EVENT_ARC_ENCODER_DELTA:
         w_handle_arc_encoder_delta(ev->arc_encoder_delta.id, ev->arc_encoder_delta.number, ev->arc_encoder_delta.delta);
@@ -294,6 +311,9 @@ static void handle_event(union event_data *ev) {
     case EVENT_SOFTCUT_POSITION:
         w_handle_softcut_position(ev->softcut_position.idx, ev->softcut_position.pos);
         break;
+    case EVENT_CUSTOM:
+        w_handle_custom_weave(&(ev->custom));
+        break;
     } /* switch */
 
     event_data_free(ev);
@@ -309,4 +329,22 @@ void handle_engine_report(void) {
     const int n = o_get_num_engines();
     w_handle_engine_report(p, n);
     o_unlock_descriptors();
+}
+
+void event_handle_pending(void) {
+    union event_data *ev = NULL;
+    char done = 0;
+    while(!done) {    
+	pthread_mutex_lock(&evq.lock);
+	if (evq.size > 0) {     
+	    ev = evq_pop();
+	} else {
+	    done = 1;
+	    ev = NULL;
+	}
+	pthread_mutex_unlock(&evq.lock);
+	if (ev != NULL) {
+	    handle_event(ev);
+	}
+    }
 }
