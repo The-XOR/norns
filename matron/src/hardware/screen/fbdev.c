@@ -155,6 +155,8 @@ static cairo_surface_t *screen_fbdev_surface_create(screen_fbdev_priv_t *priv, c
         cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, priv->fb_vinfo.xres));
     cairo_surface_set_user_data(surface, NULL, priv, &screen_fbdev_surface_destroy);
 
+    cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
+
     return surface;
 
 handle_ioctl_error:

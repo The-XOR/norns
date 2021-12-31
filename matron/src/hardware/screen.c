@@ -18,9 +18,6 @@
 #include "hardware/io.h"
 #include "hardware/screen.h"
 
-#define MAGNIFY_WIDTH    2
-#define MAGNIFY_HEIGHT   2
-
 // skip this if you don't want every screen module call to perform null checks
 #ifndef CHECK_CR
 #define CHECK_CR      \
@@ -238,13 +235,6 @@ void screen_display_png(const char *filename, double x, double y) {
 }
 
 void screen_init(void) {
-    surfacefb = cairo_linuxfb_surface_create();
-    if (surfacefb == NULL) {
-        return;
-    }
-    cairo_surface_set_device_scale(surfacefb, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
-    crfb = cairo_create(surfacefb);
-
     surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128*MAGNIFY_WIDTH, 64*MAGNIFY_HEIGHT);
     cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     cr = cairo_create(surface);

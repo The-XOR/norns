@@ -16,7 +16,7 @@ norns is primarily intended to run on a pi-based sound computer designed by [mon
 ## quick reference
 
 ```
-git clone https://github.com/monome/norns.git
+git clone https://github.com/The-XOR/norns.git
 cd norns
 git submodule update --init --recursive
 ./waf configure
