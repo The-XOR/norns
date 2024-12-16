@@ -40,7 +40,7 @@ find ~/dust -name .DS_Store -delete
 find ~/dust -name ._.DS_Store -delete
 
 # set alsa volume
-amixer --device hw:sndrpimonome set Master 100% on
+amixer --device hw:CODEC set Master 100% on
 sudo alsactl store
 
 # change boot/cmdline for screen
