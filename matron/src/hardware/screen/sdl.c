@@ -105,6 +105,7 @@ static cairo_surface_t *screen_sdl_surface_create(screen_sdl_priv_t *priv) {
                                                   CAIRO_FORMAT_RGB16_565, priv->draw_surface->w, priv->draw_surface->h,
                                                   cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, priv->draw_surface->w));
     cairo_surface_set_user_data(surface, NULL, priv, &screen_sdl_surface_destroy);
-
+	cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
+	
     return surface;
 }

@@ -128,7 +128,8 @@ static void init_font_faces(void);
 //--- extern function definitions
 
 void screen_init(void) {
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128, 64);
+    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128*MAGNIFY_WIDTH, 64*MAGNIFY_HEIGHT);
+    cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     cr = cr_primary = cairo_create(surface);
 
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
@@ -562,6 +563,7 @@ void screen_display_png(const char *filename, double x, double y) {
     int img_w, img_h;
 
     image = cairo_image_surface_create_from_png(filename);
+	cairo_surface_set_device_scale(image, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
 
     if (cairo_surface_status(image)) {
         fprintf(stderr, "display_png: %s\n", cairo_status_to_string(cairo_surface_status(image)));
