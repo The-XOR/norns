@@ -24,11 +24,15 @@
 #include "hello.h"
 #include "i2c.h"
 #include "input.h"
+#include "jack_client.h"
 #include "metro.h"
 #include "osc.h"
 #include "platform.h"
 #include "screen.h"
+#include "screen_events.h"
+#include "screen_results.h"
 #include "stat.h"
+#include "hardware/screen/ssd1322.h"
 
 #include "oracle.h"
 #include "weaver.h"
@@ -45,8 +49,9 @@ void cleanup(void) {
     i2c_deinit();
     battery_deinit();
     stat_deinit();
-    clock_deinit();
-
+    jack_client_deinit();
+    ssd1322_deinit();
+    screen_results_deinit();
     fprintf(stderr, "matron shutdown complete\n");
     exit(0);
 }
@@ -68,8 +73,9 @@ int main(int argc, char **argv) {
 
     battery_init();
     stat_init();
-    i2c_init();
     osc_init();
+    jack_client_init();
+    ssd1322_init();
     clock_init();
     clock_internal_init();
     clock_midi_init();
@@ -92,16 +98,20 @@ int main(int argc, char **argv) {
     fprintf(stderr, "init dev_monitor...\n");
     dev_monitor_init();
 
+    // start listening for screen events
+    screen_results_init();
+    screen_events_init();
+
     // now is a good time to set our cleanup
     fprintf(stderr, "setting cleanup...\n");
     atexit(cleanup);
-
 
     fprintf(stderr, "init input...\n");
     // start reading input to interpreter
     input_init();
 
-    
+    i2c_init();
+
     fprintf(stderr, "running startup...\n");
     // i/o subsystems are ready; run user startup routine
     w_startup();
@@ -116,7 +126,6 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "running post-startup...\n");
     w_post_startup();
-    
     
     // blocks until quit
     event_loop();

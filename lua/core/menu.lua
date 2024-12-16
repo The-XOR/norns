@@ -6,6 +6,7 @@ local util = require 'util'
 local fileselect = require 'fileselect'
 local listselect = require 'listselect'
 local textentry = require 'textentry'
+local gamepad = require 'gamepad'
 
 _menu = {}
 
@@ -14,6 +15,7 @@ key = norns.none
 enc = norns.none
 redraw = norns.blank
 cleanup = norns.none
+refresh = norns.none
 
 -- tuning
 local KEY1_HOLD_TIME = 0.25
@@ -29,6 +31,7 @@ _menu.errormsg = ""
 _menu.shownav = false
 _menu.showstats = false
 _menu.previewfile = ""
+_menu.binarystates = {triggered = {}, on = {}}
 
 -- menu pages
 local m = {}
@@ -63,14 +66,16 @@ end
 norns.menu = {}
 norns.menu.init = function() _menu.set_mode(_menu.mode) end -- used by fileselect.lua
 norns.menu.status = function() return _menu.mode end
-norns.menu.set = function(new_enc, new_key, new_redraw)
+norns.menu.set = function(new_enc, new_key, new_redraw, new_refresh)
   _menu.penc = new_enc
   _menu.key = new_key
   _menu.redraw = new_redraw
+  _menu.refresh = new_refresh
 end
 norns.menu.get_enc = function() return _menu.penc end
 norns.menu.get_key = function() return _menu.key end
 norns.menu.get_redraw = function() return _menu.redraw end
+norns.menu.get_refresh = function() return _menu.refresh end
 norns.menu.toggle = function(status) _menu.set_mode(status) end
 
 norns.scripterror = function(msg)
@@ -78,6 +83,9 @@ norns.scripterror = function(msg)
   print("### SCRIPT ERROR: "..msg)
   if util.string_starts(msg,"missing") then
     print("### try 'SYSTEM > RESTART'")
+  elseif util.string_starts(msg,"version") then
+    print("### try 'SYSTEM > UPDATE'")
+    print("### or check for new disk image")
   end
   _menu.errormsg = msg
   _menu.scripterror = true
@@ -154,15 +162,17 @@ _menu.set_mode = function(mode)
     screen.clear()
     screen.update()
     redraw = norns.script.redraw
+    refresh = norns.script.refresh
     _menu.key = key
     norns.encoders.callback = enc
     norns.enc.resume()
     redraw()
-  elseif mode == true then -- ACTIVATE MENu MODE
+  elseif mode == true then -- ACTIVATE MENU MODE
     if _menu.mode == false then _norns.screen_save() end
     _menu.mode = true
     _menu.alt = false
     redraw = norns.none
+    refresh = norns.none
     screen.font_face(1)
     screen.font_size(8)
     screen.line_width(1)
@@ -184,8 +194,13 @@ _menu.set_page = function(page)
   _menu.key = m[page].key
   _menu.penc = m[page].enc
   _menu.redraw = m[page].redraw
+  _menu.refresh = m[page].refresh
   _menu.keyboardcode = m[page].keycode
   _menu.keyboardchar = m[page].keychar
+  _menu.custom_gamepad_axis = m[page].gamepad_axis
+  _menu.custom_gamepad_dpad = m[page].gamepad_dpad
+  _menu.custom_gamepad_button = m[page].gamepad_button
+  _menu.custom_gamepad_analog = m[page].gamepad_analog
   m[page].init()
   _menu.redraw()
 end
@@ -206,16 +221,33 @@ end
 
 -- global menu keys
 function _menu.keycode(c,value)
-  if value==1 then
-    if c=="F1" then _menu.set_page("MIX")
-    elseif c=="F2" then _menu.set_page("TAPE")
-    elseif c=="F3" then _menu.set_page("HOME")
-    elseif c=="F4" then _menu.set_page("PARAMS")
+  -- those are globals and can't be overriden by a sub-menu
+  if value>0 then
+    if c=="F1" then
+      _menu.set_page("MIX")
+      return
+    elseif c=="F2" then
+      _menu.set_page("TAPE")
+      return
+    elseif c=="F3" then
+      _menu.set_page("HOME")
+      return
+    elseif c=="F4" then
+      _menu.set_page("PARAMS")
+      return
     end
   end
 
+  -- if a sub-menu defines its own handler, it takes precedence...
+  if _menu.keyboardcode then
+    _menu.keyboardcode(c,value)
+    return
+  end
+
+  -- ... otherwise we use those default bindings in most places
+
   -- E2 emu (scolling)
-  if value==1 then
+  if value>0 then
     if c=="DOWN" then
       _menu.penc(2,1)
     elseif c=="UP" then
@@ -227,7 +259,7 @@ function _menu.keycode(c,value)
     end
   end
 
-  -- key emu
+  -- K2/K3 emu
   if value==1 or value==0 then
     if c=="LEFT" then
       _menu.key(2,value)
@@ -236,11 +268,64 @@ function _menu.keycode(c,value)
     end
   end
 
-  if _menu.keyboardcode then _menu.keyboardcode(c,value) end
+  -- parameter change with +/-
+  if c=="MINUS" then
+    _menu.penc(3,value*-1)
+  elseif c=="EQUAL" then
+    _menu.penc(3,value)
+  end
 end
 
-function _menu.keychar(c) end
+function _menu.keychar(c)
+  if _menu.keyboardchar then _menu.keyboardchar(c) end
+end
 
+function _menu.gamepad_axis(_sensor_axis,_value)
+
+  -- if a sub-menu defines its own handler, it takes precedence...
+  if _menu.custom_gamepad_axis then
+    _menu.custom_gamepad_axis(_sensor_axis,_value)
+    return
+  end
+
+  if gamepad.down() then
+    _menu.penc(2,1)
+  elseif gamepad.up() then
+    _menu.penc(2,-1)
+  elseif gamepad.left() then
+    _menu.key(2,1)
+  elseif gamepad.right() then
+    _menu.key(3,1)
+  end
+end
+
+function _menu.gamepad_button(b,value)
+
+  if value == 1 and (b == "L1" or b == "R1") then
+    local delta = b == "R1" and 1 or -1
+    local c = util.clamp(_menu.panel+delta,1,4)
+    if c ~= _menu.panel then
+      _menu.shownav = true
+      _menu.panel = c
+      _menu.set_page(_menu.panels[_menu.panel])
+      nav_vanish:start()
+    end
+  end
+
+  -- if a sub-menu defines its own handler, it takes precedence...
+  if _menu.custom_gamepad_button then
+    _menu.custom_gamepad_button(b,value)
+    return
+  end
+
+  if value==1 or value==0 then
+    if b == "B" then
+      _menu.key(2,value)
+    elseif b == "A" then
+      _menu.key(3,value)
+    end
+  end
+end
 
 -- interfaces
 
@@ -249,8 +334,10 @@ m["SELECT"] = require 'core/menu/select'
 m["PREVIEW"] = require 'core/menu/preview'
 m["PARAMS"] = require 'core/menu/params'
 m["SYSTEM"] = require 'core/menu/system'
+m["DISPLAY"] = require 'core/menu/display'
 m["DEVICES"] = require 'core/menu/devices'
 m["WIFI"] = require 'core/menu/wifi'
+m["SETTINGS"] = require 'core/menu/settings'
 m["RESTART"] = require 'core/menu/restart'
 m["RESET"] = require 'core/menu/reset'
 m["UPDATE"] = require 'core/menu/update'

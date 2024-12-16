@@ -1,4 +1,9 @@
--- Separator class
+--- Separator between parameters
+--
+-- See also the [norns script reference](https://monome.org/docs/norns/reference/)
+-- which has
+-- [examples for using params](https://monome.org/docs/norns/reference/params).
+--
 -- @module params.separator
 
 local Separator = {}
@@ -6,9 +11,10 @@ Separator.__index = Separator
 
 local tSEPARATOR = 0
 
-function Separator.new(name)
+function Separator.new(id,name)
   local s = setmetatable({}, Separator)
-  s.name = name or ""
+  s.name = name or (id or "separator")
+  s.id = id or s.name
   s.t = tSEPARATOR
   s.action = function() end
   return s

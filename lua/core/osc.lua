@@ -1,5 +1,10 @@
 --- osc device
+--
+-- The [norns script reference](https://monome.org/docs/norns/reference/)
+-- has [examples for this module](https://monome.org/docs/norns/reference/osc).
+--
 -- @module osc
+-- @alias OSC
 
 local tab = require 'tabutil'
 local paramset = require 'core/paramset'
@@ -15,8 +20,8 @@ OSC.__index = OSC
 -- @tparam string args : osc message args
 -- @tparam table from : a {host, port} table with the source address
 function OSC.event(path, args, from)
-  print("incoming osc message from", from, path)
-  tab.print(args)
+--   print("incoming osc message from:”, from[1], from[2], path)
+--   tab.print(args)
 end
 
 --- static method to send osc event.
@@ -40,6 +45,11 @@ function OSC.send_crone(path, args)
   else
     _norns.osc_send_crone(path)
   end
+end
+
+--- clear handlers.
+function OSC.cleanup()
+  OSC.event = nil
 end
 
 local function param_handler(path, args)
@@ -70,7 +80,7 @@ local function param_handler(path, args)
         local param = pset:lookup_param(osc_param_id)
 
         if param.id == osc_param_id then
-          print('setting parameter '..pset_id..'/'..param.id..' to '..osc_param_value)
+          -- print('setting parameter '..pset_id..'/'..param.id..' to '..osc_param_value)
           param:set(osc_param_value)
         end
       end
@@ -92,6 +102,8 @@ local function remote_handler(path, args)
     _norns.key(n, val)
   elseif cmd=="/remote/enc" then
     _norns.enc(n, val)
+  elseif cmd=="/remote/brd" then 
+    keyboard.process(1,n,val)
   end
 end
 				    

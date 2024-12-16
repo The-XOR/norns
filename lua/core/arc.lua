@@ -1,5 +1,10 @@
 --- Arc
+--
+-- The [norns script reference](https://monome.org/docs/norns/reference/)
+-- has [examples for this module](https://monome.org/docs/norns/reference/arc).
+--
 -- @module arc
+-- @alias Arc
 
 local tab = require 'tabutil'
 
@@ -157,6 +162,12 @@ function Arc.cleanup()
     dev.delta = nil
     dev.key = nil
   end
+
+  Arc.add = function(dev)
+    print("arc added:", dev.id, dev.name, dev.serial)
+  end
+
+  Arc.remove = function(dev) end
 end
 
 -- @static

@@ -1,6 +1,7 @@
 --- Screen class
 -- subset of cairo drawing functions. see https://www.cairographics.org/tutorial/
 -- @module screen
+-- @alias Screen
 
 local Screen = {}
 
@@ -8,6 +9,13 @@ local metro = require 'core/metro'
 local screensaver = metro[36]
 
 local sleeping = false
+
+local executable_lua, err = loadfile(_path.display_settings)
+local loaded_settings = executable_lua ~= nil and executable_lua() or {}
+local brightness = loaded_settings.brightness or 15
+local contrast = loaded_settings.contrast or 127
+local gamma = loaded_settings.gamma or 1.0
+local module_just_loaded = true
 
 screensaver.event = function()
   _norns.screen_clear()
@@ -20,6 +28,12 @@ screensaver.count = 1
 
 --- copy buffer to screen.
 Screen.update_default = function()
+  if module_just_loaded then
+    _norns.screen_brightness(brightness)
+    _norns.screen_contrast(contrast)
+    _norns.screen_gamma(gamma)
+    module_just_loaded = false
+  end
   _norns.screen_update()
 end
 
@@ -119,21 +133,21 @@ Screen.circle = function(x, y, r) _norns.screen_circle(x, y, r) end
 Screen.rect = function(x, y, w, h) _norns.screen_rect(x, y, w, h) end
 
 --- draw curve (cubic Bézier spline).
--- @tparam number x1 destination x
--- @tparam number y1 destination y
--- @tparam number x2 handle 1 x
--- @tparam number y2 handle 1 y
--- @tparam number x3 handle 2 x
--- @tparam number y3 handle 2 y
+-- @tparam number x1 handle 1 x
+-- @tparam number y1 handle 1 y
+-- @tparam number x2 handle 2 x
+-- @tparam number y2 handle 2 y
+-- @tparam number x3 destination x
+-- @tparam number y3 destination y
 Screen.curve = function(x1, y1, x2, y2, x3, y3) _norns.screen_curve(x1, y1, x2, y2, x3, y3) end
 
 --- draw curve (cubic Bézier spline) relative coordinates.
--- @tparam number x1 relative destination x
--- @tparam number y1 relative destination y
--- @tparam number x2 handle 1 x
--- @tparam number y2 handle 1 y
--- @tparam number x3 handle 2 x
--- @tparam number y3 handle 2 y
+-- @tparam number x1 handle 1 x
+-- @tparam number y1 handle 1 y
+-- @tparam number x2 handle 2 x
+-- @tparam number y2 handle 2 y
+-- @tparam number x3 relative destination x
+-- @tparam number y3 relative destination y
 Screen.curve_rel = function(x1, y1, x2, y2, x3, y3) _norns.screen_curve_rel(x1, y1, x2, y2, x3, y3) end
 
 --- close current path.
@@ -141,16 +155,29 @@ Screen.close = function() _norns.screen_close() end
 
 --- stroke current path.
 -- uses currently selected color.
+-- after this call the current path will be cleared, so the 'relative' functions
+-- (`move_rel`, `line_rel` and `curve_rel`) won't work - use their absolute
+-- alternatives instead.
 Screen.stroke = function() _norns.screen_stroke() end
 
 --- fill current path.
 -- uses currently selected color.
+-- after this call the current path will be cleared, so the 'relative' functions
+-- (`move_rel`, `line_rel` and `curve_rel`) won't work - use their absolute
+-- alternatives instead.
 Screen.fill = function() _norns.screen_fill() end
 
 --- draw text (left aligned).
 -- uses currently selected font.
 -- @tparam string str : text to write
 Screen.text = function(str) _norns.screen_text(str) end
+
+--- draw left-aligned text, trimmed to specified width.
+-- (characters are removed from end of string until it fits.)
+-- uses currently selected font.
+-- @tparam string str text to write
+-- @tparam number w width 
+Screen.text_trim = function(str, w) _norns.screen_text_trim(str, w) end
 
 --- draw text (left aligned) and rotated.
 -- uses currently selected font.
@@ -178,82 +205,162 @@ Screen.text_center = function(str) _norns.screen_text_center(str) end
 -- @tparam number degrees : degress to rotate
 Screen.text_center_rotate = function(x, y, str, degrees) _norns.screen_text_center_rotate(x, y, str, degrees) end
 
---- calculate width of text.
--- uses currently selected font.
+--- calculate width of text given current font and draw state.
 -- @tparam string str : text to calculate width of
-Screen.text_extents = function(str) return _norns.screen_text_extents(str) end
+Screen.text_extents = function(str) 
+  return _norns.screen_text_extents(str)
+end
+
+-- get the current drawing position in the screen surface
+-- @treturn number x
+-- @treturn number y
+Screen.current_point = function() return _norns.screen_current_point() end
 
 --- select font face.
--- @param index font face (see list)
+-- @param index font face (see list, or Screen.font\_face\_names)
 --
--- 1 04B_03 (norns default)
--- 2 ALEPH
--- 3 Roboto Thin
--- 4 Roboto Light
--- 5 Roboto Regular
--- 6 Roboto Medium
--- 7 Roboto Bold
--- 8 Roboto Black
--- 9 Roboto Thin Italic
--- 10 Roboto Light Italic
--- 11 Roboto Italic
--- 12 Roboto Medium Italic
--- 13 Roboto Bold Italic
--- 14 Roboto Black Italic
--- 15 VeraBd
--- 16 VeraBI
--- 17 VeraIt
--- 18 VeraMoBd
--- 19 VeraMoBI
--- 20 VeraMoIt
--- 21 VeraMono
--- 22 VeraSeBd
--- 23 VeraSe
--- 24 Vera
--- 25 bmp/tom-thumb
--- 26 creep
--- 27 ctrld-fixed-10b
--- 28 ctrld-fixed-10r
--- 29 ctrld-fixed-13b
--- 30 ctrld-fixed-13b-i
--- 31 ctrld-fixed-13r
--- 32 ctrld-fixed-13r-i
--- 33 ctrld-fixed-16b
--- 34 ctrld-fixed-16b-i
--- 35 ctrld-fixed-16r
--- 36 ctrld-fixed-16r-i
--- 37 scientifica-11
--- 38 scientificaBold-11
--- 39 scientificaItalic-11
--- 40 ter-u12b
--- 41 ter-u12n
--- 42 ter-u14b
--- 43 ter-u14n
--- 44 ter-u14v
--- 45 ter-u16b
--- 46 ter-u16n
--- 47 ter-u16v
--- 48 ter-u18b
--- 49 ter-u18n
--- 50 ter-u20b
--- 51 ter-u20n
--- 52 ter-u22b
--- 53 ter-u22n
--- 54 ter-u24b
--- 55 ter-u24n
--- 56 ter-u28b
--- 57 ter-u28n
--- 58 ter-u32b
--- 59 ter-u32n
--- 60 unscii-16-full.pcf
--- 61 unscii-16.pcf
--- 62 unscii-8-alt.pcf
--- 63 unscii-8-fantasy.pcf
--- 64 unscii-8-mcr.pcf
--- 65 unscii-8.pcf
--- 66 unscii-8-tall.pcf
--- 67 unscii-8-thin.pcf
+-- * 1 norns (default)
+-- * 2 ALEPH
+-- * 3 Roboto Thin
+-- * 4 Roboto Light
+-- * 5 Roboto Regular
+-- * 6 Roboto Medium
+-- * 7 Roboto Bold
+-- * 8 Roboto Black
+-- * 9 Roboto Thin Italic
+-- * 10 Roboto Light Italic
+-- * 11 Roboto Italic
+-- * 12 Roboto Medium Italic
+-- * 13 Roboto Bold Italic
+-- * 14 Roboto Black Italic
+-- * 15 VeraBd
+-- * 16 VeraBI
+-- * 17 VeraIt
+-- * 18 VeraMoBd
+-- * 19 VeraMoBI
+-- * 20 VeraMoIt
+-- * 21 VeraMono
+-- * 22 VeraSeBd
+-- * 23 VeraSe
+-- * 24 Vera
+-- * 25 bmp/tom-thumb
+-- * 26 creep
+-- * 27 ctrld-fixed-10b
+-- * 28 ctrld-fixed-10r
+-- * 29 ctrld-fixed-13b
+-- * 30 ctrld-fixed-13b-i
+-- * 31 ctrld-fixed-13r
+-- * 32 ctrld-fixed-13r-i
+-- * 33 ctrld-fixed-16b
+-- * 34 ctrld-fixed-16b-i
+-- * 35 ctrld-fixed-16r
+-- * 36 ctrld-fixed-16r-i
+-- * 37 scientifica-11
+-- * 38 scientificaBold-11
+-- * 39 scientificaItalic-11
+-- * 40 ter-u12b
+-- * 41 ter-u12n
+-- * 42 ter-u14b
+-- * 43 ter-u14n
+-- * 44 ter-u14v
+-- * 45 ter-u16b
+-- * 46 ter-u16n
+-- * 47 ter-u16v
+-- * 48 ter-u18b
+-- * 49 ter-u18n
+-- * 50 ter-u20b
+-- * 51 ter-u20n
+-- * 52 ter-u22b
+-- * 53 ter-u22n
+-- * 54 ter-u24b
+-- * 55 ter-u24n
+-- * 56 ter-u28b
+-- * 57 ter-u28n
+-- * 58 ter-u32b
+-- * 59 ter-u32n
+-- * 60 unscii-16-full.pcf
+-- * 61 unscii-16.pcf
+-- * 62 unscii-8-alt.pcf
+-- * 63 unscii-8-fantasy.pcf
+-- * 64 unscii-8-mcr.pcf
+-- * 65 unscii-8.pcf
+-- * 66 unscii-8-tall.pcf
+-- * 67 unscii-8-thin.pcf
+-- * 68 Particle
+-- * 69 04B_03 (aliased to norns.ttf)
 Screen.font_face = function(index) _norns.screen_font_face(index) end
+Screen.font_face_count = 68
+Screen.font_face_names = {
+   "norns",
+   "liquid",
+   "Roboto-Thin",
+   "Roboto-Light",
+   "Roboto-Regular",
+   "Roboto-Medium",
+   "Roboto-Bold",
+   "Roboto-Black",
+   "Roboto-ThinItalic",
+   "Roboto-LightItalic",
+   "Roboto-Italic",
+   "Roboto-MediumItalic",
+   "Roboto-BoldItalic",
+   "Roboto-BlackItalic",
+   "VeraBd",
+   "VeraBI",
+   "VeraIt",
+   "VeraMoBd",
+   "VeraMoBI",
+   "VeraMoIt",
+   "VeraMono",
+   "VeraSeBd",
+   "VeraSe",
+   "Vera",
+   "bmp/tom-thumb",
+   "bmp/creep",
+   "bmp/ctrld-fixed-10b",
+   "bmp/ctrld-fixed-10r",
+   "bmp/ctrld-fixed-13b",
+   "bmp/ctrld-fixed-13b-i",
+   "bmp/ctrld-fixed-13r",
+   "bmp/ctrld-fixed-13r-i",
+   "bmp/ctrld-fixed-16b",
+   "bmp/ctrld-fixed-16b-i",
+   "bmp/ctrld-fixed-16r",
+   "bmp/ctrld-fixed-16r-i",
+   "bmp/scientifica-11",
+   "bmp/scientificaBold-11",
+   "bmp/scientificaItalic-11",
+   "bmp/ter-u12b",
+   "bmp/ter-u12n",
+   "bmp/ter-u14b",
+   "bmp/ter-u14n",
+   "bmp/ter-u14v",
+   "bmp/ter-u16b",
+   "bmp/ter-u16n",
+   "bmp/ter-u16v",
+   "bmp/ter-u18b",
+   "bmp/ter-u18n",
+   "bmp/ter-u20b",
+   "bmp/ter-u20n",
+   "bmp/ter-u22b",
+   "bmp/ter-u22n",
+   "bmp/ter-u24b",
+   "bmp/ter-u24n",
+   "bmp/ter-u28b",
+   "bmp/ter-u28n",
+   "bmp/ter-u32b",
+   "bmp/ter-u32n",
+   "bmp/unscii-16-full",
+   "bmp/unscii-16",
+   "bmp/unscii-8-alt",
+   "bmp/unscii-8-fantasy",
+   "bmp/unscii-8-mcr",
+   "bmp/unscii-8",
+   "bmp/unscii-8-tall",
+   "bmp/unscii-8-thin",
+   "Particle",
+   "04B_03__",
+}
 
 --- set font size.
 -- @tparam number size in pixel height.
@@ -265,20 +372,6 @@ Screen.font_size = function(size) _norns.screen_font_size(size) end
 Screen.pixel = function(x, y)
   _norns.screen_rect(x, y, 1, 1)
 end
-
-
-_norns.screen_text_right = function(str)
-  local x, y = _norns.screen_text_extents(str)
-  _norns.screen_move_rel(-x, 0)
-  _norns.screen_text(str)
-end
-
-_norns.screen_text_center = function(str)
-  local x, y = _norns.screen_text_extents(str)
-  _norns.screen_move_rel(-x/2, 0)
-  _norns.screen_text(str)
-end
-
 _norns.screen_text_rotate = function(x, y, str, degrees)
   _norns.screen_save()
   _norns.screen_move(x, y)
@@ -293,9 +386,7 @@ _norns.screen_text_center_rotate = function(x, y, str, degrees)
   _norns.screen_move(x, y)
   _norns.screen_translate(x, y)
   _norns.screen_rotate(util.degs_to_rads(degrees))
-  local x2, y2 = _norns.screen_text_extents(str)
-  _norns.screen_move_rel(-x2/2, 0)
-  _norns.screen_text(str)
+  _norns.screen_text_center(str)
   _norns.screen_restore()
 end
 
@@ -303,11 +394,52 @@ _norns.screen_circle = function(x, y, r)
   _norns.screen_arc(x, y, r, 0, math.pi*2)
 end
 
---- display png.
+--- export screenshot
+-- @param filename saved to dust/data/(script)/(filename).png
+Screen.export_screenshot = function(filename) _norns.screen_export_screenshot(norns.state.data..filename..'.png') end
+
+--- display png
 -- @param filename
 -- @tparam number x x position
 -- @tparam number y y position
-Screen.display_png = function(filename,x,y) _norns.screen_display_png(filename,x,y) end
+Screen.display_png = function(filename, x, y) _norns.screen_display_png(filename, x, y) end
+
+--- load png into an image buffer
+-- @param filename
+Screen.load_png = function(filename) return _norns.screen_load_png(filename) end
+
+--- create an image buffer
+-- @tparam number width image witdth
+-- @tparam number height image height
+Screen.create_image = function(width, height) return _norns.screen_create_image(width, height) end
+
+--- display image buffer
+-- @param image
+-- @tparam number x x position
+-- @tparam number y y position
+Screen.display_image = function(image, x, y) _norns.screen_display_image(image, x, y) end
+
+--- display sub-region image buffer
+-- @param image
+-- @tparam number left left inset within image
+-- @tparam number top top inset within image
+-- @tparam number width width from right within image
+-- @tparam number height height from top within image
+-- @tparam number x x position
+-- @tparam number y y position
+Screen.display_image_region = function(image, left, top, width, height, x, y)
+  _norns.screen_display_image_region(image, left, top, width, height, x, y)
+end
+
+--- direct screen drawing within the provide function into the image instead of the screen
+-- @tparam image image the image to draw into
+-- @tparam function func function called to perform drawing
+Screen.draw_to = function(image, func)
+  image:_context_focus()
+  local ok, result = pcall(func)
+  image:_context_defocus()
+  if not ok then print(result) else return result end
+end
 
 --- get a rectangle of screen content. returned buffer contains one byte (valued 0 - 15) per pixel, i.e. w * h bytes
 -- @tparam number x x position
@@ -327,7 +459,7 @@ end
 Screen.poke = function(x, y, w, h, s) _norns.screen_poke(x, y, w, h, s) end
 
 --- rotate
--- @tparam number radians
+-- @tparam number r radians
 Screen.rotate = function(r) _norns.screen_rotate(r) end
 
 --- move origin position
@@ -428,6 +560,28 @@ Screen.blend_mode = function(index)
   elseif type(index) == "number" then
     _norns.screen_set_operator(index)
   end
+end
+
+--@tparam number/boolean i
+--
+-- if number:
+-- i == 0 -> normal mode
+-- i < 0 -> inverted mode
+-- i > 0 -> inverted mode
+--
+-- if boolean:
+-- false -> normal mode
+-- true -> inverted mode
+Screen.invert = function(i)
+  if type(i) == "boolean" then
+    _norns.screen_invert(i and 1 or 0)
+  elseif type(i) == "number" then
+    _norns.screen_invert(i == 0.0 and 0 or 1)
+  end
+end
+
+Screen.sleep = function()
+  screensaver:event()
 end
 
 return Screen

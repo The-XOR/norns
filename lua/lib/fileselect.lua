@@ -1,10 +1,16 @@
 --- fileselect utility
+--
+-- The [norns script reference](https://monome.org/docs/norns/reference/)
+-- has [examples for this module](https://monome.org/docs/norns/reference/lib/fileselect).
+--
 -- @module lib.fileselect
+-- @alias fs
+
 -- reroutes redraw/enc/key
 
 local fs = {}
 
-function fs.enter(folder, callback)
+function fs.enter(folder, callback, filter_string)
   fs.folders = {}
   fs.list = {}
   fs.display_list = {}
@@ -15,8 +21,11 @@ function fs.enter(folder, callback)
   fs.callback = callback
   fs.done = false
   fs.path = nil
+  fs.filter = filter_string and filter_string or "all"
+  fs.previewing = nil
+  fs.previewing_timeout_counter = nil
 
-  if fs.folder:sub(-1,-1) ~= "/" then
+  if fs.folder:sub(-1, -1) ~= "/" then
     fs.folder = fs.folder .. "/"
   end
 
@@ -26,15 +35,18 @@ function fs.enter(folder, callback)
     fs.key_restore = key
     fs.enc_restore = enc
     fs.redraw_restore = redraw
+    fs.refresh_restore = refresh
     key = fs.key
     enc = fs.enc
     redraw = norns.none
+    refresh = norns.none
     norns.menu.init()
   else
     fs.key_restore = norns.menu.get_key()
     fs.enc_restore = norns.menu.get_enc()
     fs.redraw_restore = norns.menu.get_redraw()
-    norns.menu.set(fs.enc, fs.key, fs.redraw)
+    fs.refresh_restore = norns.menu.get_refresh()
+    norns.menu.set(fs.enc, fs.key, fs.redraw, fs.refresh)
   end
   fs.redraw()
 end
@@ -44,12 +56,16 @@ function fs.exit()
     key = fs.key_restore
     enc = fs.enc_restore
     redraw = fs.redraw_restore
+    refresh = fs.refresh_restore
     norns.menu.init()
   else
-    norns.menu.set(fs.enc_restore, fs.key_restore, fs.redraw_restore)
+    norns.menu.set(fs.enc_restore, fs.key_restore, fs.redraw_restore, fs.refresh_restore)
   end
-  if fs.path then fs.callback(fs.path)
-  else fs.callback("cancel") end
+  if fs.path then
+    fs.callback(fs.path)
+  else
+    fs.callback("cancel")
+  end
 end
 
 function fs.pushd(dir)
@@ -62,10 +78,9 @@ function fs.pushd(dir)
   fs.redraw()
 end
 
-
 fs.getdir = function()
   local path = fs.folder
-  for k,v in pairs(fs.folders) do
+  for k, v in pairs(fs.folders) do
     path = path .. v
   end
   --print("path: "..path)
@@ -77,6 +92,7 @@ fs.getlist = function()
   fs.list = util.scandir(dir)
   fs.display_list = {}
   fs.lengths = {}
+  fs.visible = {}
   fs.pos = 0
 
   if fs.depth > 0 then
@@ -88,42 +104,96 @@ fs.getlist = function()
   for k, v in ipairs(fs.list) do
     local line = v
     local max_line_length = 128
+    local display_length = "";
+    local fulldir = dir .. line
+
+    fs.visible[k] = true
 
     if string.sub(line, -1) ~= "/" then
-      local _, samples, rate = audio.file_info(dir .. line)
+      local _, samples, rate = audio.file_info(fulldir)
+      -- if file is audio:
       if samples > 0 and rate > 0 then
-        fs.lengths[k] = util.s_to_hms(math.floor(samples / rate))
-        max_line_length = 97
+        -- if there's no filter or we specify an "audio" or format filter:
+        if fs.filter == "all" or fs.filter == "audio" or fs.filter == fulldir:match("^.+(%..+)$") then
+          display_length = util.s_to_hms(math.floor(samples / rate))
+          max_line_length = 97
+        else         -- otherwise, do not display audio file:
+          fs.visible[k] = false
+          display_length = nil
+        end
+        -- if file is NOT audio:
+      elseif fs.filter ~= "all" then
+        if fs.filter == "audio" or fs.filter ~= fulldir:match("^.+(%..+)$") then
+          fs.visible[k] = false
+          display_length = nil
+        end
       end
     end
 
-    line = util.trim_string_to_width(line, max_line_length)
-    fs.display_list[k] = line
+    if fs.visible[k] then
+      line = util.trim_string_to_width(line, max_line_length)
+      table.insert(fs.display_list, line)
+      table.insert(fs.lengths, display_length)
+    end
   end
 end
 
-fs.key = function(n,z)
+local function stop()
+  if fs.previewing then
+    fs.previewing = nil
+    audio.tape_play_stop()
+    fs.redraw()
+  end
+end
+
+local function timeout()
+  if fs.previewing_timeout_counter == nil then
+    fs.previewing_timeout_counter = clock.run(function()
+      clock.sleep(1)
+      fs.previewing_timeout_counter = nil
+    end)
+  end
+end
+
+local function start()
+  if fs.previewing_timeout_counter ~= nil then return end
+  timeout()
+  stop()
+  fs.previewing = fs.pos
+  audio.tape_play_open(fs.getdir() .. fs.file)
+  audio.tape_play_start()
+  fs.redraw()
+end
+
+fs.key = function(n, z)
   -- back
-  if n==2 and z==1 then
+  if n == 2 and z == 1 then
     fs.done = true
-  -- select
-  elseif n==3 and z==1 then
+    stop()
+    -- select
+  elseif n == 3 and z == 1 then
+    stop()
     if #fs.list > 0 then
-      fs.file = fs.list[fs.pos+1]
+      if string.sub(fs.display_list[fs.pos + 1], -3) == '...' then
+        fs.file = fs.list[fs.pos + 1]
+      else
+        fs.file = fs.display_list[fs.pos + 1]
+      end
       if fs.file == "../" then
         fs.folders[fs.depth] = nil
         fs.depth = fs.depth - 1
         fs.getlist()
         fs.redraw()
-      elseif string.find(fs.file,'/') then
-        --print("folder")
+      elseif string.find(fs.file, '/') then
+        --print("folder selected")
         fs.depth = fs.depth + 1
         fs.folders[fs.depth] = fs.file
         fs.getlist()
         fs.redraw()
       else
+        -- print("file selected")
         local path = fs.folder
-        for k,v in pairs(fs.folders) do
+        for k, v in pairs(fs.folders) do
           path = path .. v
         end
         fs.path = path .. fs.file
@@ -135,13 +205,20 @@ fs.key = function(n,z)
   end
 end
 
-fs.enc = function(n,d)
-  if n==2 then
-    fs.pos = util.clamp(fs.pos + d, 0, fs.len - 1)
+fs.enc = function(n, d)
+  if n == 2 then
+    fs.pos = util.clamp(fs.pos + d, 0, #fs.display_list - 1)
     fs.redraw()
+  elseif n == 3 and d > 0 then
+    fs.file = fs.display_list[fs.pos + 1]
+    if fs.lengths[fs.pos + 1] ~= "" then
+      start()
+    end
+  elseif n == 3 and d < 0 then
+    -- always stop with left scroll
+    stop()
   end
 end
-
 
 fs.redraw = function()
   screen.clear()
@@ -149,21 +226,25 @@ fs.redraw = function()
   screen.font_size(8)
   if #fs.list == 0 then
     screen.level(4)
-    screen.move(0,20)
+    screen.move(0, 20)
     screen.text("(no files)")
   else
-    for i=1,6 do
-      if (i > 2 - fs.pos) and (i < fs.len - fs.pos + 3) then
-        local list_index = i+fs.pos-2
-        screen.move(0,10*i)
-        if(i==3) then
+    for i = 1, 6 do
+      if (i > 2 - fs.pos) and (i < #fs.display_list - fs.pos + 3) then
+        local list_index = i + fs.pos - 2
+        screen.move(0, 10 * i)
+        if (i == 3) then
           screen.level(15)
         else
           screen.level(4)
         end
-        screen.text(fs.display_list[list_index])
+        local text = fs.display_list[list_index]
+        if list_index - 1 == fs.previewing then
+          text = util.trim_string_to_width('* ' .. text, 97)
+        end
+        screen.text(text)
         if fs.lengths[list_index] then
-          screen.move(128,10*i)
+          screen.move(128, 10 * i)
           screen.text_right(fs.lengths[list_index])
         end
       end
@@ -171,5 +252,7 @@ fs.redraw = function()
   end
   screen.update()
 end
+
+fs.refresh = function() fs.redraw() end
 
 return fs

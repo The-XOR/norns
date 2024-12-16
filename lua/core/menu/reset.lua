@@ -4,7 +4,7 @@ local m = {
 
 m.key = function(n,z)
   if n==2 and z==1 then
-    _menu.set_page("SYSTEM")
+    _menu.set_page("SETTINGS")
   elseif n==3 and z==1 then
     m.confirmed = true
     _menu.redraw()
@@ -12,6 +12,7 @@ m.key = function(n,z)
     os.execute("rm ~/dust/data/system.state")
     os.execute("rm "..paths.favorites)
     os.execute("rm "..paths.enabled_mods)
+    os.execute("rm "..paths.display_settings)
     _norns.reset()
   end
 end

@@ -1,12 +1,12 @@
 releases = {
   stable = {
-    version="210927",
-    url="https://github.com/monome/The-XOR/releases/download/v2.6.0/release_210927.tgz",
-    sha="https://github.com/monome/The-XOR/releases/download/v2.6.0/release_210927.sha256"
+    version="240911",
+    url="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.tgz",
+    sha="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.sha256"
   },
   beta = {
-    version="210927",
-    url="https://github.com/monome/The-XOR/releases/download/v2.6.0/release_210927.tgz",
-    sha="https://github.com/monome/The-XOR/releases/download/v2.6.0/release_210927.sha256"
+    version="240911",
+    url="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.tgz",
+    sha="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.sha256"
   }
 }

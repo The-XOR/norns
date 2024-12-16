@@ -376,11 +376,6 @@ void OscInterface::addServerMethods() {
         Commands::softcutCommands.post(Commands::Id::SET_CUT_REC_FLAG, argv[0]->i, argv[1]->f);
     });
 
-    addServerMethod("/set/param/cut/rec_once", "if", [](lo_arg **argv, int argc) {
-        if (argc < 2) { return; }
-        Commands::softcutCommands.post(Commands::Id::SET_CUT_REC_ONCE, argv[0]->i, argv[1]->f);
-    });
-
     addServerMethod("/set/param/cut/play_flag", "if", [](lo_arg **argv, int argc) {
         if (argc < 2) { return; }
         Commands::softcutCommands.post(Commands::Id::SET_CUT_PLAY_FLAG, argv[0]->i, argv[1]->f);
@@ -479,6 +474,7 @@ void OscInterface::addServerMethods() {
         if (argc < 3) { return; }
         Commands::softcutCommands.post(Commands::Id::SET_CUT_VOICE_SYNC, argv[0]->i, argv[1]->i, argv[2]->f);
     });
+
 
     ///////////////////////////////////////////
     /// FIXME: fade curve calculations are now per-voice,
@@ -723,13 +719,13 @@ void OscInterface::addServerMethods() {
         if (argc < 2) {
             return;
         }
-        if (argc > 3) {
+        if (argc > 2) {
             dur = argv[2]->f;
         }
-        if (argc > 4) {
+        if (argc > 3) {
             fadeTime = argv[3]->f;
         }
-        if (argc > 5) {
+        if (argc > 4) {
             preserve = argv[4]->f;
         }
         softCutClient->clearBufferWithFade(argv[0]->i, argv[1]->f, dur, fadeTime, preserve);

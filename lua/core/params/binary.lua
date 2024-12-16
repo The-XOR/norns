@@ -1,5 +1,10 @@
--- Binary class
--- @module params.toggle
+--- Binary (toggling) parameters
+--
+-- See also the [norns script reference](https://monome.org/docs/norns/reference/)
+-- which has
+-- [examples for using params](https://monome.org/docs/norns/reference/params).
+--
+-- @module params.binary
 
 local Binary = {}
 Binary.__index = Binary
@@ -11,7 +16,7 @@ function Binary.new(id, name, behavior, default, allow_pmap)
   o.t = tBINARY
   o.id = id
   o.name = name
-  o.default = default or 0
+  o.default = default or (o.behavior ~= 'trigger' and 0 or 1)
   o.value = o.default
   o.behavior = behavior or 'trigger'
   o.action = function() end
@@ -25,10 +30,18 @@ end
 
 function Binary:set(v, silent)
   local silent = silent or false
-  v = (v > 0) and 1 or 0
-  if self.value ~= v then
-    self.value = v
-    if silent==false then self:bang() end
+  local i = params.lookup[self.id]
+  v = v and v or 1
+  if self.behavior == 'trigger' and v > 0 then
+    _menu.binarystates.triggered[i] = 2
+    if silent == false then self:bang() end
+  elseif self.behavior ~= 'trigger' then
+    v = (v > 0) and 1 or 0
+    if self.value ~= v then
+      self.value = v
+      _menu.binarystates.on[i] = v
+      if silent == false then self:bang() end
+    end
   end
 end
 
@@ -47,7 +60,10 @@ function Binary:set_default()
 end
 
 function Binary:bang()
-  self.action(self.value)
+  self.action(self.behavior == 'trigger' and 1 or self.value)
+  if self.behavior == 'trigger' then
+    self.value = 0
+  end
 end
 
 function Binary:string()

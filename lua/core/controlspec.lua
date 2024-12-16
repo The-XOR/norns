@@ -1,5 +1,10 @@
 --- ControlSpec Class
+--
+-- The [norns script reference](https://monome.org/docs/norns/reference/)
+-- has [examples for this module](https://monome.org/docs/norns/reference/controlspec).
+--
 -- @module controlspec
+-- @alias ControlSpec
 
 local LinearWarp = {}
 function LinearWarp.map(spec, value)
@@ -181,11 +186,11 @@ ControlSpec.PHASE = ControlSpec.new(0, math.pi, 'lin', 0, 0, "")
 --- converts to an exponential RQ range
 ControlSpec.RQ = ControlSpec.new(0.001, 2, 'exp', 0, 0.707, "")
 --- converts to a MIDI range (default 64)
-ControlSpec.MIDI = ControlSpec.new(0, 127, 'lin', 0, 64, "")
+ControlSpec.MIDI = ControlSpec.new(0, 127, 'lin', 1, 64, "", 1/127)
 --- converts to a range for MIDI notes (default 60)
-ControlSpec.MIDINOTE = ControlSpec.new(0, 127, 'lin', 0, 60, "")
+ControlSpec.MIDINOTE = ControlSpec.new(0, 127, 'lin', 1, 60, "", 1/127)
 --- converts to a range for MIDI velocity (default 64)
-ControlSpec.MIDIVELOCITY = ControlSpec.new(1, 127, 'lin', 0, 64, "")
+ControlSpec.MIDIVELOCITY = ControlSpec.new(1, 127, 'lin', 1, 64, "", 1/126)
 --- converts to a dB range
 ControlSpec.DB = ControlSpec.new(-math.huge, 0, 'db', nil, nil, "dB")
 --- converts to a linear amplitude range (0-1)

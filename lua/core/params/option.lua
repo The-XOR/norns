@@ -1,4 +1,9 @@
--- Option class
+--- Select a parameter from a list
+--
+-- See also the [norns script reference](https://monome.org/docs/norns/reference/)
+-- which has
+-- [examples for this module](https://monome.org/docs/norns/reference/parameters/option).
+--
 -- @module params.option
 
 local tab = require 'tabutil'
@@ -35,6 +40,14 @@ function Option:set(v, silent)
   if self.selected ~= c then
     self.selected = c
     if silent==false then self:bang() end
+  end
+  if norns.pmap.data[self.id] ~= nil then
+    local midi_prm = norns.pmap.data[self.id]
+    midi_prm.value = util.round(util.linlin(midi_prm.out_lo, midi_prm.out_hi, midi_prm.in_lo, midi_prm.in_hi, self.selected))
+    if midi_prm.echo then
+      local port = norns.pmap.data[self.id].dev
+      midi.vports[port]:cc(midi_prm.cc, midi_prm.value, midi_prm.ch)
+    end
   end
 end
 

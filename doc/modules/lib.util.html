@@ -26,6 +26,7 @@
 <br/>
 <h1>norns</h1>
 
+
 <ul>
   <li><a href="../index.html">Index</a></li>
 </ul>
@@ -47,43 +48,57 @@
   <li><a href="../modules/core.crow.quote.html">core.crow.quote</a></li>
   <li><a href="../modules/encoders.html">encoders</a></li>
   <li><a href="../modules/engine.html">engine</a></li>
+  <li><a href="../modules/gamepad.html">gamepad</a></li>
   <li><a href="../modules/grid.html">grid</a></li>
   <li><a href="../modules/hid.html">hid</a></li>
   <li><a href="../modules/keyboard.html">keyboard</a></li>
   <li><a href="../modules/metro.html">metro</a></li>
   <li><a href="../modules/midi.html">midi</a></li>
+  <li><a href="../modules/norns.html">norns</a></li>
   <li><a href="../modules/osc.html">osc</a></li>
+  <li><a href="../modules/params.binary.html">params.binary</a></li>
   <li><a href="../modules/params.control.html">params.control</a></li>
+  <li><a href="../modules/params.file.html">params.file</a></li>
+  <li><a href="../modules/params.group.html">params.group</a></li>
+  <li><a href="../modules/params.number.html">params.number</a></li>
+  <li><a href="../modules/params.option.html">params.option</a></li>
+  <li><a href="../modules/params.separator.html">params.separator</a></li>
+  <li><a href="../modules/params.taper.html">params.taper</a></li>
+  <li><a href="../modules/params.text.html">params.text</a></li>
+  <li><a href="../modules/params.trigger.html">params.trigger</a></li>
   <li><a href="../modules/paramset.html">paramset</a></li>
   <li><a href="../modules/poll.html">poll</a></li>
   <li><a href="../modules/screen.html">screen</a></li>
   <li><a href="../modules/script.html">script</a></li>
   <li><a href="../modules/softcut.html">softcut</a></li>
-  <li><a href="../modules/lib.BeatClock.html">lib.BeatClock</a></li>
+  <li><a href="../modules/lib.beatclock.html">lib.beatclock</a></li>
   <li><a href="../modules/lib.container.defaulttable.html">lib.container.defaulttable</a></li>
   <li><a href="../modules/lib.container.deque.html">lib.container.deque</a></li>
   <li><a href="../modules/lib.container.observable.html">lib.container.observable</a></li>
   <li><a href="../modules/lib.container.watchtable.html">lib.container.watchtable</a></li>
   <li><a href="../modules/lib.container.weaktable.html">lib.container.weaktable</a></li>
   <li><a href="../modules/lib.elca.html">lib.elca</a></li>
-  <li><a href="../modules/lib.EnvGraph.html">lib.EnvGraph</a></li>
+  <li><a href="../modules/lib.envgraph.html">lib.envgraph</a></li>
   <li><a href="../modules/lib.er.html">lib.er</a></li>
   <li><a href="../modules/lib.fileselect.html">lib.fileselect</a></li>
-  <li><a href="../modules/lib.FilterGraph.html">lib.FilterGraph</a></li>
+  <li><a href="../modules/lib.filtergraph.html">lib.filtergraph</a></li>
   <li><a href="../modules/lib.filters.html">lib.filters</a></li>
   <li><a href="../modules/lib.formatters.html">lib.formatters</a></li>
-  <li><a href="../modules/lib.Graph.html">lib.Graph</a></li>
+  <li><a href="../modules/lib.graph.html">lib.graph</a></li>
   <li><a href="../modules/lib.intonation.html">lib.intonation</a></li>
-  <li><a href="../modules/Lattice.html">Lattice</a></li>
+  <li><a href="../modules/lib.lattice.html">lib.lattice</a></li>
+  <li><a href="../modules/lib.lfo.html">lib.lfo</a></li>
   <li><a href="../modules/lib.listselect.html">lib.listselect</a></li>
-  <li><a href="../modules/lib.MusicUtil.html">lib.MusicUtil</a></li>
-  <li><a href="../modules/lib.pattern.html">lib.pattern</a></li>
+  <li><a href="../modules/lib.musicutil.html">lib.musicutil</a></li>
+  <li><a href="../modules/lib.pattern_time.html">lib.pattern_time</a></li>
+  <li><a href="../modules/lib.reflection.html">lib.reflection</a></li>
   <li><a href="../modules/lib.sequins.html">lib.sequins</a></li>
   <li><a href="../modules/lib.tabutil.html">lib.tabutil</a></li>
   <li><a href="../modules/lib.test.luaunit.html">lib.test.luaunit</a></li>
   <li><a href="../modules/lib.textentry.html">lib.textentry</a></li>
   <li><a href="../modules/lib.textentry_kbd.html">lib.textentry_kbd</a></li>
-  <li><a href="../modules/lib.UI.html">lib.UI</a></li>
+  <li><a href="../modules/lib.timeline.html">lib.timeline</a></li>
+  <li><a href="../modules/lib.ui.html">lib.ui</a></li>
   <li><strong>lib.util</strong></li>
   <li><a href="../modules/lib.voice.html">lib.voice</a></li>
 </ul>
@@ -93,8 +108,10 @@
 <div id="content">
 
 <h1>Module <code>lib.util</code></h1>
-<p>Utility module</p>
-<p></p>
+<p>Utility functions.</p>
+<p>
+
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
@@ -116,7 +133,7 @@
 	<td class="summary">check if file exists.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#file_size">file_size (name)</a></td>
+	<td class="name" nowrap><a href="#file_size">file_size (path)</a></td>
 	<td class="summary">query file size.</td>
 	</tr>
 	<tr>
@@ -181,11 +198,11 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#wrap">wrap (n, min, max)</a></td>
-	<td class="summary">wrap a number to a positive min/max range</td>
+	<td class="summary">wrap a integer to a positive min/max range</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#wrap_max">wrap_max (n, min, max)</a></td>
-	<td class="summary">wrap a number to a positive min/max range but clamp the min</td>
+	<td class="summary">wrap an integer to a positive min/max range but clamp the min</td>
 	</tr>
 </table>
 
@@ -208,6 +225,8 @@
     <ul>
         <li><span class="parameter">db</span>
             <span class="types"><span class="type">number</span></span>
+
+
 
         </li>
     </ul>
@@ -263,6 +282,8 @@
 
            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
 
+
+
     </ol>
 
 
@@ -298,7 +319,7 @@
 </dd>
     <dt>
     <a name = "file_size"></a>
-    <strong>file_size (name)</strong>
+    <strong>file_size (path)</strong>
     </dt>
     <dd>
     query file size.
@@ -306,7 +327,7 @@
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">name</span>
+        <li><span class="parameter">path</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          filepath
         </li>
@@ -335,6 +356,8 @@
     <ul>
         <li><span class="parameter">path</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
 
         </li>
     </ul>
@@ -507,6 +530,8 @@
 
            <span class="types"><span class="type">number</span></span>
 
+
+
     </ol>
 
 
@@ -549,6 +574,8 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
+
+
 
     </ol>
 
@@ -593,6 +620,8 @@
 
            <span class="types"><span class="type">number</span></span>
 
+
+
     </ol>
 
 
@@ -635,6 +664,8 @@
     <ol>
 
            <span class="types"><span class="type">number</span></span>
+
+
 
     </ol>
 
@@ -732,6 +763,8 @@
         <li><span class="parameter">degrees</span>
             <span class="types"><span class="type">number</span></span>
 
+
+
         </li>
     </ul>
 
@@ -758,6 +791,8 @@
     <ul>
         <li><span class="parameter">radians</span>
             <span class="types"><span class="type">number</span></span>
+
+
 
         </li>
     </ul>
@@ -786,6 +821,8 @@
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
 
+
+
         </li>
     </ul>
 
@@ -805,21 +842,27 @@
     <strong>wrap (n, min, max)</strong>
     </dt>
     <dd>
-    wrap a number to a positive min/max range
+    wrap a integer to a positive min/max range
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
         <li><span class="parameter">min</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
         <li><span class="parameter">max</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
     </ul>
@@ -827,7 +870,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">number</span></span>
+           <span class="types"><span class="type">integer</span></span>
         cycled value
     </ol>
 
@@ -840,21 +883,27 @@
     <strong>wrap_max (n, min, max)</strong>
     </dt>
     <dd>
-    wrap a number to a positive min/max range but clamp the min
+    wrap an integer to a positive min/max range but clamp the min
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">n</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
         <li><span class="parameter">min</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
         <li><span class="parameter">max</span>
-            <span class="types"><span class="type">number</span></span>
+            <span class="types"><span class="type">integer</span></span>
+
+
 
         </li>
     </ul>
@@ -862,7 +911,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">number</span></span>
+           <span class="types"><span class="type">integer</span></span>
         cycled value
     </ol>
 
@@ -876,8 +925,8 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2021-10-08 15:48:35 </i>
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2024-10-13 17:45:04 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

@@ -4,8 +4,9 @@ local textentry = require 'textentry'
 local mSELECT = 0
 local mEDIT = 1
 local mPSET = 2
-local mMAP = 3
-local mMAPEDIT = 4
+local mPSETDELETE = 3
+local mMAP = 4
+local mMAPEDIT = 5
 
 local m = {
   pos = 0,
@@ -120,6 +121,15 @@ local function write_pset(name)
   end
 end
 
+local function delta_value(id,fine,d)
+  local prm = params:lookup_param(id)
+  if prm.t == params.tBINARY and prm.behavior == "toggle" then
+    prm:set(d)
+  elseif prm.t ~= params.tBINARY then
+    local dx = fine and (d / 20) or d
+    prm:delta(dx)
+  end
+end
 
 m.key = function(n,z)
   if n==1 and z==1 then
@@ -189,13 +199,13 @@ m.key = function(n,z)
       elseif t == params.tTRIGGER then
         if m.mode == mEDIT then
           params:set(i)
-          m.triggered[i] = 2
+          _menu.binarystates.triggered[i] = 2
         end
-      elseif t == params.tBINARY and m.mode == mEDIT then 
+      elseif t == params.tBINARY and m.mode == mEDIT then
         params:delta(i,1)
-        if params:lookup_param(i).behavior == 'trigger' then 
-          m.triggered[i] = 2
-        else m.on[i] = params:get(i) end
+        if params:lookup_param(i).behavior == 'trigger' then
+          _menu.binarystates.triggered[i] = 2
+        else _menu.binarystates.on[i] = params:get(i) end
       elseif m.mode == mMAP and params:get_allow_pmap(i) then
         local n = params:get_id(i)
         local pm = norns.pmap.data[n]
@@ -224,7 +234,7 @@ m.key = function(n,z)
         if m.mode == mEDIT then
           params:delta(i, 0)
           if params:lookup_param(i).behavior ~= 'trigger' then
-            m.on[i] = params:get(i) 
+            _menu.binarystates.on[i] = params:get(i)
           end
         end
       end
@@ -271,10 +281,17 @@ m.key = function(n,z)
         -- delete
       elseif m.ps_action == 3 then
         if pset[m.ps_pos+1] then
-          os.execute("rm "..pset[m.ps_pos+1].file)
-          init_pset()
+          m.mode = mPSETDELETE
         end
       end
+    end
+  elseif m.mode == mPSETDELETE then
+    if n==2 and z==1 then
+      m.mode = mPSET
+    elseif n==3 and z==1 then
+      params:delete(pset[m.ps_pos+1].file,pset[m.ps_pos+1].name,string.format("%02d",m.ps_pos+1))
+      init_pset()
+      m.mode = mPSET
     end
   end
   _menu.redraw()
@@ -321,21 +338,20 @@ m.enc = function(n,d)
       m.pos = i-1
     -- adjust value
     elseif m.mode == mEDIT and n==3 and params.count > 0 then
-      local dx = m.fine and (d/20) or d
-      params:delta(page[m.pos+1],dx)
+      delta_value(page[m.pos + 1], m.fine, d)
       _menu.redraw()
     end
   -- MAPEDIT
   elseif m.mode == mMAPEDIT then
     if n==2 then
-      m.mpos = (m.mpos+d) % 11
+      m.mpos = (m.mpos+d) % 12
     elseif n==3 then
       local p = page[m.pos+1]
       local n = params:get_id(p)
       local t = params:t(p)
       local pm = norns.pmap.data[n]
       if m.mpos==0 then
-        params:delta(page[m.pos+1],d)
+        delta_value(page[m.pos + 1], false, d)
       elseif m.mpos==3 then
         m.cc = util.clamp(m.cc+d,0,127)
       elseif m.mpos==4 then
@@ -369,6 +385,8 @@ m.enc = function(n,d)
         end
       elseif m.mpos==10 then
         if d>0 then pm.accum = true else pm.accum = false end
+      elseif m.mpos == 11 then
+        if d>0 then pm.echo = true else pm.echo = false end
       end
     end
     _menu.redraw()
@@ -380,6 +398,39 @@ m.enc = function(n,d)
       m.ps_pos = util.clamp(m.ps_pos + d, 0, m.ps_n-1)
     end
     _menu.redraw()
+  end
+end
+
+m.gamepad_axis = function (_sensor_axis,_value)
+
+  if gamepad.down() then
+    _menu.penc(2,1)
+  elseif gamepad.up() then
+    _menu.penc(2,-1)
+  end
+
+  if m.mode == mSELECT then
+    if gamepad.left() then
+      _menu.key(2,1)
+    elseif gamepad.right() then
+      _menu.key(3,1)
+    end
+  elseif m.mode == mEDIT or m.mode == mMAP then
+    local i = page[m.pos+1]
+    local t = params:t(i)
+    if t == params.tGROUP then
+      if gamepad.left() then
+        _menu.key(2,1)
+      elseif gamepad.right() then
+        _menu.key(3,1)
+      end
+    else
+      if gamepad.left() then
+        _menu.penc(3,-1)
+      elseif gamepad.right() then
+        _menu.penc(3,1)
+      end
+    end
   end
 end
 
@@ -425,12 +476,12 @@ m.redraw = function()
           screen.text(params:get_name(p))
           screen.move(127,10*i)
           if t ==  params.tTRIGGER then
-            if m.triggered[p] and m.triggered[p] > 0 then
+            if _menu.binarystates.triggered[p] and _menu.binarystates.triggered[p] > 0 then
               screen.rect(124, 10 * i - 4, 3, 3)
               screen.fill()
             end
           elseif t == params.tBINARY then
-            fill = m.on[p] or m.triggered[p]
+            fill = _menu.binarystates.on[p] or _menu.binarystates.triggered[p]
             if fill and fill > 0 then
               screen.rect(124, 10 * i - 4, 3, 3)
               screen.fill()
@@ -510,29 +561,29 @@ m.redraw = function()
     screen.text(n)
     screen.move(127,10)
     screen.text_right(params:string(p))
-    screen.move(0,25)
+    screen.move(0,22)
     hl(1)
     if m.midilearn then screen.text("LEARNING") else screen.text("LEARN") end
-    screen.move(127,25)
+    screen.move(127,22)
     hl(2)
     screen.text_right("CLEAR")
 
     screen.level(4)
-    screen.move(0,40)
+    screen.move(0,32)
     screen.text("cc")
-    screen.move(55,40)
+    screen.move(55,32)
     hl(3)
     screen.text_right(m.cc)
     screen.level(4)
-    screen.move(0,50)
+    screen.move(0,42)
     screen.text("ch")
-    screen.move(55,50)
+    screen.move(55,42)
     hl(4)
     screen.text_right(m.ch)
     screen.level(4)
-    screen.move(0,60)
+    screen.move(0,52)
     screen.text("dev")
-    screen.move(55,60)
+    screen.move(55,52)
     hl(5)
 
     local long_name = midi.vports[m.dev].name
@@ -541,30 +592,36 @@ m.redraw = function()
     screen.text_right(tostring(m.dev)..": "..short_name)
 
     screen.level(4)
-    screen.move(63,40)
+    screen.move(63,32)
     screen.text("in")
-    screen.move(103,40)
+    screen.move(103,32)
     hl(6)
     screen.text_right(pm.in_lo)
     screen.level(4)
-    screen.move(127,40)
+    screen.move(127,32)
     hl(7)
     screen.text_right(pm.in_hi)
     screen.level(4)
-    screen.move(63,50)
+    screen.move(63,42)
     screen.text("out")
-    screen.move(103,50)
+    screen.move(103,42)
     hl(8)
     screen.text_right(out_lo)
-    screen.move(127,50)
+    screen.move(127,42)
     hl(9)
     screen.text_right(out_hi)
     screen.level(4)
-    screen.move(63,60)
+    screen.move(63,52)
     screen.text("accum")
-    screen.move(127,60)
+    screen.move(127,52)
     hl(10)
     screen.text_right(pm.accum and "yes" or "no")
+    screen.level(4)
+    screen.move(63,62)
+    screen.text("echo")
+    screen.move(127,62)
+    hl(11)
+    screen.text_right(pm.echo and "yes" or "no")
   -- PSET
   elseif m.mode == mPSET then
     screen.level(4)
@@ -599,6 +656,10 @@ m.redraw = function()
         screen.text(line)
       end
     end
+  elseif m.mode == mPSETDELETE then
+    screen.move(63,40)
+    screen.level(15)
+    screen.text_center("DELETE PSET?")
   end
   screen.update()
 end
@@ -607,19 +668,21 @@ m.init = function()
   if page == nil then build_page() end
   m.alt = false
   m.fine = false
-  m.triggered = {}
+  local trig = _menu.binarystates.triggered
   _menu.timer.event = function()
-    for k, v in pairs(m.triggered) do
-      if v > 0 then m.triggered[k] = v - 1 end
+    for k, v in pairs(trig) do
+      if v > 0 then
+        trig[k] = v - 1
+      end
     end
     _menu.redraw()
   end
-  m.on = {}
+  local on = _menu.binarystates.on
   for i,param in ipairs(params.params) do
     if param.t == params.tBINARY then
-        if params:lookup_param(i).behavior == 'trigger' then 
-          m.triggered[i] = 2
-        else m.on[i] = params:get(i) end
+        if params:lookup_param(i).behavior == 'trigger' then
+         trig[i] = 2
+        else on[i] = params:get(i) end
     end
   end
   _menu.timer.time = 0.2
@@ -632,7 +695,7 @@ m.deinit = function()
 end
 
 _menu.rebuild_params = function()
-  if m.mode == mEDIT or m.mode == mMAP then 
+  if m.mode == mEDIT or m.mode == mMAP then
     if m.group then
       build_sub(m.groupid)
     else
@@ -665,7 +728,7 @@ norns.menu_midi_event = function(data, dev)
         local d = norns.pmap.data[r]
         local t = params:t(r)
         if d.accum then
-          v = v - 64
+          v = (v > 64) and 1 or -1
           d.value = util.clamp(d.value + v, d.in_lo, d.in_hi)
           v = d.value
         end
@@ -676,14 +739,14 @@ norns.menu_midi_event = function(data, dev)
         elseif t == params.tNUMBER or t == params.tOPTION then
           s = util.round(s)
           params:set(r,s)
-        elseif t == params.tBINARY then 
+        elseif t == params.tBINARY then
           params:delta(r,s)
-          if _menu.mode then 
+          if _menu.mode then
             for i,param in ipairs(params.params) do
-              if params:lookup_param(i).behavior == params:lookup_param(r).behavior then 
-                if params:lookup_param(i).behavior == 'trigger' then 
-                  m.triggered[i] = 2
-                else m.on[i] = params:get(i) end
+              if params:lookup_param(i).behavior == params:lookup_param(r).behavior then
+                if params:lookup_param(i).behavior == 'trigger' then
+                  _menu.binarystates.triggered[i] = 2
+                else _menu.binarystates.on[i] = params:get(i) end
               end
             end
           end
