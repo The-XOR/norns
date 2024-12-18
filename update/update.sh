@@ -39,6 +39,15 @@ sudo cp --remove-destination config/norns-jack.service /etc/systemd/system/norns
 find ~/dust -name .DS_Store -delete
 find ~/dust -name ._.DS_Store -delete
 
+# get common audio if not present
+if [ ! -d /home/we/dust/audio/common ]; then
+	echo "does not exist, downloading"
+	cd /home/we/dust/audio
+	wget https://github.com/monome/norns/releases/download/v2.7.1/dust-audio-common.tgz
+	tar xzvf dust-audio-common.tgz
+	rm dust-audio-common.tgz
+fi
+
 # set alsa volume
 amixer --device hw:CODEC set Master 100% on
 sudo alsactl store
@@ -56,15 +65,6 @@ rm /home/we/matronrc.lua
 # maiden project setup
 cd /home/we/maiden
 ./project-setup.sh
-
-# get common audio if not present
-if [ ! -d /home/we/dust/audio/common ]; then
-	echo "does not exist, downloading"
-	cd /home/we/dust/audio
-	wget https://github.com/monome/norns/releases/download/v2.7.1/dust-audio-common.tgz
-	tar xzvf dust-audio-common.tgz
-	rm dust-audio-common.tgz
-fi
 
 
 # cleanup

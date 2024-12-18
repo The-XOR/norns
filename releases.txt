@@ -1,12 +1,12 @@
 releases = {
   stable = {
-    version="240911",
-    url="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.tgz",
-    sha="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.sha256"
+    version="231114",
+    url="https://github.com/The-XOR/norns/releases/download/v2.8.1/norns231114.tgz",
+    sha="https://github.com/The-XOR/norns/releases/download/v2.8.1/norns231114.sha256"
   },
   beta = {
-    version="240911",
-    url="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.tgz",
-    sha="https://github.com/The-XOR/norns/releases/download/v2.8.4/norns240911.sha256"
+    version="231114",
+    url="https://github.com/The-XOR/norns/releases/download/v2.8.1/norns231114.tgz",
+    sha="https://github.com/The-XOR/norns/releases/download/v2.8.1/norns231114.sha256"
   }
 }

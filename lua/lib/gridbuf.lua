@@ -1,4 +1,3 @@
---
 local function clamp(value, min, max)
   return math.min(max, (math.max(value, min)))
 end

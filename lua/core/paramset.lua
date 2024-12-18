@@ -1,11 +1,5 @@
---- Sets of parameters, such as those in the PARAMETERS menu.
---
--- See also the [norns script reference](https://monome.org/docs/norns/reference/)
--- which has
--- [examples for using params](https://monome.org/docs/norns/reference/params).
---
+--- ParamSet class
 -- @module paramset
--- @alias ParamSet
 
 local separator = require 'core/params/separator'
 local number = require 'core/params/number'
@@ -549,14 +543,8 @@ function ParamSet:read(filename, silent)
           local index = self.lookup[id]
 
           if index and self.params[index] and not param_already_set[index] then
-            if self.params[index].t ~= self.tTEXT and tonumber(value) ~= nil then
-              if self.params[index].t == self.tBINARY then
-                if self.params[index].behavior ~= "trigger" then
-                  self.params[index]:set(tonumber(value), silent)
-                end
-              else
-                self.params[index]:set(tonumber(value), silent)
-              end
+            if tonumber(value) ~= nil then
+              self.params[index]:set(tonumber(value), silent)
             elseif value == "-inf" then
               self.params[index]:set(-math.huge, silent)
             elseif value == "inf" then
@@ -580,7 +568,6 @@ end
 --- delete from disk.
 -- @param filename either an absolute path, a number (for [scriptname]-[number].pset in local data folder) or nil (for default [scriptname].pset in local data folder)
 -- @tparam string name
--- @param pset_number
 function ParamSet:delete(filename, name, pset_number)
   if type(filename) == "number" then
     local n = filename
@@ -603,7 +590,7 @@ end
 --- bang all params.
 function ParamSet:bang()
   for _,v in pairs(self.params) do
-    if v.t ~= self.tTRIGGER and not (v.t == self.tBINARY and v.behavior == 'trigger' and v.value == 0) then
+    if v.t ~= self.tTRIGGER and not (v.t == self.tBINARY and v.behavior == 'trigger') then
       v:bang()
     end
   end

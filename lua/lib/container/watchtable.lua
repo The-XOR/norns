@@ -1,5 +1,5 @@
---- WatchTable - a table which can be watched of key changes
--- @module lib.container.watchtable
+-- WatchTable - a table which can be watched of key changes
+-- @module WatchTable
 -- @alias WatchTable
 
 local WatchTable = {}

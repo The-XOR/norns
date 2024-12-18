@@ -1,4 +1,3 @@
---
 local hid_events = require 'hid_events'
 local tab = require 'tabutil'
 
@@ -10,7 +9,7 @@ local HidDeviceClass = {}
 HidDeviceClass.is_ascii_keyboard = function(device)
     local types_inv = tab.invert(device.types)
     local type_key = hid_events.types.EV_KEY
-    -- an ascii keyboard should support key events
+    --- an ascii keyboard should support key events
     if types_inv[type_key] == nil then
         return false
     end
@@ -67,7 +66,7 @@ HidDeviceClass.is_tablet = function(device)
   -- TODO
 end
 
--- ... other TODO?
+--- ... other TODO?
 
 
 return HidDeviceClass

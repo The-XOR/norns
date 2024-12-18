@@ -1,10 +1,5 @@
 --- Grid class
---
--- The [norns script reference](https://monome.org/docs/norns/reference/)
--- has [examples for this module](https://monome.org/docs/norns/reference/grid).
---
 -- @module grid
--- @alias Grid
 
 local vport = require 'vport'
 
@@ -246,7 +241,7 @@ end
 
 
 Grid.help = [[
--- -----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 grid.connect( port )          create a grid table using device [port]
                                 default [port] 1 if unspecified
                               (returns) grid table
@@ -254,13 +249,13 @@ grid.connect( port )          create a grid table using device [port]
                                 this should be redefined by the script
 .tilt( x, y, z )               function called with incoming grid tilt event
                                 this should be redefined by the script
-:led( x, y, level )           set LED at [x,y] to [level]
+.led( x, y, level )           set LED at [x,y] to [level]
                                 [level] range is 0..15
-:all( level )                 set all grid LED to [level]
+.all( level )                 set all grid LED to [level]
                                 [level] range is 0..15
-:refresh()                    update the grid LED state
+.refresh()                    update the grid LED state
 
--- -----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- example
 
 lx,ly,lz = 0,0,0
@@ -279,9 +274,9 @@ end
 
 -- simple draw function
 draw_grid()
-  g:all(0)
-  g:led(lx,ly,lz)
-  g:refresh()
+  g.all(0)
+  g.led(lx,ly,lz)
+  g.refresh()
 end
 --------------------------------------------------------------------------------
 ]]      

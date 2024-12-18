@@ -1,10 +1,5 @@
 --- midi devices
---
--- The [norns script reference](https://monome.org/docs/norns/reference/)
--- has [examples for this module](https://monome.org/docs/norns/reference/midi).
---
 -- @module midi
--- @alias Midi
 
 local vport = require 'vport'
 
@@ -178,13 +173,6 @@ end
 -- @tparam integer val : value
 function Midi:song_select(val)
   self:send{type="song_select", val=val}
-end
-
---- enable/disable clock reception from this device
--- @tparam boolean enabled
-function Midi:clock_receive(enabled)
-  --print("Midi:clock_receive: "..enabled)
-  _norns.midi_clock_receive(self.dev, enabled)
 end
 
 --- create device, returns object with handler and send.
@@ -411,29 +399,6 @@ function Midi.update_connected_state()
     end
   end
   _menu.rebuild_params()
-end
-
-function Midi.update_clock_receive()
-  local x = norns.state.clock.midi_in
-  if x == 1 then
-    -- enable all devices
-    for _, dev in pairs(Midi.devices) do
-      dev:clock_receive(1)
-    end
-  else
-    -- disable all devices...
-    for _, dev in pairs(Midi.devices) do
-      dev:clock_receive(0)
-    end
-    -- re-enable the selected one if called for
-    if x > 2 then
-      --print("enabling clock input; x = "..x)
-      local dev = Midi.vports[x-2].device
-      if dev ~= nil then
-        dev:clock_receive(1)
-      end
-    end
-  end
 end
 
 -- add a device.

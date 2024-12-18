@@ -1,4 +1,3 @@
---
 T = require 'test/luaunit'
 DefaultTable = dofile('lib/container/defaulttable.lua')
 

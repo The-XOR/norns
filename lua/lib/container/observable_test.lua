@@ -1,4 +1,3 @@
---
 T = require 'test/luaunit'
 Observable = dofile('lib/container/observable.lua')
 

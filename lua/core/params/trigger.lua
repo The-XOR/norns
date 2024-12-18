@@ -1,9 +1,4 @@
---- Parameter for an “on/off” action trigger
---
--- See also the [norns script reference](https://monome.org/docs/norns/reference/)
--- which has
--- [examples for using params](https://monome.org/docs/norns/reference/params).
---
+-- Trigger class
 -- @module params.trigger
 
 local Trigger = {}
@@ -25,8 +20,6 @@ function Trigger:get()
 end
 
 function Trigger:set(v)
-  local i = params.lookup[self.id]
-  _menu.binarystates.triggered[i] = 2
   self:bang()
 end
 

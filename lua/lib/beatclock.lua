@@ -1,7 +1,5 @@
---- Older clock library - see @{clock} instead
---
--- @module lib.beatclock
--- @alias BeatClock
+--- BeatClock
+-- @module lib.BeatClock
 
 local BeatClock = {}
 BeatClock.__index = BeatClock

@@ -1,9 +1,4 @@
---- Select a parameter from a list
---
--- See also the [norns script reference](https://monome.org/docs/norns/reference/)
--- which has
--- [examples for this module](https://monome.org/docs/norns/reference/parameters/option).
---
+-- Option class
 -- @module params.option
 
 local tab = require 'tabutil'

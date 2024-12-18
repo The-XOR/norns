@@ -1,5 +1,5 @@
---- DefaultTable - a table which provides a default value initialization for each key
--- @module lib.container.defaulttable
+-- DefaultTable - a table which provides a default value initialization for each key
+-- @module DefaultTable
 -- @alias DefaultTable
 
 local function shallow_copy(t)

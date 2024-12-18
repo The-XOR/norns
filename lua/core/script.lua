@@ -1,6 +1,5 @@
 --- Script class
 -- @module script
--- @alias Script
 
 local hook = require 'core/hook'
 

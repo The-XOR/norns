@@ -1,4 +1,4 @@
---- Utility functions.
+-- Utility module
 -- @module lib.util
 
 util = {}
@@ -47,7 +47,7 @@ util.file_exists = function(name)
 end
 
 --- query file size.
--- @tparam string path filepath
+-- @tparam string name filepath
 -- @treturn number filesize in bytes
 util.file_size = function(path)
   if path ~= nil then

@@ -1,8 +1,4 @@
 --- clock coroutines
---
--- The [norns script reference](https://monome.org/docs/norns/reference/)
--- has [examples for this module](https://monome.org/docs/norns/reference/clock).
---
 -- @module clock
 
 local clock = {}
@@ -205,7 +201,7 @@ end
 
 function clock.add_params()
   local send_midi_clock = {}
-  params:add_group("CLOCK", 29)
+  params:add_group("CLOCK", 27)
 
   params:add_option("clock_source", "source", {"internal", "midi", "link", "crow"},
     norns.state.clock.source)
@@ -279,20 +275,6 @@ function clock.add_params()
     end
     params:set_save("clock_midi_out_"..i, false)
   end
-
-  params:add_separator("midi_clock_in_separator", "midi clock in")
-  local midi_clock_in_options = { "all", "none"}
-  for i=1,16 do 
-    table.insert(midi_clock_in_options, tostring(i))
-  end
-  params:add_option("clock_midi_in", "midi clock in",
-		midi_clock_in_options, norns.state.clock.midi_in)
-  params:set_action("clock_midi_in", function(x)
-    norns.state.clock.midi_in = x
-    midi.update_clock_receive()
-  end)
-  params:set_save("clock_midi_in", false)
-
   params:add_separator("crow_clock_separator", "crow")
   params:add_option("clock_crow_out", "crow out",
       {"off", "output 1", "output 2", "output 3", "output 4"}, norns.state.clock.crow_out)
@@ -364,7 +346,7 @@ end
 
 
 clock.help = [[
--- -----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 clock.run( func )             start a new coroutine with function [func]
                               (returns) created id
 clock.cancel( id )            cancel coroutine [id]
@@ -375,7 +357,7 @@ clock.get_beats()             (returns) current time in beats
 clock.get_tempo()             (returns) current tempo
 clock.get_beat_sec()          (returns) length of a single beat at current
                                 tempo in seconds
--- -----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- example
 
 -- start a clock with calling function [loop]

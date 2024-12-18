@@ -70,13 +70,10 @@ namespace crone {
             virtual // from any thread
                 void start() {
                 if (isRunning) {
-                    std::cout << "Tape::SfStream::start(): already running" << std::endl;
                     return;
                 } else {
-                    std::cout << "Tape::SfStream: starting..." << std::endl;
                     envIdx = 0;
                     envState = Starting;
-
                     this->th = std::make_unique<std::thread>(
                                                              [this]() {
                                                                  this->diskLoop();
@@ -130,7 +127,7 @@ namespace crone {
                     envIdx = 0;
                     envState = Stopped;
                     shouldStop = true;
-                    std::cout << "Tape: fade-out finished; stopping" << std::endl;
+                    std::cerr << "Tape: fade-out finished; stopping" << std::endl;
                 }
             }
 
@@ -167,7 +164,7 @@ namespace crone {
                 
                 if (bytesToPush > bytesAvailable) {
 #if 0 
-                    std::cout << "Tape: writer overrun: " 
+                    std::cerr << "Tape: writer overrun: " 
                               << bytesAvailable << " bytes available; " 
                               << bytesToPush << " bytes to push; "
                               << numFramesCaptured << " frames captured" 
@@ -232,7 +229,7 @@ namespace crone {
                     
                     if (framesToWrite > (int) maxFramesToWrite) {
                         // _really_ shouldn't happen
-                        std::cout << "warning: Tape::Writer has too many frames to write" << std::endl;
+                        std::cerr << "warning: Tape::Writer has too many frames to write" << std::endl;
                         framesToWrite = (int) maxFramesToWrite;
                     }
 
@@ -246,22 +243,22 @@ namespace crone {
                     if (sf_writef_float(this->file, diskOutBuf, framesToWrite) != framesToWrite) {
                         char errstr[256];
                         sf_error_str(nullptr, errstr, sizeof(errstr) - 1);
-                        std::cout << "error: Tape::writer failed to write (libsndfile: " << errstr << ")" << std::endl;
+                        std::cerr << "error: Tape::writer failed to write (libsndfile: " << errstr << ")" << std::endl;
                         this->status = EIO;
                         break;
                     }
 
                     numFramesCaptured += framesToWrite;
                     if (numFramesCaptured >= maxFrames) {
-                        std::cout << "Tape: writer exceeded max frame count; aborting.";
+                        std::cerr << "Tape: writer exceeded max frame count; aborting.";
                         break;
                     }
 
                 }
 
-                std::cout << "Tape::writer closing file...";
+                std::cerr << "Tape::writer closing file...";
                 sf_close(this->file);
-                std::cout << " done." << std::endl;
+                std::cerr << " done." << std::endl;
                 SfStream::isRunning = false;
             }
 
@@ -270,13 +267,6 @@ namespace crone {
                       size_t maxFrames = JACK_MAX_FRAMES, // <-- ridiculous big number
                       int sampleRate = 48000,
                       int bitDepth = 24) {
-                
-                if (SfStream::isRunning) {
-                    std::cout << "Tape Writer::open(): stream is running; no action was taken" << std::endl;
-                    return false;
-                }
-
-
                 SF_INFO sf_info;
                 int short_mask;
 
@@ -305,7 +295,7 @@ namespace crone {
                 if ((this->file = sf_open(path.c_str(), SFM_WRITE, &sf_info)) == NULL) {
                     char errstr[256];
                     sf_error_str(nullptr, errstr, sizeof(errstr) - 1);
-                    std::cout << "cannot open sndfile" << path << " for output (" << errstr << ")" << std::endl;
+                    std::cerr << "cannot open sndfile" << path << " for output (" << errstr << ")" << std::endl;
                     return false;
                 }
 
@@ -347,7 +337,6 @@ namespace crone {
         private:
             // prime the ringbuffer
             void prime() {
-                // std::cout << "priming tape reader" << std::endl;
                 jack_ringbuffer_t *rb = this->ringBuf.get();
                 size_t framesToRead = jack_ringbuffer_write_space(rb) / frameSize;
                 if (framesToRead > maxFramesToRead) { framesToRead = maxFramesToRead; };
@@ -358,7 +347,7 @@ namespace crone {
 
                 // couldn't read enough, file is shorter than the buffer
                 if (framesRead < framesToRead) {
-                    std::cout << "Tape::Reader: short file, disable loop" << std::endl;
+                    std::cerr << "Tape::Reader: short file, disable loop" << std::endl;
                     SfStream::shouldStop = false;
                }
             }
@@ -436,26 +425,22 @@ namespace crone {
 
             // from any thread
             bool open(const std::string &path) {
-                if (SfStream::isRunning) {
-                    std::cout << "Tape Reader::open(): stream is running; no action was taken" << std::endl;
-                    return false;
-                }
-
                 SF_INFO sfInfo;
+
                 if ((this->file = sf_open(path.c_str(), SFM_READ, &sfInfo)) == NULL) {
                     char errstr[256];
                     sf_error_str(0, errstr, sizeof(errstr) - 1);
-                    std::cout << "Tape Reader:: cannot open sndfile" << path << " for output (" << errstr << ")" << std::endl;
+                    std::cerr << "Tape Reader:: cannot open sndfile" << path << " for output (" << errstr << ")" << std::endl;
                     return false;
                 }
 
                 if (sfInfo.frames < 1) {
 
-                    std::cout << "Tape Reader:: error reading file " << path << " (no frames available)" << std::endl;
+                    std::cerr << "Tape Reader:: error reading file " << path << " (no frames available)" << std::endl;
                     return false;
                 }
                 this->frames = static_cast<size_t>(sfInfo.frames);
-                std::cout << "Tape Reader:: file size " << this->frames << " samples" << std::endl;
+                std::cerr << "Tape Reader:: file size " << this->frames << " samples" << std::endl;
                 inChannels = sfInfo.channels;
                 if (inChannels > NumChannels)
                     return 0;//more than stereo is going to break things
@@ -513,13 +498,12 @@ namespace crone {
                     if (loopFile) {
                         // couldn't perform full read so must be end of file. Seek to start of file and keep reading
                         while (framesRead < framesToRead) {
-                            // std::cout << "tape reader: couldn't perform full read; looping file..." << std::endl;
                             sf_seek(this->file,0, SEEK_SET);
                             auto nextRead = (size_t) sf_readf_float(this->file, diskBufPtr, framesToRead-framesRead);
                             if (nextRead < 1)
                             {
                                   //Shouldn't happen
-                                  std::cout << "Tape::Reader: unable to read file" << std::endl;
+                                  std::cerr << "Tape::Reader: unable to read file" << std::endl;
                                   SfStream::shouldStop = true;
                                   break;
                             }
@@ -530,6 +514,7 @@ namespace crone {
                         }
                     }
                     else {
+                        std::cerr << "Tape::Reader::diskloop() reached EOF" << std::endl;
                         SfStream::shouldStop = true;
                     }
 
@@ -540,6 +525,7 @@ namespace crone {
 
                 }
                 sf_close(this->file);
+                std::cerr << "Tape::reader closed file" << std::endl;
             }
 
         }; // Reader class

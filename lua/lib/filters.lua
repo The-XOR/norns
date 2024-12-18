@@ -1,8 +1,7 @@
 --- Filters
+--- @module lib.filters
 --
 -- some filters that could be useful for musical event processing
--- @module lib.filters
--- @alias f
 
 local f = {}
 f.__index = f
@@ -31,8 +30,8 @@ function f:__tostring()
 end
 
 ----------------------
---- moving, windowed mean-average filter
--- @type filters.mean
+--- @type filters.mean
+-- moving, windowed mean-average filter
 
 local mean = {}
 mean.__index = mean
@@ -71,8 +70,8 @@ function mean:next(x)
 end
 
 ----------------------
+--- @type filters.median
 --- moving, windowed median average filter
--- @type filters.median
 
 local median = {}
 median.__index = median
@@ -145,8 +144,8 @@ function median:next(x)
 end
 
 ----------------------
---- simple one-pole lowpass smoothing filter
--- @type filters.smoother
+--- @type filters.smoother
+-- simple one-pole lowpass smoothing filter
 
 local smoother = {}
 smoother.__index = smoother

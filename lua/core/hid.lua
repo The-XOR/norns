@@ -1,6 +1,5 @@
 --- Hid class
 -- @module hid
--- @alias Hid
 
 local vport = require 'vport'
 local hid_events = require 'hid_events'

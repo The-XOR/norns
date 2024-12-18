@@ -1,8 +1,7 @@
 --- Filter graph drawing module.
 -- Subclass of Graph for drawing common filter graphs. Can draw approximations of low-pass, band-pass, notch and high-pass filters.
 --
--- @module lib.filtergraph
--- @alias FilterGraph
+-- @module lib.FilterGraph
 -- @release v1.0.0
 -- @author Mark Eats
 

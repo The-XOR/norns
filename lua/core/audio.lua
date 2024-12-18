@@ -1,10 +1,5 @@
 --- Audio class
---
--- The [norns script reference](https://monome.org/docs/norns/reference/)
--- has [examples for this module](https://monome.org/docs/norns/reference/audio).
---
 -- @module audio
--- @alias Audio
 
 local cs = require 'controlspec'
 
@@ -252,11 +247,8 @@ end
 
 --- print audio file info 
 -- @tparam string path (from dust directory)
--- @treturn integer number of audio channels
--- @treturn integer number of samples
--- @treturn integer sample rate
 function Audio.file_info(path)
-  -- ch, samples, rate
+  -- dur, ch, rate
   --print("file_info: " .. path)
   return _norns.sound_file_inspect(path)
 end
