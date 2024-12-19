@@ -32,7 +32,6 @@
 #include "screen_events.h"
 #include "screen_results.h"
 #include "stat.h"
-#include "hardware/screen/ssd1322.h"
 
 #include "oracle.h"
 #include "weaver.h"
@@ -50,7 +49,7 @@ void cleanup(void) {
     battery_deinit();
     stat_deinit();
     jack_client_deinit();
-    ssd1322_deinit();
+    //ssd1322_deinit();
     screen_results_deinit();
     fprintf(stderr, "matron shutdown complete\n");
     exit(0);
@@ -76,7 +75,7 @@ int main(int argc, char **argv) {
     i2c_init();
     osc_init();
     jack_client_init();
-    ssd1322_init();
+    //ssd1322_init();
     clock_init();
     clock_internal_init();
     clock_midi_init();

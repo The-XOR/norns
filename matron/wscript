@@ -18,7 +18,7 @@ def build(bld):
         'src/hardware/platform.c',
         'src/hardware/screen.c',
         'src/hardware/stat.c',
-        'src/hardware/screen/ssd1322.c',
+        'src/hardware/screen/fbdev.c',
         'src/hardware/input/gpio.c',
         'src/args.c',
         'src/events.c',
