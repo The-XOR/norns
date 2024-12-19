@@ -1,3 +1,3 @@
 git submodule update --init --recursive
-./waf configure --release
+./waf configure
 ./waf build --release
