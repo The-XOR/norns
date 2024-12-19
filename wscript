@@ -54,8 +54,6 @@ def configure(conf):
         header_name='monome.h',
         uselib_store='LIBMONOME')
 
-    conf.check_boost()
-
     if conf.options.desktop:
         conf.check_cfg(package='sdl2', args=['--cflags', '--libs'])
         conf.define('NORNS_DESKTOP', True)
