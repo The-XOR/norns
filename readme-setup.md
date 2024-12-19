@@ -16,7 +16,7 @@ on norns / raspberry pi, the following should be installed from monome's reposit
 
 ```
 curl https://keybase.io/artfwo/pgp_keys.asc | sudo apt-key add -
-echo "deb https://package.monome.org/ buster main" | sudo tee /etc/apt/sources.list.d/norns.list
+echo "deb https://package.monome.org/ stretch main" | sudo tee /etc/apt/sources.list.d/norns.list
 sudo apt update
 sudo apt install libmonome-dev libnanomsg-dev supercollider-language supercollider-server supercollider-dev
 ```

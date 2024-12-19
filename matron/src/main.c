@@ -72,7 +72,6 @@ int main(int argc, char **argv) {
 
     battery_init();
     stat_init();
-    i2c_init();
     osc_init();
     jack_client_init();
     //ssd1322_init();
@@ -109,6 +108,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "init input...\n");
     // start reading input to interpreter
     input_init();
+
+    i2c_init();
 
     fprintf(stderr, "running startup...\n");
     // i/o subsystems are ready; run user startup routine

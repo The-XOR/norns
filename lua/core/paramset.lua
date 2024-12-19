@@ -543,8 +543,14 @@ function ParamSet:read(filename, silent)
           local index = self.lookup[id]
 
           if index and self.params[index] and not param_already_set[index] then
-            if tonumber(value) ~= nil then
-              self.params[index]:set(tonumber(value), silent)
+            if self.params[index].t ~= self.tTEXT and tonumber(value) ~= nil then
+              if self.params[index].t == self.tBINARY then
+                if self.params[index].behavior ~= "trigger" then
+                  self.params[index]:set(tonumber(value), silent)
+                end
+              else
+                self.params[index]:set(tonumber(value), silent)
+              end
             elseif value == "-inf" then
               self.params[index]:set(-math.huge, silent)
             elseif value == "inf" then
@@ -590,7 +596,7 @@ end
 --- bang all params.
 function ParamSet:bang()
   for _,v in pairs(self.params) do
-    if v.t ~= self.tTRIGGER and not (v.t == self.tBINARY and v.behavior == 'trigger') then
+    if v.t ~= self.tTRIGGER and not (v.t == self.tBINARY and v.behavior == 'trigger' and v.value == 0) then
       v:bang()
     end
   end

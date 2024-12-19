@@ -1,3 +1,39 @@
+# 240911
+
+# norns 2.8.4
+
+- NEW norns font with 86 new glyphs #1783 @dstroud
+- FIX paramset fixes #1787 #1796 @dstroud
+- FIX binary params #1781 #1785 @dndrks
+- FIX keyboard wakes up screen #1778 @hallmar
+
+
+# 240424
+
+# norns 2.8.3
+
+- NEW acceleration for inf pots #1776 @tehn
+- FIX grid rotation #1772 @tehn
+- FIX tape play return on open #1770 @catfact
+- FIX update.sh apply shield update correctly
+
+
+# 240221
+
+# norns 2.8.2
+
+- NEW support for i2c adc inf pots, as encoders @tehn
+- NEW particle font @dansimco
+- NEW hotswap lib (from crow) @trentgill
+- NEW midi clock in port selection @catfact
+- FIX remove system/log @tehn
+- FIX link start/stop @artfwo
+
+# norns-image
+
+- FIX disable logging @catfact
+
+
 # 231114
 
 # norns 2.8.1

@@ -31,6 +31,7 @@ _menu.errormsg = ""
 _menu.shownav = false
 _menu.showstats = false
 _menu.previewfile = ""
+_menu.binarystates = {triggered = {}, on = {}}
 
 -- menu pages
 local m = {}
@@ -166,7 +167,7 @@ _menu.set_mode = function(mode)
     norns.encoders.callback = enc
     norns.enc.resume()
     redraw()
-  elseif mode == true then -- ACTIVATE MENu MODE
+  elseif mode == true then -- ACTIVATE MENU MODE
     if _menu.mode == false then _norns.screen_save() end
     _menu.mode = true
     _menu.alt = false
@@ -344,4 +345,3 @@ m["SLEEP"] = require 'core/menu/sleep'
 m["MIX"] = require 'core/menu/mix'
 m["TAPE"] = require 'core/menu/tape'
 m["MODS"] = require 'core/menu/mods'
-m["LOG"] = require 'core/menu/log'

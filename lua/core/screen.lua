@@ -218,7 +218,7 @@ Screen.current_point = function() return _norns.screen_current_point() end
 --- select font face.
 -- @param index font face (see list, or Screen.font_face_names)
 --
--- 1 04B_03 (norns default)
+-- 1 norns (default)
 -- 2 ALEPH
 -- 3 Roboto Thin
 -- 4 Roboto Light
@@ -285,10 +285,11 @@ Screen.current_point = function() return _norns.screen_current_point() end
 -- 65 unscii-8.pcf
 -- 66 unscii-8-tall.pcf
 -- 67 unscii-8-thin.pcf
+-- 68 Particle
 Screen.font_face = function(index) _norns.screen_font_face(index) end
-Screen.font_face_count = 67
+Screen.font_face_count = 68
 Screen.font_face_names = {
-   "04B_03__",
+   "norns",
    "liquid",
    "Roboto-Thin",
    "Roboto-Light",
@@ -354,7 +355,8 @@ Screen.font_face_names = {
    "bmp/unscii-8-mcr",
    "bmp/unscii-8",
    "bmp/unscii-8-tall",
-   "bmp/unscii-8-thin"
+   "bmp/unscii-8-thin",
+   "Particle",
 }
 
 --- set font size.
