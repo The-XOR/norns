@@ -421,7 +421,7 @@ void screen_invert(int inverted){
 
 void screen_level(int z) {
     z = z < 0 ? 0 : (z > 15 ? 15 : z);
-    cairo_set_source_rgb(cr, c[z], c[z], c[z]);
+    cairo_set_source_rgb(cr, _b[z], _g[z], _r[z]);
 }
 
 void screen_line_width(double w) {
