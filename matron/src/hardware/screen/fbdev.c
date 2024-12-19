@@ -1,3 +1,4 @@
+// questo file e. una SPECIALIZZAZIONE del file sdl.c
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
@@ -44,8 +45,32 @@ screen_ops_t screen_fbdev_ops = {
 };
 
 int screen_fbdev_config(matron_io_t *io, lua_State *l) {
-    (void)io;
-    (void)l;
+    screen_fbdev_priv_t *priv = io->data;
+    lua_pushstring(l, "dev");
+    lua_gettable(l, -2);
+    if (lua_isstring(l, -1)) {
+        const char *dev = lua_tostring(l, -1);
+        if (!(priv->dev = malloc(strlen(dev) + 1))) {
+            fprintf(stderr, "ERROR (screen:fbdev) no memory\n");
+            lua_settop(l, 0);
+            return -1;
+        }
+        strcpy(priv->dev, dev);
+    } else if (lua_isnil(l, -1)) {
+        if (!(priv->dev = malloc(9))) {
+            fprintf(stderr, "ERROR (screen:fbdev) no memory\n");
+            free(priv->dev);
+            lua_settop(l, 0);
+            return -1;
+        }
+        strcpy(priv->dev, "/dev/fb0");
+        fprintf(stderr, "screen:fbdev: no 'dev', using %s\n", priv->dev); 
+    } else {
+        fprintf(stderr, "ERROR (screen:fbdev) config option 'dev' should be a string\n");
+        lua_settop(l, 0);
+        return -1;
+    }
+    lua_pop(l, 1);
     return 0;
 }
 

@@ -58,6 +58,7 @@ def build(bld):
     matron_libs = [
         'pthread',
         'm',
+        'SDL2',
     ]
 
     matron_use = [
@@ -73,6 +74,7 @@ def build(bld):
         'SNDFILE',
         'AVAHI-COMPAT-LIBDNS_SD',
         'JACK',
+        'SDL2',
     ]
 
     if bld.env.NORNS_DESKTOP:
