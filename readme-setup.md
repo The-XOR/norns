@@ -18,7 +18,7 @@ on norns / raspberry pi, the following should be installed from monome's reposit
 curl https://keybase.io/artfwo/pgp_keys.asc | sudo apt-key add -
 echo "deb https://package.monome.org/ stretch main" | sudo tee /etc/apt/sources.list.d/norns.list
 sudo apt update
-sudo apt install libmonome-dev libnanomsg-dev supercollider-language supercollider-server supercollider-dev libsdl2-dev
+sudo apt install libmonome-dev libnanomsg-dev supercollider-language supercollider-server supercollider-dev
 ```
 
 for other platforms (x86, amd64), these packages can again use the standard repositories:
@@ -38,6 +38,12 @@ cd libmonome
 
 - add `/usr/local/lib` to library search paths. the recommended way to do this is by editing `/etc/ld.so.conf`. (use of the `LD_LIBRARY_PATH` variable is deprecated, since it willl override binary-specific settings.)
 
+### desktop
+
+using the `desktop` build option has additional requirements:
+```
+sudo apt install libsdl2-dev
+```
 
 ## building norns
 
