@@ -19,14 +19,14 @@ getting the code and configuring your environment
 -------------------------------------------------
 
  * ensure all the dependencies described in the previous section are installed.
- * fork `https://github.com/monome/norns` into your own github account (more on forking
+ * fork `https://github.com/The-XOR/norns` into your own github account (more on forking
    [here](https://help.github.com/articles/fork-a-repo/)).
  * if you haven't configured your machine with an ssh key that's known to github then follow
    these [directions](https://help.github.com/articles/generating-ssh-keys/).
  * navigate to a local directory to hold your sources.
  * `git clone https://github.com/<your_name_here>/norns.git`
  * `cd norns`
- * `git remote add upstream https://github.com/monome/norns.git` (so that you
+ * `git remote add upstream https://github.com/The-XOR/norns.git` (so that you
    fetch from the main repository, not your clone, when running `git fetch`
    et al.)
 

@@ -53,7 +53,7 @@ brew install cmake readline nanomsg
 
 from there on either linux or macOS:
 ```
-git clone https://github.com/monome/norns.git
+git clone https://github.com/The-XOR/norns.git
 cd norns/maiden-repl
 mkdir build
 cd build

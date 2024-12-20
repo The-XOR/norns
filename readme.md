@@ -25,11 +25,11 @@ git submodule update --init --recursive
 
 ## related
 ### supporting repositories
-- [maiden](https://github.com/monome/maiden/) | editing interface
+- [maiden](https://github.com/The-XOR/maiden/) | editing interface
 - [softcut](https://github.com/monome/softcut-lib) | sample-cutting editor part of `matron`
 
 ### tools
-- [norns disk image](https://github.com/monome/norns-image) | raspbian-based disk image
+- [norns disk image](https://github.com/The-XOR/norns-image) | raspbian-based disk image
 - [monome linux kernel](https://github.com/monome/linux/) | custom, monome-flavored linux kernel
 - [DIY shield instructions](https://github.com/monome/norns-shield) | the DIY open-source hardware variant
 

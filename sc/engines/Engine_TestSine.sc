@@ -13,7 +13,7 @@ Engine_TestSine : CroneEngine {
 	}
 	// Rather than defining a SynthDef, use a shorthand to allocate a function and send it to the engine to play
 	// Defined as an empty method in CroneEngine
-	// https://github.com/monome/norns/blob/master/sc/core/CroneEngine.sc#L31
+	// https://github.com/The-XOR/norns/blob/master/sc/core/CroneEngine.sc#L31
 	alloc {
 		// Define the synth variable, whichis a function
 		synth = {
@@ -31,7 +31,7 @@ Engine_TestSine : CroneEngine {
 		// It seems like when an Engine is loaded it is passed an AudioContext
 		// that is used to define audio routing stuff (Busses and Groups in SC parlance)
 		// These methods are defined in 
-		// https://github.com/monome/norns/blob/master/sc/core/CroneAudioContext.sc
+		// https://github.com/The-XOR/norns/blob/master/sc/core/CroneAudioContext.sc
 		// pass the CroneAudioContext method "out_b" as the value to the \out argument
 		// pass the CroneAudioContext method "xg" as the value to the target.
 		}.play(args: [\out, context.out_b], target: context.xg);

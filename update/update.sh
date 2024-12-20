@@ -43,7 +43,7 @@ find ~/dust -name ._.DS_Store -delete
 if [ ! -d /home/we/dust/audio/common ]; then
 	echo "does not exist, downloading"
 	cd /home/we/dust/audio
-	wget https://github.com/monome/norns/releases/download/v2.7.1/dust-audio-common.tgz
+	wget https://github.com/The-XOR/norns/releases/download/v2.7.1/dust-audio-common.tgz
 	tar xzvf dust-audio-common.tgz
 	rm dust-audio-common.tgz
 fi

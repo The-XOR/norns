@@ -23,6 +23,7 @@
 #include "screen_results.h"
 #include "hardware/io.h"
 #include "hardware/screen.h"
+#include "hardware/screen/ssd1322.h"
 
 #define NUM_FONTS 69
 #define NUM_OPS 29
@@ -346,7 +347,7 @@ void screen_update(void) {
 #endif
 
     cairo_surface_flush(surface);
-    //ssd1322_update(surface, surface_may_have_color);
+    ssd1322_update(surface, surface_may_have_color);
 }
 
 void screen_save(void) {
@@ -393,7 +394,7 @@ void screen_brightness(int v) {
     // is limited and offset.
     v += 16;
 
-    //ssd1322_set_brightness((uint8_t) v);
+    ssd1322_set_brightness((uint8_t) v);
 }
 
 void screen_contrast(int c){
@@ -403,7 +404,7 @@ void screen_contrast(int c){
     if (c > 255) {
         c=255;
     }
-    //ssd1322_set_contrast((uint8_t) c);
+    ssd1322_set_contrast((uint8_t) c);
 }
 
 void screen_gamma(double g) {
@@ -411,11 +412,11 @@ void screen_gamma(double g) {
         g=0;
     }
 
-    //ssd1322_set_gamma(g);
+    ssd1322_set_gamma(g);
 }
 
 void screen_invert(int inverted){
-   inverted=inverted+0;// ssd1322_set_display_mode((inverted != 0) ? SSD1322_DISPLAY_MODE_INVERT : SSD1322_DISPLAY_MODE_NORMAL);
+    ssd1322_set_display_mode((inverted != 0) ? SSD1322_DISPLAY_MODE_INVERT : SSD1322_DISPLAY_MODE_NORMAL);
 }
 
 void screen_level(int z) {

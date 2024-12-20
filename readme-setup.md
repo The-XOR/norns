@@ -48,7 +48,7 @@ sudo apt install libsdl2-dev
 ## building norns
 
 ```
-git clone https://github.com/monome/norns.git
+git clone https://github.com/The-XOR/norns.git
 cd norns
 git submodule update --init --recursive
 ./waf configure
