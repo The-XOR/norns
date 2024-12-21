@@ -25,7 +25,7 @@ int open_spi() {
     uint8_t mode = SPI_MODE_0;
     uint8_t bits_per_word = SPI0_BUS_WIDTH;
     uint8_t little_endian = 0;
-    uint32_t speed_hz = 1200000000 / 64; // 18.75Mhz, 1200Mhz is the CPU speed.
+    uint32_t speed_hz = 40000000;
 
     int fd = open(SPIDEV_0_0_PATH, O_RDWR | O_SYNC);
 
