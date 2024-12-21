@@ -40,13 +40,14 @@ int open_spi() {
     || ( ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed_hz)       < 0 )
     || ( ioctl(fd, SPI_IOC_WR_LSB_FIRST, &little_endian)     < 0 );
     if( outcome != 0 ){
-       fprintf(stderr, "could not set SPI WR settings via IOC\n");
-       close(fd);
-       return -1;
+        fprintf(stderr, "could not set SPI WR settings via IOC\n");
+        close(fd);
+        return -1;
     }
 
     return fd;
 }
+
 
 int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
     va_list args;
@@ -95,25 +96,53 @@ int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
 
     pthread_mutex_unlock(&lock);
     return 0;
-fail:
+    fail:
     pthread_mutex_unlock(&lock);
     return -1;
+}
+
+int write_data(uint8_t data) {
+    struct spi_ioc_transfer data_transfer = {0};
+    uint8_t data_buf[1];
+
+    pthread_mutex_lock(&lock);
+
+    if (spidev_fd <= 0) {
+        fprintf(stderr, "%s: spidev not yet opened\n", __func__);
+        pthread_mutex_unlock(&lock);
+        return -1;
+    }
+
+    gpiod_line_set_value(gpio_dc, 1);
+
+    data_buf[0] = data;
+    data_transfer.tx_buf = (unsigned long) data_buf;
+    data_transfer.len = (uint32_t) sizeof(data_buf);
+
+    if (ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &data_transfer) < 0) {
+        fprintf(stderr, "%s: could not send data-message.\n", __func__);
+        pthread_mutex_unlock(&lock);
+        return -1;
+    }
+
+    pthread_mutex_unlock(&lock);
+    return 0;
 }
 
 #ifndef NUMARGS
 #define NUMARGS(...)  (sizeof((int[]){__VA_ARGS__}) / sizeof(int))
 #endif
 #define write_command_with_data(x, ...) \
-    (ssd1322_write_command(x, NUMARGS(__VA_ARGS__), __VA_ARGS__))
+(ssd1322_write_command(x, NUMARGS(__VA_ARGS__), __VA_ARGS__))
 #define write_command(x) \
-    (ssd1322_write_command(x, 0, 0))
+(ssd1322_write_command(x, 0, 0))
 
 static void* ssd1322_thread_run(void * p){
     (void)p;
 
     static struct timespec ts = {
-            .tv_sec = 0,
-            .tv_nsec = 16666666, // 60Hz
+        .tv_sec = 0,
+        .tv_nsec = 16666666, // 60Hz
     };
 
     while( spidev_buffer ){
@@ -165,33 +194,33 @@ void ssd1322_init() {
     gpiod_line_request_output(gpio_dc, "D/C", 0);
     gpiod_line_request_output(gpio_reset, "RST", 0);
 
-	 // versione copilot
+    // versione copilot
     //gpiod_line_request_output(gpio_dc, "DC", 0);
     //gpiod_line_request_output(gpio_reset, "RESET", 0);
 
 
-	 // Reset the display
+    // Reset the display
     gpiod_line_set_value(gpio_reset, 0);
     usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 1);
     usleep(100000); // 100 ms
-/*
-    // All values copied from fbtft-ssd1322.c from monome/linux repo.
-    write_command(SSD1322_SET_DISPLAY_OFF);
-    write_command(SSD1322_SET_DEFAULT_LINEAR_GRAY_SCALE);
-    write_command_with_data(SSD1322_SET_OSCILLATOR_FREQUENCY, 0x91);
-    write_command_with_data(SSD1322_SET_MULTIPLEX_RATIO, NORNS_MUX_RATIO);
-    write_command_with_data(SSD1322_SET_DISPLAY_OFFSET, 0x00);
-    write_command_with_data(SSD1322_SET_DISPLAY_START_LINE, 0x00);
-    write_command_with_data(SSD1322_SET_VDD_REGULATOR, 0x01);
-    write_command_with_data(SSD1322_SET_DISPLAY_ENHANCEMENT_A, 0xA0, 0xFD);
-    write_command_with_data(SSD1322_SET_CONTRAST_CURRENT, 0x7F);
-    write_command_with_data(SSD1322_MASTER_CURRENT_CONTROL, 0x0F);
-    write_command_with_data(SSD1322_SET_PHASE_LENGTH, NORNS_PHASE_LENGTH);
-    write_command_with_data(SSD1322_SET_PRECHARGE_VOLTAGE, 0x1F);
-    write_command_with_data(SSD1322_SET_VCOMH_VOLTAGE, 0x04);
-    write_command(SSD1322_SET_DISPLAY_MODE_NORMAL);
-*/
+    /*
+     *    // All values copied from fbtft-ssd1322.c from monome/linux repo.
+     *    write_command(SSD1322_SET_DISPLAY_OFF);
+     *    write_command(SSD1322_SET_DEFAULT_LINEAR_GRAY_SCALE);
+     *    write_command_with_data(SSD1322_SET_OSCILLATOR_FREQUENCY, 0x91);
+     *    write_command_with_data(SSD1322_SET_MULTIPLEX_RATIO, NORNS_MUX_RATIO);
+     *    write_command_with_data(SSD1322_SET_DISPLAY_OFFSET, 0x00);
+     *    write_command_with_data(SSD1322_SET_DISPLAY_START_LINE, 0x00);
+     *    write_command_with_data(SSD1322_SET_VDD_REGULATOR, 0x01);
+     *    write_command_with_data(SSD1322_SET_DISPLAY_ENHANCEMENT_A, 0xA0, 0xFD);
+     *    write_command_with_data(SSD1322_SET_CONTRAST_CURRENT, 0x7F);
+     *    write_command_with_data(SSD1322_MASTER_CURRENT_CONTROL, 0x0F);
+     *    write_command_with_data(SSD1322_SET_PHASE_LENGTH, NORNS_PHASE_LENGTH);
+     *    write_command_with_data(SSD1322_SET_PRECHARGE_VOLTAGE, 0x1F);
+     *    write_command_with_data(SSD1322_SET_VCOMH_VOLTAGE, 0x04);
+     *    write_command(SSD1322_SET_DISPLAY_MODE_NORMAL);
+     */
     // Initialization sequence
     write_command(0x36);
     write_data(0x00);
@@ -271,15 +300,15 @@ void ssd1322_init() {
     write_command(0x29);
     usleep(120000); // 120 ms
 
-	/*
-    // Flips the screen orientation if the device is a norns shield.
-    if( platform() != PLATFORM_CM3 ){
-        write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x04, 0x11);
-    }
-    else{
-        write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x16, 0x11);
-    }
-	*/
+    /*
+     *    // Flips the screen orientation if the device is a norns shield.
+     *    if( platform() != PLATFORM_CM3 ){
+     *        write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x04, 0x11);
+}
+else{
+    write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x16, 0x11);
+}
+*/
 
     // Do not turn display on until the first update has been called,
     // otherwise previous GDDRAM (or noise) will display before the
@@ -318,8 +347,8 @@ void ssd1322_deinit(){
 void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_color){
     pthread_mutex_lock(&lock);
 
-    //should_translate_color = surface_may_have_color;
-	should_translate_color = true;
+    should_translate_color = surface_may_have_color;
+    should_translate_color = true;
 
     if( surface_buffer != NULL && surface_pointer != NULL ){
         const uint32_t surface_w = cairo_image_surface_get_width(surface_pointer);
@@ -333,8 +362,8 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
 
         memcpy(
             (uint8_t *) surface_buffer,
-            (uint8_t *) cairo_image_surface_get_data(surface_pointer),
-            SURFACE_BUFFER_LEN
+               (uint8_t *) cairo_image_surface_get_data(surface_pointer),
+               SURFACE_BUFFER_LEN
         );
     }
     else{
@@ -343,12 +372,12 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
 
     display_dirty = true;
 
-early_return:
+    early_return:
     pthread_mutex_unlock(&lock);
 }
 
 void ssd1322_refresh(){
-	return;//todo
+    return;//todo
     struct spi_ioc_transfer transfer = {0};
 
     if( spidev_fd <= 0 ){
@@ -412,12 +441,12 @@ void ssd1322_refresh(){
         transfer.len = SPIDEV_BUFFER_LEN / n_transfers;
         if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
             fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n",
-                            __func__,               i,    n_transfers);
+                    __func__,               i,    n_transfers);
             goto early_return;
         }
     }
 
-early_return:
+    early_return:
     pthread_mutex_unlock(&lock);
     return;
 }
@@ -425,64 +454,64 @@ early_return:
 
 void ssd1322_set_brightness(uint8_t b){
     //write_command_with_data(SSD1322_SET_PRECHARGE_VOLTAGE, b);
-	write_command_with_data(0x51, b);
+    write_command_with_data(0x51, b);
 }
 
 void ssd1322_set_contrast(uint8_t c){
     //write_command_with_data(SSD1322_SET_CONTRAST_CURRENT, c);
-	write_command_with_data(0x53, b);
+    write_command_with_data(0x53, c);
 }
 
 void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset){
-	switch(mode_offset)
-	{
-		case SSD1322_DISPLAY_MODE_ALL_OFF:
-			write_command(0x28);
-			break;
+    switch(mode_offset)
+    {
+        case SSD1322_DISPLAY_MODE_ALL_OFF:
+            write_command(0x28);
+            break;
 
-		case SSD1322_DISPLAY_MODE_ALL_ON:
-			write_command(0x23);
-			break;
+        case SSD1322_DISPLAY_MODE_ALL_ON:
+            write_command(0x23);
+            break;
 
-		case SSD1322_DISPLAY_MODE_NORMAL:
-			write_command(0x29);
-			break;
+        case SSD1322_DISPLAY_MODE_NORMAL:
+            write_command(0x29);
+            break;
 
-		case SSD1322_DISPLAY_MODE_INVERT:
-			write_command(0x21);
-			break;
-	}
+        case SSD1322_DISPLAY_MODE_INVERT:
+            write_command(0x21);
+            break;
+    }
 }
 
 void ssd1322_set_gamma(double g){
-	/*
-    // (SSD1322 rev 1.2, P 29/60)
-    // Section 8.8, Gray Scale Decoder:
-    // "Note: Both GS0 and GS1 have no 2nd pre-charge (phase 3)
-    //        and current drive (phase 4), however GS1 has 1st
-    //        pre-charge (phase 2)."
+    /*
+     *    // (SSD1322 rev 1.2, P 29/60)
+     *    // Section 8.8, Gray Scale Decoder:
+     *    // "Note: Both GS0 and GS1 have no 2nd pre-charge (phase 3)
+     *    //        and current drive (phase 4), however GS1 has 1st
+     *    //        pre-charge (phase 2)."
+     *
+     *    // According to the above note, GS0 and GS1 should effectively
+     *    // be skipped in the gamma curve calculation, because GS1 is
+     *    // like the starting point so it should have a value of 0.
+     *    uint8_t gs[16] = {0};
+     *    double max_grayscale = SSD1322_GRAYSCALE_MAX_VALUE;
+     *    for (int level = 0; level <= 14; level++) {
+     *        double pre_gamma = level / 14.0;
+     *        double grayscale = round(pow(pre_gamma, g) * max_grayscale);
+     *        double limit = (grayscale > max_grayscale) ? max_grayscale : grayscale;
+     *        gs[level + 1] = (uint8_t) limit;
+}
 
-    // According to the above note, GS0 and GS1 should effectively
-    // be skipped in the gamma curve calculation, because GS1 is
-    // like the starting point so it should have a value of 0.
-    uint8_t gs[16] = {0};
-    double max_grayscale = SSD1322_GRAYSCALE_MAX_VALUE;
-    for (int level = 0; level <= 14; level++) {
-        double pre_gamma = level / 14.0;
-        double grayscale = round(pow(pre_gamma, g) * max_grayscale);
-        double limit = (grayscale > max_grayscale) ? max_grayscale : grayscale;
-        gs[level + 1] = (uint8_t) limit;
-    }
-
-    write_command_with_data(
-            SSD1322_SET_GRAYSCALE_TABLE, // GS0 is skipped.
-            gs[0x1], gs[0x2], gs[0x3], gs[0x4], gs[0x5],
-            gs[0x6], gs[0x7], gs[0x8], gs[0x9], gs[0xA],
-            gs[0xB], gs[0xC], gs[0xD], gs[0xE], gs[0xF]
+write_command_with_data(
+    SSD1322_SET_GRAYSCALE_TABLE, // GS0 is skipped.
+    gs[0x1], gs[0x2], gs[0x3], gs[0x4], gs[0x5],
+    gs[0x6], gs[0x7], gs[0x8], gs[0x9], gs[0xA],
+    gs[0xB], gs[0xC], gs[0xD], gs[0xE], gs[0xF]
     );
     write_command(SSD1322_ENABLE_GRAYSCALE_TABLE);
-	*/
- 	uint8_t gamma_curve[15];
+    */
+    uint8_t gamma_curve[15];
     double max_grayscale = 255.0;
     for (int level = 0; level < 15; level++) {
         double pre_gamma = level / 14.0;
