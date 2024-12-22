@@ -48,7 +48,6 @@ int open_spi() {
     return fd;
 }
 
-
 int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
     va_list args;
     uint8_t cmd_buf[1];
@@ -191,114 +190,38 @@ void ssd1322_init() {
     gpio_dc = gpiod_chip_get_line(gpio_0, SSD1322_DC_GPIO_LINE);
     gpio_reset = gpiod_chip_get_line(gpio_0, SSD1322_RESET_GPIO_LINE);
 
+    // nomi ottenibili col comando gpioinfo
     gpiod_line_request_output(gpio_dc, "D/C", 0);
     gpiod_line_request_output(gpio_reset, "RST", 0);
 
-    // versione copilot
-    //gpiod_line_request_output(gpio_dc, "DC", 0);
-    //gpiod_line_request_output(gpio_reset, "RESET", 0);
-
-
     // Reset the display
+    gpiod_line_set_value(gpio_reset, 1);
+    usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 0);
     usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 1);
     usleep(100000); // 100 ms
-    /*
-     *    // All values copied from fbtft-ssd1322.c from monome/linux repo.
-     *    write_command(SSD1322_SET_DISPLAY_OFF);
-     *    write_command(SSD1322_SET_DEFAULT_LINEAR_GRAY_SCALE);
-     *    write_command_with_data(SSD1322_SET_OSCILLATOR_FREQUENCY, 0x91);
-     *    write_command_with_data(SSD1322_SET_MULTIPLEX_RATIO, NORNS_MUX_RATIO);
-     *    write_command_with_data(SSD1322_SET_DISPLAY_OFFSET, 0x00);
-     *    write_command_with_data(SSD1322_SET_DISPLAY_START_LINE, 0x00);
-     *    write_command_with_data(SSD1322_SET_VDD_REGULATOR, 0x01);
-     *    write_command_with_data(SSD1322_SET_DISPLAY_ENHANCEMENT_A, 0xA0, 0xFD);
-     *    write_command_with_data(SSD1322_SET_CONTRAST_CURRENT, 0x7F);
-     *    write_command_with_data(SSD1322_MASTER_CURRENT_CONTROL, 0x0F);
-     *    write_command_with_data(SSD1322_SET_PHASE_LENGTH, NORNS_PHASE_LENGTH);
-     *    write_command_with_data(SSD1322_SET_PRECHARGE_VOLTAGE, 0x1F);
-     *    write_command_with_data(SSD1322_SET_VCOMH_VOLTAGE, 0x04);
-     *    write_command(SSD1322_SET_DISPLAY_MODE_NORMAL);
-     */
+  
     // Initialization sequence
-    write_command(0x36);
-    write_data(0x00);
-
-    write_command(0x3A);
-    write_data(0x05);
-
-    write_command(0xB2);
-    write_data(0x0C);
-    write_data(0x0C);
-    write_data(0x00);
-    write_data(0x33);
-    write_data(0x33);
-
-    write_command(0xB7);
-    write_data(0x35);
-
-    write_command(0xBB);
-    write_data(0x19);
-
-    write_command(0xC0);
-    write_data(0x2C);
-
-    write_command(0xC2);
-    write_data(0x01);
-
-    write_command(0xC3);
-    write_data(0x12);
-
-    write_command(0xC4);
-    write_data(0x20);
-
-    write_command(0xC6);
-    write_data(0x0F);
-
-    write_command(0xD0);
-    write_data(0xA4);
-    write_data(0xA1);
-
-    write_command(0xE0);
-    write_data(0xD0);
-    write_data(0x04);
-    write_data(0x0D);
-    write_data(0x11);
-    write_data(0x13);
-    write_data(0x2B);
-    write_data(0x3F);
-    write_data(0x54);
-    write_data(0x4C);
-    write_data(0x18);
-    write_data(0x0D);
-    write_data(0x0B);
-    write_data(0x1F);
-    write_data(0x23);
-
-    write_command(0xE1);
-    write_data(0xD0);
-    write_data(0x04);
-    write_data(0x0C);
-    write_data(0x11);
-    write_data(0x13);
-    write_data(0x2C);
-    write_data(0x3F);
-    write_data(0x44);
-    write_data(0x51);
-    write_data(0x2F);
-    write_data(0x1F);
-    write_data(0x1F);
-    write_data(0x20);
-    write_data(0x23);
-
-    write_command(0x21);
-
     write_command(0x11);
-    usleep(120000); // 120 ms
+    usleep(150000); 
 
+    write_command_with_data(0x36, 0x00);
+    write_command_with_data(0x3a, 0x05);
+    write_command_with_data(0xB2, 0x0c, 0x0c);
+    write_command_with_data(0xB7, 0x35);
+    write_command_with_data(0xB8, 0x1a);
+    write_command_with_data(0xc0, 0x2c);
+    write_command_with_data(0xc2, 0x01);
+    write_command_with_data(0xc3, 0x0b);
+    write_command_with_data(0xc4, 0x20);
+    write_command_with_data(0xc6, 0x0f);
+    write_command_with_data(0xd0, 0xa4, 0xa1);
+    write_command(0x21);
+    write_command_with_data(0xe0, 0x00, 0x19, 0x1E, 0x0A, 0x09, 0x15, 0x3D, 0x44, 0x51, 0x12, 0x03, 0x00, 0x3F, 0x3F);
+    write_command_with_data(0xe1, 0x00, 0x18, 0x1E, 0x0A, 0x09, 0x25, 0x3F, 0x43, 0x52, 0x33, 0x03, 0x00, 0x3F, 0x3F),
     write_command(0x29);
-    usleep(120000); // 120 ms
+    usleep(100000); 
 
     /*
      *    // Flips the screen orientation if the device is a norns shield.
@@ -390,12 +313,12 @@ void ssd1322_refresh(){
         return;
     }
 
-    write_command_with_data(SSD1322_SET_COLUMN_ADDRESS, 28, 91);
-    write_command_with_data(SSD1322_SET_ROW_ADDRESS, 0, 63);
-    write_command(SSD1322_WRITE_RAM_COMMAND);
+    write_command_with_data(0x2a, 1, 0);
+    write_command_with_data(0x2b, 240, 0);
+    write_command(0x2c);
 
     if( should_turn_on ){
-        write_command(SSD1322_SET_DISPLAY_ON);
+        write_command(0x29);
         should_turn_on = 0;
     }
 
@@ -434,7 +357,7 @@ void ssd1322_refresh(){
 
     gpiod_line_set_value(gpio_dc, 1);
 
-    const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
+    const uint32_t spidev_bufsize = 76800; // Max is defined in /boot/config.txt
     const uint32_t n_transfers = SPIDEV_BUFFER_LEN / spidev_bufsize;
     for( uint32_t i = 0; i < n_transfers; i++ ){
         transfer.tx_buf = (unsigned long) (spidev_buffer + (i * spidev_bufsize));
@@ -474,7 +397,7 @@ void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset){
             break;
 
         case SSD1322_DISPLAY_MODE_NORMAL:
-            write_command(0x29);
+            write_command(0x20);
             break;
 
         case SSD1322_DISPLAY_MODE_INVERT:
