@@ -27,8 +27,8 @@
 
 #define NUM_FONTS 69
 #define NUM_OPS 29
-#define MAGNIFY_WIDTH    2
-#define MAGNIFY_HEIGHT   2
+#define MAGNIFY_WIDTH    1
+#define MAGNIFY_HEIGHT   1
 
 static char font_path[NUM_FONTS][32];
 

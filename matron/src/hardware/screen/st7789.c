@@ -24,30 +24,27 @@ static pthread_t ssd1322_pthread_t;
 #define ST7789_HEIGHT 320
 #define ST7789_WIDTH 240
 
-int open_spi() {
-    uint8_t mode = SPI_MODE_0;
-    uint8_t bits_per_word = SPI0_BUS_WIDTH;
-    uint8_t little_endian = 0;
-    uint32_t speed_hz = 30000000;
-
-    int fd = open(SPIDEV_0_0_PATH, O_RDWR | O_SYNC);
-    if( fd < 0 ){
+int open_spi() 
+{
+    int spi_fd = open(SPIDEV_0_0_PATH, O_RDWR | O_SYNC);
+    if( spi_fd < 0 )
+    {
         fprintf(stderr, "(screen) couldn't open %s\n", SPIDEV_0_0_PATH);
         return -1;
     }
     
  	uint8_t mode = SPI_MODE_0;
     uint8_t bits_per_word = 8;
-    uint32_t speed = 500000;
+    uint32_t speed_hz = 30000000;
 
     if (ioctl(spi_fd, SPI_IOC_WR_MODE, &mode) < 0 ||
         ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0 ||
-        ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+        ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed_hz) < 0) {
         fprintf(stderr, "could not set SPI WR settings via IOC\n");
         close(spi_fd);
-        return -1;
+        spi_fd = -1;
     }
-    return fd;
+    return spi_fd;
 }
 
 int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
@@ -173,7 +170,8 @@ void ssd1322_init()
     }
 
     surface_buffer = calloc(SURFACE_BUFFER_LEN, 1);
-    if( surface_buffer == NULL ){
+    if( surface_buffer == NULL )
+    {
         fprintf(stderr, "%s: couldn't allocate surface_buffer\n", __func__);
         return;
     }
@@ -184,7 +182,7 @@ void ssd1322_init()
         return;
     }
 
-    spidev_fd = open_spi(SPIDEV_0_0_PATH);
+    spidev_fd = open_spi();
     if( spidev_fd < 0 )
 	{
         fprintf(stderr, "%s: couldn't open %s.\n", __func__, SPIDEV_0_0_PATH);
@@ -298,7 +296,8 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
     should_translate_color = surface_may_have_color;
     should_translate_color = true;
 
-    if( surface_buffer != NULL && surface_pointer != NULL ){
+    if( surface_buffer != NULL && surface_pointer != NULL )
+    {
         const uint32_t surface_w = cairo_image_surface_get_width(surface_pointer);
         const uint32_t surface_h = cairo_image_surface_get_height(surface_pointer);
         cairo_format_t surface_f = cairo_image_surface_get_format(surface_pointer);
@@ -308,13 +307,9 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
             goto early_return;
         }
 
-        memcpy(
-            (uint8_t *) surface_buffer,
-               (uint8_t *) cairo_image_surface_get_data(surface_pointer),
-               SURFACE_BUFFER_LEN
-        );
-    }
-    else{
+        memcpy((uint8_t *) surface_buffer, (uint8_t *) cairo_image_surface_get_data(surface_pointer), SURFACE_BUFFER_LEN);
+    } else
+    {
         fprintf(stderr, "%s: surface_buffer (%p) surface_pointer (%p)\n", __func__, surface_buffer, surface_pointer);
     }
 
@@ -333,7 +328,8 @@ void ssd1322_refresh()
         return;
     }
 
-    if( surface_buffer == NULL ){
+    if( surface_buffer == NULL )
+    {
         fprintf(stderr, "%s: surface_buffer not allocated yet.\n", __func__);
         return;
     }
@@ -399,7 +395,6 @@ void ssd1322_refresh()
 
     early_return:
     pthread_mutex_unlock(&lock);
-    return;
 }
 
 
@@ -410,6 +405,7 @@ void ssd1322_set_brightness(uint8_t b)
 
 void ssd1322_set_contrast(uint8_t c)
 {
+    c=c+0;
     //non implementato
 }
 
@@ -481,10 +477,12 @@ void ssd1322_set_gamma(double g)
 
 void ssd1322_set_refresh_rate(uint8_t hz)
 {
+    hz=hz+0;
 	// non implementato
 }
 
-uint8_t* ssd1322_resize_buffer(size_t size){
+uint8_t* ssd1322_resize_buffer(size_t size)
+{
     spidev_buffer = realloc(spidev_buffer, size);
     return spidev_buffer;
 }
