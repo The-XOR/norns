@@ -22,29 +22,6 @@
 
 // Pinout
 // see: https://github.com/monome/norns-image/blob/main/readme-hardware.md#pinout-1
-/*
-OLED
-The OLED is a NHD-2.7-12864WDW3-M1
-
-128 x 64 pixel 16-step grayscale, white LEDs
-
-DRIVER: ssd1322
-CONFIG: dtoverlay=ssd1322-spi
-This OLED works with the fbtft library which is not mainline. It creates a framebuffer at /dev/fb1
-
-Internally the OLED is connected with a flat ribbon cable that has a ZIF socket. I suggest disconnecting the ribbon on the PCB, not the OLED itself.
-
-Pinout
-The OLED is controlled via SPI (spi0 on the CM3) and a few GPIOs.
-
-PIN: SPI MISO = GPIO9
-PIN: SPI MOSI = GPIO10
-PIN: SPI SCK = GPIO11
-PIN: SPI CE0 = GPIO8
-PIN: RESET = GPIO6
-PIN: DC = GPIO5
-*/
-
 #define SSD1322_DC_AND_RESET_GPIO_CHIP "gpiochip0"
 #define SSD1322_DC_GPIO_LINE 5
 #define SSD1322_RESET_GPIO_LINE 6
@@ -95,10 +72,8 @@ PIN: DC = GPIO5
 
 #define SSD1322_GRAYSCALE_MAX_VALUE 112.0
 
-//#define SSD1322_PIXEL_WIDTH 128
-//#define SSD1322_PIXEL_HEIGHT 64
-#define SSD1322_PIXEL_WIDTH 320
-#define SSD1322_PIXEL_HEIGHT 240
+#define SSD1322_PIXEL_WIDTH 128
+#define SSD1322_PIXEL_HEIGHT 64
 
 typedef enum {
     SSD1322_DISPLAY_MODE_ALL_OFF = 0,
