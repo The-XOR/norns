@@ -20,6 +20,10 @@ static pthread_t ssd1322_pthread_t;
 #define SPIDEV_BUFFER_LEN  SSD1322_PIXEL_WIDTH * SSD1322_PIXEL_HEIGHT * sizeof(uint8_t)
 #define SURFACE_BUFFER_LEN SSD1322_PIXEL_WIDTH * SSD1322_PIXEL_HEIGHT * sizeof(uint32_t)
 
+// per motivi a me oscuri, height > width. boh.
+#define ST7789_HEIGHT 320
+#define ST7789_WIDTH 240
+
 int open_spi() {
     uint8_t mode = SPI_MODE_0;
     uint8_t bits_per_word = SPI0_BUS_WIDTH;
@@ -234,11 +238,9 @@ void ssd1322_init()
 	write_command_with_data(0xe1,0xd0,0x02,0x07,0x0a,0x0b,0x18,0x34,0x43,0x4a,0x2b,0x1b,0x1c,0x22,0x1f);
 	write_command_with_data(0x55,0xB0);
 
-	int width = 320;
-	int height = 240;
 	// caset / raset
-    write_command_with_data(0x2a, 0, 0, (width - 1) >> 8, (width - 1) & 0xFF  );
-    write_command_with_data(0x2b, 0, 0, (height - 1) >> 8, (height - 1) & 0xFF  );
+    write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
+    write_command_with_data(0x2b, 0, 0, (ST7789_HEIGHT - 1) >> 8, (ST7789_HEIGHT - 1) & 0xFF  );
 
     write_command(0x29);
     usleep(100000); 
@@ -336,11 +338,9 @@ void ssd1322_refresh()
         return;
     }
 
-	int width = 320;
-	int height = 240;
 	// caset / raset
-    write_command_with_data(0x2a, 0, 0, (width - 1) >> 8, (width - 1) & 0xFF  );
-    write_command_with_data(0x2b, 0, 0, (height - 1) >> 8, (height - 1) & 0xFF  );
+    write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
+    write_command_with_data(0x2b, 0, 0, (ST7789_HEIGHT - 1) >> 8, (ST7789_HEIGHT - 1) & 0xFF  );
     write_command(0x2c);
 
     if( should_turn_on )
