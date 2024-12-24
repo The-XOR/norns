@@ -7,16 +7,21 @@
 
 static int spidev_fd = 0;
 static bool display_dirty = false;
-//static bool should_translate_color = false;
 static bool should_turn_on = true;
-static uint16_t * spidev_buffer = NULL;
+static uint8_t * spidev_buffer = NULL;
 static struct gpiod_chip * gpio_0;
 static struct gpiod_line * gpio_dc;
 static struct gpiod_line * gpio_reset;
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t ssd1322_pthread_t;
 
+#define ST7789_Portrait         0xC0
+#define ST7789_Portrait180      0
+#define ST7789_Landscape        0xA0
+#define ST7789_Landscape180     0x60
+
 #define SPIDEV_BUFFER_LEN      (ST7789_HEIGHT * ST7789_WIDTH * sizeof(uint16_t )) // 2 bytes per pixel
+#define MIN(a,b)    ((a)<(b) ? (a) : (b))
 
 int open_spi() 
 {
@@ -30,11 +35,9 @@ int open_spi()
  	uint8_t mode = SPI_MODE_0;
     uint8_t bits_per_word = 8;
     uint32_t speed_hz = 40000000;
-    uint8_t little_endian = 0;
 
     if (ioctl(spi_fd, SPI_IOC_WR_MODE, &mode) < 0 ||
         ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0 
-        || ioctl(spi_fd, SPI_IOC_WR_LSB_FIRST, &little_endian)  < 0 
         || ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed_hz) < 0) {
         fprintf(stderr, "could not set SPI WR settings via IOC\n");
         close(spi_fd);
@@ -208,7 +211,7 @@ void ssd1322_init()
     // Bit 5: Page/column order. 0=normal mode, 1=reverse mode
     // Bit 6: Column address order. 0=left-to-right, 1=right-to-left
     // Bit 7: Page address order. 0=top-to-bottom, 1=bottom-to-top
-    write_command_with_data(0x36, 0x00);
+    write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
 
 	// RGB 16-bit color mode
     write_command_with_data(0x3a, 0x55);
@@ -283,14 +286,6 @@ void ssd1322_deinit()
     }
 }
 
-uint16_t argb32_to_rgb565(uint32_t argb)
-{
-    uint8_t r = (argb >> 16) & 0xFF;
-    uint8_t g = (argb >> 8) & 0xFF;
-    uint8_t b = argb & 0xFF;
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-}
-
 void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_color)
 {
     int width = cairo_image_surface_get_width(surface_pointer);
@@ -303,19 +298,37 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
 
     pthread_mutex_lock(&lock);
 
-    surface_may_have_color=!surface_may_have_color;
     if( spidev_buffer != NULL && surface_pointer != NULL )
     {
-        for (int i = 0; i < width * height; i++) 
+
+        if( surface_may_have_color )
         {
-            spidev_buffer[i] = argb32_to_rgb565(data[i]);
-            // const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (data + i));
-            // const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
-            // const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
-            // const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
-            // spidev_buffer[i]  = (uint16_t)(vaddq_u16(r, g), b);
-        }
-               
+            // Preserve luminance of RGB when converting to grayscale. Use the
+            // closest multiple of 16 to the fraction to scale the channels'
+            // grayscale value. Use a multiple of 16 because a 4-bit grayscale
+            // value should fit into the upper nibble of the 8-bit value. The
+            // decimal approximation is out of 256: 80 + 160 + 16 = 256.
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += sizeof(uint8x8_t))
+            {
+                const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (data + i));
+                const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
+                const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
+                const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
+                const uint8x8_t conversion = vaddhn_u16(vaddq_u16(r, g), b);
+                vst1_u8(spidev_buffer + i, vsri_n_u8(conversion, conversion, 4));
+            }
+        } else
+        {
+            // If the surface has only been drawn to, we can guarantee that RGB are
+            // all equal values representing a grayscale value. So, we can take any
+            // of those channels arbitrarily. Use the green channel just because.
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += sizeof(uint8x16_t) )
+            {
+                const uint8x16x4_t ARGB = vld4q_u8((uint8_t *) (data + i));
+                vst1q_u8(spidev_buffer + i, vsriq_n_u8(ARGB.val[1], ARGB.val[1], 4));
+            }
+        }        
+        
         display_dirty = true;
     } else
     {
@@ -325,29 +338,9 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
     pthread_mutex_unlock(&lock);
 }
 
-void send_data(int spi_fd, uint16_t *data, size_t len) {
-    uint8_t buffer[2];
-    struct spi_ioc_transfer tr = {
-        .tx_buf = (unsigned long)buffer,
-        .rx_buf = 0,
-        .len = 2,
-        .delay_usecs = 0,
-        .speed_hz = 40000000,
-        .bits_per_word = 8,
-    };
-
-    for (size_t i = 0; i < len; i++) {
-        buffer[0] = data[i] >> 8;
-        buffer[1] = data[i] & 0xFF;
-        if (ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr) < 1) {
-            perror("Failed to send SPI message");
-            exit(1);
-        }
-    }
-}
-
 void ssd1322_refresh()
 {
+    struct spi_ioc_transfer transfer = {0};
     if( spidev_fd <= 0 )
     {
         fprintf(stderr, "%s: spidev not yet opened.\n", __func__);
@@ -367,56 +360,23 @@ void ssd1322_refresh()
 
     pthread_mutex_lock(&lock);
     gpiod_line_set_value(gpio_dc, 1);
-    /*
-    struct spi_ioc_transfer xfer = {0};
-    xfer.tx_buf = (unsigned long)spidev_buffer;
-    xfer.len = ST7789_HEIGHT * ST7789_WIDTH;
-    ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &xfer);
-*/
-send_data(spidev_fd, spidev_buffer, ST7789_HEIGHT * ST7789_WIDTH);
+    const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
+    int bytes_transferred=0;
+    while((SPIDEV_BUFFER_LEN - bytes_transferred) > 0)
+    {
+        transfer.tx_buf = (unsigned long) (spidev_buffer + bytes_transferred);
+        transfer.len = MIN(spidev_bufsize, SPIDEV_BUFFER_LEN - bytes_transferred);
+        bytes_transferred +=  transfer.len;
+        if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
+            fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n",__func__, bytes_transferred,SPIDEV_BUFFER_LEN);
+            goto early_return;
+        }
+
+    }
+
+early_return:
     pthread_mutex_unlock(&lock);
 }
-
-// void ssd1322_refresh()
-// {
-//     fprintf(stderr,"dbg uno\n");
-
-//     struct spi_ioc_transfer transfer = {0};
-//     if( spidev_fd <= 0 )
-//     {
-//         fprintf(stderr, "%s: spidev not yet opened.\n", __func__);
-//         return;
-//     }
-
-// 	// caset / raset
-//     write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
-//     write_command_with_data(0x2b, 0, 0, (ST7789_HEIGHT - 1) >> 8, (ST7789_HEIGHT - 1) & 0xFF  );
-
-//     if( should_turn_on )
-// 	{
-//         write_command(0x29);
-//         should_turn_on = 0;
-//     }
-//     write_command(0x2c);
-
-//     pthread_mutex_lock(&lock);
-//     gpiod_line_set_value(gpio_dc, 1);
-//     fprintf(stderr,"dbg trafagf\n");
-//    const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
-//     const uint32_t n_transfers = SPIDEV_BUFFER_LEN / spidev_bufsize;
-//     for( uint32_t i = 0; i < n_transfers; i++ ){
-//         transfer.tx_buf = (unsigned long) (spidev_buffer + (i * spidev_bufsize));
-//         transfer.len = SPIDEV_BUFFER_LEN / n_transfers;
-//         if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
-//             fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n",
-//                             __func__,               i,    n_transfers);
-//             goto early_return;
-//         }
-//     }
-
-// early_return:
-//     pthread_mutex_unlock(&lock);
-// }
 
 void ssd1322_set_brightness(uint8_t b)
 {
