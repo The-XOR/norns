@@ -26,6 +26,9 @@
 #define SSD1322_DC_GPIO_LINE 5
 #define SSD1322_RESET_GPIO_LINE 6
 
+#define MAGNIFY_WIDTH    2
+#define MAGNIFY_HEIGHT   2
+
 // Commands
 // see:
 #define SSD1322_ENABLE_GRAYSCALE_TABLE        0x00
