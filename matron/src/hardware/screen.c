@@ -27,8 +27,8 @@
 
 #define NUM_FONTS 69
 #define NUM_OPS 29
-#define MAGNIFY_WIDTH    1
-#define MAGNIFY_HEIGHT   1
+#define MAGNIFY_WIDTH    2
+#define MAGNIFY_HEIGHT   2
 
 static char font_path[NUM_FONTS][32];
 
@@ -502,7 +502,8 @@ void screen_text(const char *s) {
     cairo_show_text(cr, s);
 }
 
-void screen_clear(void) {
+void screen_clear(void) 
+{
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
     cairo_paint(cr);
     cairo_set_operator(cr, CAIRO_OPERATOR_OVER);

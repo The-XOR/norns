@@ -17,7 +17,7 @@ static struct gpiod_line * gpio_reset;
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t ssd1322_pthread_t;
 
-#define SPIDEV_BUFFER_LEN  SSD1322_PIXEL_WIDTH * SSD1322_PIXEL_HEIGHT * sizeof(uint8_t)
+#define SPIDEV_BUFFER_LEN  (SSD1322_PIXEL_WIDTH *MAGNIFY_WIDTH) * (SSD1322_PIXEL_HEIGHT * MAGNIFY_WIDTH) * sizeof(uint16_t)
 #define SURFACE_BUFFER_LEN SSD1322_PIXEL_WIDTH * SSD1322_PIXEL_HEIGHT * sizeof(uint32_t)
 
 // per motivi a me oscuri, height > width. boh.
@@ -35,7 +35,7 @@ int open_spi()
     
  	uint8_t mode = SPI_MODE_0;
     uint8_t bits_per_word = 8;
-    uint32_t speed_hz = 30000000;
+    uint32_t speed_hz = 3000000;
 
     if (ioctl(spi_fd, SPI_IOC_WR_MODE, &mode) < 0 ||
         ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0 ||
@@ -47,7 +47,8 @@ int open_spi()
     return spi_fd;
 }
 
-int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
+int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) 
+{
     va_list args;
     uint8_t cmd_buf[1];
     uint8_t data_buf[256];
@@ -99,7 +100,8 @@ int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) {
     return -1;
 }
 
-int write_data(uint8_t data) {
+int write_data(uint8_t data) 
+{
     struct spi_ioc_transfer data_transfer = {0};
     uint8_t data_buf[1];
 
@@ -294,7 +296,6 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
     pthread_mutex_lock(&lock);
 
     should_translate_color = surface_may_have_color;
-    should_translate_color = true;
 
     if( surface_buffer != NULL && surface_pointer != NULL )
     {
@@ -360,22 +361,54 @@ void ssd1322_refresh()
         // grayscale value. Use a multiple of 16 because a 4-bit grayscale
         // value should fit into the upper nibble of the 8-bit value. The
         // decimal approximation is out of 256: 80 + 160 + 16 = 256.
-        for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += 8 ){
-            const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (surface_buffer + i));
-            const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
-            const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
-            const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
-            const uint8x8_t conversion = vaddhn_u16(vaddq_u16(r, g), b);
-            vst1_u8(spidev_buffer + i, vsri_n_u8(conversion, conversion, 4));
+   
+        for(uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += 8) 
+        {
+            // Load 8 pixels BGRA
+            const uint8x8x4_t pixel = vld4_u8((const uint8_t *)(surface_buffer + i));
+            
+            // Extract RGB and shift to correct positions
+            uint16x8_t r = vshll_n_u8(pixel.val[2], 8);  // R << 8
+            r = vshrq_n_u16(r, 3);                       // Keep top 5 bits
+            r = vshlq_n_u16(r, 11);                      // Position for RGB565
+            
+            uint16x8_t g = vshll_n_u8(pixel.val[1], 8);  // G << 8
+            g = vshrq_n_u16(g, 2);                       // Keep top 6 bits
+            g = vshlq_n_u16(g, 5);                       // Position for RGB565
+            
+            uint16x8_t b = vshll_n_u8(pixel.val[0], 8);  // B << 8
+            b = vshrq_n_u16(b, 3);                       // Keep top 5 bits
+            
+            // Combine RGB565
+            uint16x8_t rgb565 = vorrq_u16(vorrq_u16(r, g), b);
+            
+            // Store result
+            vst1q_u16((uint16_t*)(spidev_buffer + i*2), rgb565);
         }
     } else
 	{
-        // If the surface has only been drawn to, we can guarantee that RGB are
-        // all equal values representing a grayscale value. So, we can take any
-        // of those channels arbitrarily. Use the green channel just because.
-        for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += 16 ){
-            const uint8x16x4_t ARGB = vld4q_u8((uint8_t *) (surface_buffer + i));
-            vst1q_u8(spidev_buffer + i, vsriq_n_u8(ARGB.val[1], ARGB.val[1], 4));
+        for(uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += 16) 
+        {
+            // Load 16 pixels
+            const uint8x16x4_t rgba = vld4q_u8((uint8_t *)(surface_buffer + i));
+            
+            // Process lower 8 pixels
+            uint16x8_t r_lo = vshlq_n_u16(vshll_n_u8(vget_low_u8(rgba.val[2]), 8), 8);  // R
+            uint16x8_t g_lo = vshlq_n_u16(vshll_n_u8(vget_low_u8(rgba.val[1]), 8), 3);  // G
+            uint16x8_t b_lo = vshrq_n_u16(vshll_n_u8(vget_low_u8(rgba.val[0]), 8), 3);  // B
+            
+            // Process upper 8 pixels
+            uint16x8_t r_hi = vshlq_n_u16(vshll_n_u8(vget_high_u8(rgba.val[2]), 8), 8);
+            uint16x8_t g_hi = vshlq_n_u16(vshll_n_u8(vget_high_u8(rgba.val[1]), 8), 3);
+            uint16x8_t b_hi = vshrq_n_u16(vshll_n_u8(vget_high_u8(rgba.val[0]), 8), 3);
+
+            // Combine RGB565
+            uint16x8_t rgb565_lo = vorrq_u16(vorrq_u16(r_lo, g_lo), b_lo);
+            uint16x8_t rgb565_hi = vorrq_u16(vorrq_u16(r_hi, g_hi), b_hi);
+
+            // Store 16-bit RGB565 values
+            vst1q_u16((uint16_t*)(spidev_buffer + i*2), rgb565_lo);
+            vst1q_u16((uint16_t*)(spidev_buffer + i*2 + 16), rgb565_hi);
         }
     }
 
@@ -383,12 +416,12 @@ void ssd1322_refresh()
 
     const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
     const uint32_t n_transfers = SPIDEV_BUFFER_LEN / spidev_bufsize;
-    for( uint32_t i = 0; i < n_transfers; i++ ){
+    for( uint32_t i = 0; i < n_transfers; i++ )
+    {
         transfer.tx_buf = (unsigned long) (spidev_buffer + (i * spidev_bufsize));
         transfer.len = SPIDEV_BUFFER_LEN / n_transfers;
         if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
-            fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n",
-                    __func__,               i,    n_transfers);
+            fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n", __func__,  i, n_transfers);
             goto early_return;
         }
     }
@@ -396,7 +429,6 @@ void ssd1322_refresh()
     early_return:
     pthread_mutex_unlock(&lock);
 }
-
 
 void ssd1322_set_brightness(uint8_t b)
 {
