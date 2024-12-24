@@ -128,7 +128,7 @@ static void init_font_faces(void);
 //--- extern function definitions
 
 void screen_init(void) {
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 128*MAGNIFY_WIDTH, 64*MAGNIFY_HEIGHT);
+    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, ST7789_WIDTH, ST7789_HEIGHT);
     cairo_surface_set_device_scale(surface, MAGNIFY_WIDTH, MAGNIFY_HEIGHT);
     cr = cr_primary = cairo_create(surface);
 
