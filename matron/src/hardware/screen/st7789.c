@@ -425,18 +425,18 @@ void ssd1322_set_brightness(uint8_t b)
     write_command_with_data(0x51, b);
 }
 
-void ssd1322_set_contrast(uint8_t c)
+void ssd1322_set_contrast(int c)
 {
     // implementato come controllo di palette    
-    //c: da 0 a 255
-// bit 0,1,2=livello R, bit 3,4,5=livello G, bit 6,7=livello B
+    //c: da 0 a 511
+// bit 0,1,2=livello R, bit 3,4,5=livello G, bit 6,7,8=livello B
     int r_corr = c & 0x07;  // bit 0,1,2 -> valori da 0 a 7
     int g_corr = (c >> 3) & 0x07;  // bit 3,4,5 -> valori da 0 a 7
-    int b_corr = (c >> 6); // bit 7,8 -> valori da 0 a 3
+    int b_corr = (c >> 6)  & 0x07; // bit 6,7,8 -> valori da 0 a 7
 
     _r_corr = 0.14 * r_corr;
     _g_corr = 0.14 * g_corr;
-    _b_corr = 0.2 * b_corr;
+    _b_corr = 0.14 * b_corr;
 }
 
 void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset)

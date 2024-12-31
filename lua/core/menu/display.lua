@@ -14,7 +14,7 @@ map[1] = {
   position = {x=54, y=56},
   name = "PALETTE",
   get = function(_) return contrast end,
-  set = function(d) contrast = util.clamp(0, contrast + d, 255) end,
+  set = function(d) contrast = util.clamp(0, contrast + d, 511) end,
   is_default = function(_) return contrast == 127 end,
 }
 map[2] = {

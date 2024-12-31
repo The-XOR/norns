@@ -373,10 +373,10 @@ void screen_contrast(int c){
     if (c < 0) {
         c=0;
     }
-    if (c > 255) {
-        c=255;
+    if (c > 511) {
+        c=511;
     }
-    ssd1322_set_contrast((uint8_t) c);
+    ssd1322_set_contrast(c);
 }
 
 void screen_gamma(double g) {
