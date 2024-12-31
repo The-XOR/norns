@@ -28,10 +28,10 @@
 
 #define MAGNIFY_WIDTH    2
 #define MAGNIFY_HEIGHT   2
+
 // per motivi a me oscuri, height > width. boh.
 #define ST7789_HEIGHT 320
 #define ST7789_WIDTH 240
-
 
 // Commands
 // see:
