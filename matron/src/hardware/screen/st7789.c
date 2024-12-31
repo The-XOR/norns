@@ -211,7 +211,7 @@ void ssd1322_init()
     // Bit 5: Page/column order. 0=normal mode, 1=reverse mode
     // Bit 6: Column address order. 0=left-to-right, 1=right-to-left
     // Bit 7: Page address order. 0=top-to-bottom, 1=bottom-to-top
-    write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
+ //dbg   write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
 
 	// RGB 16-bit color mode
     write_command_with_data(0x3a, 0x55);
@@ -290,7 +290,6 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
 {
     int width = cairo_image_surface_get_width(surface_pointer);
     int height = cairo_image_surface_get_height(surface_pointer);
-    uint8_t *data = cairo_image_surface_get_data(surface_pointer);
     if (width != ST7789_WIDTH || height != ST7789_HEIGHT) {
         fprintf(stderr, "Invalid surface dimensions\n");
         return;
@@ -300,7 +299,13 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
 
     if( spidev_buffer != NULL && surface_pointer != NULL )
     {
-
+        #ifdef DEBUG_DISPLAY
+            int f = 33; //rand() % 255;
+            surface_may_have_color=!surface_may_have_color; 
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i ++)
+                *(spidev_buffer + i)=f;
+        #else
+        const uint8_t *data = cairo_image_surface_get_data(surface_pointer);
         if( surface_may_have_color )
         {
             // Preserve luminance of RGB when converting to grayscale. Use the
@@ -308,9 +313,9 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
             // grayscale value. Use a multiple of 16 because a 4-bit grayscale
             // value should fit into the upper nibble of the 8-bit value. The
             // decimal approximation is out of 256: 80 + 160 + 16 = 256.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += sizeof(uint8x8_t))
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
             {
-                const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (data + i));
+                const uint8x8x4_t pixel = vld4_u8(data + i);
                 const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
                 const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
                 const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
@@ -322,13 +327,15 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
             // If the surface has only been drawn to, we can guarantee that RGB are
             // all equal values representing a grayscale value. So, we can take any
             // of those channels arbitrarily. Use the green channel just because.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i += sizeof(uint8x16_t) )
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++ )
             {
-                const uint8x16x4_t ARGB = vld4q_u8((uint8_t *) (data + i));
-                vst1q_u8(spidev_buffer + i, vsriq_n_u8(ARGB.val[1], ARGB.val[1], 4));
+                // VLD4 loads 4 vectors from memory. It performs a 4-way de-interleave from memory to the vectors.
+                const uint8x8x4_t ARGB = vld4_u8(data + i);
+                vst1_u8(spidev_buffer + i, vsri_n_u8(ARGB.val[1], ARGB.val[1], 4));
             }
         }        
-        
+        #endif
+
         display_dirty = true;
     } else
     {
