@@ -41,6 +41,7 @@ extern void screen_event_set_operator(int i);
 extern void screen_event_current_point();
 extern void screen_event_gamma(double g);
 extern void screen_event_brightness(int b);
+extern void screen_event_off();
 extern void screen_event_contrast(int c);
 extern void screen_event_invert(int i);
 

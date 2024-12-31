@@ -394,6 +394,10 @@ void screen_invert(int inverted){
     ssd1322_set_display_mode((inverted != 0) ? SSD1322_DISPLAY_MODE_INVERT : SSD1322_DISPLAY_MODE_NORMAL);
 }
 
+void screen_off()
+{
+    ssd1322_set_display_mode(SSD1322_DISPLAY_MODE_ALL_OFF);
+}
 void screen_level(int z) {
     z = z < 0 ? 0 : (z > 15 ? 15 : z);
     cairo_set_source_rgb(cr, c[z], c[z], c[z]);

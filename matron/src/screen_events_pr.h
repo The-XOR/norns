@@ -46,6 +46,8 @@ typedef enum {
 	      SCREEN_EVENT_BRIGHTNESS,
 	      SCREEN_EVENT_CONTRAST,
 	      SCREEN_EVENT_INVERT,
+	      SCREEN_EVENT_OFF,
+
 	      
 } screen_event_id_t;
 

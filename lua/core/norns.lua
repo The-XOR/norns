@@ -178,12 +178,12 @@ end
 norns.shutdown = function()
   hook.system_pre_shutdown()
   print("SLEEP")
-  --TODO fade out screen then run the shutdown script
   norns.state.clean_shutdown = true
   norns.state.save()
   pcall(cleanup)
   audio.level_dac(0)
   audio.headphone_gain(0)
+  _norns.screen_off();
   os.execute("sleep 0.5; sudo shutdown now")
 end
 

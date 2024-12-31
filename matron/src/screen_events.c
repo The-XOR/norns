@@ -221,6 +221,10 @@ void handle_screen_event(struct screen_event_data *ev) {
     case SCREEN_EVENT_INVERT:
         screen_invert(ev->payload.i.i1);
         break;
+
+    case SCREEN_EVENT_OFF:
+        screen_off();
+        break;
     default:;
         ;
     }
@@ -575,6 +579,13 @@ void screen_event_contrast(int c) {
     screen_event_data_init(&ev);
     ev.type = SCREEN_EVENT_CONTRAST;
     ev.payload.i.i1 = c;
+    screen_event_data_push(&ev);
+}
+
+void screen_event_off() {
+    struct screen_event_data ev;
+    screen_event_data_init(&ev);
+    ev.type = SCREEN_EVENT_OFF;
     screen_event_data_push(&ev);
 }
 

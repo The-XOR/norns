@@ -100,6 +100,7 @@ static int _screen_font_size(lua_State *l);
 static int _screen_aa(lua_State *l);
 static int _screen_gamma(lua_State *l);
 static int _screen_brightness(lua_State*l);
+static int _screen_off(lua_State*l);
 static int _screen_contrast(lua_State*l);
 static int _screen_invert(lua_State *l);
 static int _screen_level(lua_State *l);
@@ -461,6 +462,7 @@ void w_init(void) {
     lua_register_norns("screen_aa", &_screen_aa);
     lua_register_norns("screen_gamma", &_screen_gamma);
     lua_register_norns("screen_brightness", &_screen_brightness);
+    lua_register_norns("screen_off", &_screen_off);
     lua_register_norns("screen_contrast", &_screen_contrast);
     lua_register_norns("screen_invert", &_screen_invert);
     lua_register_norns("screen_level", &_screen_level);
@@ -723,6 +725,18 @@ int _screen_brightness(lua_State *l) {
     lua_check_num_args(1);
     int b = luaL_checkinteger(l, 1);
     screen_event_brightness(b);
+    lua_settop(l, 0);
+    return 0;
+}
+
+/***
+ * screen: change pre-charge voltage for drawing
+ * @function s_brightness
+ * @tparam int level, [0, 15]
+ */
+int _screen_off(lua_State *l) {
+    lua_check_num_args(0);
+    screen_event_off();
     lua_settop(l, 0);
     return 0;
 }
