@@ -327,7 +327,7 @@ void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_col
             // If the surface has only been drawn to, we can guarantee that RGB are
             // all equal values representing a grayscale value. So, we can take any
             // of those channels arbitrarily. Use the green channel just because.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++ )
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; /*i += sizeof(uint8x8_t)*/i++ )
             {
                 // VLD4 loads 4 vectors from memory. It performs a 4-way de-interleave from memory to the vectors.
                 const uint8x8x4_t ARGB = vld4_u8(data + i);
