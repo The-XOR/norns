@@ -7,8 +7,10 @@
 
 static int spidev_fd = 0;
 static bool display_dirty = false;
+static bool should_translate_color = false;
 static bool should_turn_on = true;
 static uint8_t * spidev_buffer = NULL;
+static uint32_t * surface_buffer = NULL;
 static struct gpiod_chip * gpio_0;
 static struct gpiod_line * gpio_dc;
 static struct gpiod_line * gpio_reset;
@@ -21,6 +23,7 @@ static pthread_t ssd1322_pthread_t;
 #define ST7789_Landscape180     0x60
 
 #define SPIDEV_BUFFER_LEN      (ST7789_HEIGHT * ST7789_WIDTH * sizeof(uint16_t )) // 2 bytes per pixel
+#define SURFACE_BUFFER_LEN      (ST7789_HEIGHT * ST7789_WIDTH * sizeof(uint32_t ))
 #define MIN(a,b)    ((a)<(b) ? (a) : (b))
 
 int open_spi() 
@@ -170,6 +173,12 @@ void ssd1322_init()
         return;
     }
 
+    surface_buffer = calloc(SURFACE_BUFFER_LEN, 1);
+    if( surface_buffer == NULL ){
+        fprintf(stderr, "%s: couldn't allocate surface_buffer\n", __func__);
+        return;
+    }
+
     spidev_buffer = calloc(SPIDEV_BUFFER_LEN, 1);
     if( spidev_buffer == NULL ){
         fprintf(stderr, "%s: couldn't allocate spidev_buffer\n", __func__);
@@ -283,76 +292,46 @@ void ssd1322_deinit()
             free(spidev_buffer);
             spidev_buffer = NULL;
         }
+        if(surface_buffer != NULL)
+        {
+            free(surface_buffer);
+            surface_buffer = NULL;
+        }
+
     }
 }
 
 void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_color)
 {
-    int width = cairo_image_surface_get_width(surface_pointer);
-    int height = cairo_image_surface_get_height(surface_pointer);
-    if (width != ST7789_WIDTH || height != ST7789_HEIGHT) {
-        fprintf(stderr, "Invalid surface dimensions\n");
-        return;
-    }
-
     pthread_mutex_lock(&lock);
 
-    if( spidev_buffer != NULL && surface_pointer != NULL )
-    {
-        #ifdef DEBUG_DISPLAY
-            int f = 33; //rand() % 255;
-            surface_may_have_color=!surface_may_have_color; 
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i ++)
-                *(spidev_buffer + i)=f;
-        #else
-        const uint8_t *data = cairo_image_surface_get_data(surface_pointer);
-        if( surface_may_have_color )
-        {
-            // Preserve luminance of RGB when converting to grayscale. Use the
-            // closest multiple of 16 to the fraction to scale the channels'
-            // grayscale value. Use a multiple of 16 because a 4-bit grayscale
-            // value should fit into the upper nibble of the 8-bit value. The
-            // decimal approximation is out of 256: 80 + 160 + 16 = 256.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
-            {
-                const uint8x8x4_t pixel = vld4_u8(data + i);
-                const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
-                const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
-                const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
-                const uint8x8_t conversion = vaddhn_u16(vaddq_u16(r, g), b);
-                vst1_u8(spidev_buffer + i, vsri_n_u8(conversion, conversion, 4));
-            }
-        } else
-        {
-            // If the surface has only been drawn to, we can guarantee that RGB are
-            // all equal values representing a grayscale value. So, we can take any
-            // of those channels arbitrarily. Use the green channel just because.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; /*i += sizeof(uint8x8_t)*/i++ )
-            {
-                // VLD4 loads 4 vectors from memory. It performs a 4-way de-interleave from memory to the vectors.
-                const uint8x8x4_t ARGB = vld4_u8(data + i);
-                vst1_u8(spidev_buffer + i, vsri_n_u8(ARGB.val[1], ARGB.val[1], 4));
-            }
-        }        
-        #endif
+    should_translate_color = surface_may_have_color;
 
-        display_dirty = true;
+    if( surface_buffer != NULL && surface_pointer != NULL ){
+        const uint32_t surface_w = cairo_image_surface_get_width(surface_pointer);
+        const uint32_t surface_h = cairo_image_surface_get_height(surface_pointer);
+        cairo_format_t surface_f = cairo_image_surface_get_format(surface_pointer);
+
+        if( surface_w != ST7789_WIDTH || surface_h != ST7789_HEIGHT || surface_f != CAIRO_FORMAT_ARGB32 ){
+            fprintf(stderr, "%s: %ux%u = invalid surface size\n", __func__, surface_w, surface_h);
+            goto early_return;
+        }
+        memcpy(surface_buffer, cairo_image_surface_get_data(surface_pointer), SURFACE_BUFFER_LEN);
     } else
     {
-        fprintf(stderr, "%s: spidev_buffer (%p) surface_pointer (%p)\n", __func__, spidev_buffer, surface_pointer);
+        fprintf(stderr, "%s: surface_buffer (%p) surface_pointer (%p)\n", __func__, surface_buffer, surface_pointer);
     }
 
+    display_dirty = true;
+
+early_return:
     pthread_mutex_unlock(&lock);
 }
 
-void ssd1322_refresh()
+static void transfer2display()
 {
     struct spi_ioc_transfer transfer = {0};
-    if( spidev_fd <= 0 )
-    {
-        fprintf(stderr, "%s: spidev not yet opened.\n", __func__);
-        return;
-    }
+    pthread_mutex_unlock(&lock);
 
 	// caset / raset
     write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
@@ -369,6 +348,7 @@ void ssd1322_refresh()
     gpiod_line_set_value(gpio_dc, 1);
     const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
     int bytes_transferred=0;
+
     while((SPIDEV_BUFFER_LEN - bytes_transferred) > 0)
     {
         transfer.tx_buf = (unsigned long) (spidev_buffer + bytes_transferred);
@@ -383,6 +363,60 @@ void ssd1322_refresh()
 
 early_return:
     pthread_mutex_unlock(&lock);
+}
+
+void ssd1322_refresh()
+{
+    if( spidev_fd <= 0 )
+    {
+        fprintf(stderr, "%s: spidev not yet opened.\n", __func__);
+        return;
+    }
+
+    pthread_mutex_lock(&lock);
+    //#define DEBUG_DISPLAY
+    if( spidev_buffer != NULL && surface_buffer != NULL )
+    {
+        #ifdef DEBUG_DISPLAY
+            int f = 133; //rand() % 255;
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
+                *(spidev_buffer + i)=f;
+        #else
+        if( should_translate_color )
+        {
+            // Preserve luminance of RGB when converting to grayscale. Use the
+            // closest multiple of 16 to the fraction to scale the channels'
+            // grayscale value. Use a multiple of 16 because a 4-bit grayscale
+            // value should fit into the upper nibble of the 8-bit value. The
+            // decimal approximation is out of 256: 80 + 160 + 16 = 256.
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
+            {
+                const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (surface_buffer + i));
+                const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
+                const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
+                const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
+                const uint8x8_t conversion = vaddhn_u16(vaddq_u16(r, g), b);
+                vst1_u8(spidev_buffer + i, vsri_n_u8(conversion, conversion, 4));
+            }
+        } else
+        {
+            // If the surface has only been drawn to, we can guarantee that RGB are
+            // all equal values representing a grayscale value. So, we can take any
+            // of those channels arbitrarily. Use the green channel just because.
+            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; /*i += sizeof(uint8x8_t)*/i++ )
+            {
+                // VLD4 loads 4 vectors from memory. It performs a 4-way de-interleave from memory to the vectors.
+                const uint8x8x4_t ARGB = vld4_u8((const uint8_t *) surface_buffer + i);
+                vst1_u8(spidev_buffer + i, vsri_n_u8(ARGB.val[1], ARGB.val[1], 4));
+            }
+        }        
+        #endif
+    } else
+    {
+        fprintf(stderr, "%s: spidev_buffer (%p) surface_buffer (%p)\n", __func__, spidev_buffer, surface_buffer);
+    }
+ 
+    transfer2display();
 }
 
 void ssd1322_set_brightness(uint8_t b)
