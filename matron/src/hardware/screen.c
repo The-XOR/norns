@@ -357,8 +357,8 @@ void screen_brightness(int v) {
     if (v < 0) {
         v=0;
     }
-    if (v > 15) {
-        v=15;
+    if (v > 255) {
+        v=255;
     }
 
     // True range of pre-charge voltage, AKA "brightness" is 0-31.
@@ -382,6 +382,9 @@ void screen_contrast(int c){
 void screen_gamma(double g) {
     if (g < 0.0) {
         g=0;
+    }
+    if (g > 3.0) {
+        g=3;
     }
 
     ssd1322_set_gamma(g);

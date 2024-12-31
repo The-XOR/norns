@@ -16,6 +16,9 @@ static struct gpiod_line * gpio_dc;
 static struct gpiod_line * gpio_reset;
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t ssd1322_pthread_t;
+static float _r_corr = 0.4797;
+static float _g_corr = 0.4700;
+static float _b_corr = 0.0503;
 
 #define ST7789_Portrait         0xC0
 #define ST7789_Portrait180      0
@@ -369,10 +372,9 @@ early_return:
 static uint16_t argb_to_rgb565(uint32_t argb) 
 {
 //    uint8_t a = (argb >> 24) & 0xFF;
-    uint8_t r = ((argb >> 16) & 0xFF ) * 0.4797;
-    uint8_t g = ((argb >> 8) & 0xFF) * 0.4700;
-    //uint8_t b = (argb & 0xFF) * 0.0503;
-    uint8_t b = 0;
+    uint8_t r = ((argb >> 16) & 0xFF ) * _r_corr;
+    uint8_t g = ((argb >> 8) & 0xFF) * _g_corr;
+    uint8_t b = (argb & 0xFF) * _b_corr;
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 }
 
@@ -419,13 +421,22 @@ void ssd1322_refresh()
 
 void ssd1322_set_brightness(uint8_t b)
 {
+    // b= da 0 a 255
     write_command_with_data(0x51, b);
 }
 
 void ssd1322_set_contrast(uint8_t c)
 {
-    c=c+0;
-    //non implementato
+    // implementato come controllo di palette    
+    //c: da 0 a 255
+// bit 0,1,2=livello R, bit 3,4,5=livello G, bit 6,7=livello B
+    int r_corr = c & 0x07;  // bit 0,1,2 -> valori da 0 a 7
+    int g_corr = (c >> 3) & 0x07;  // bit 3,4,5 -> valori da 0 a 7
+    int b_corr = (c >> 6); // bit 7,8 -> valori da 0 a 3
+
+    _r_corr = 0.14 * r_corr;
+    _g_corr = 0.14 * g_corr;
+    _b_corr = 0.2 * b_corr;
 }
 
 void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset)
@@ -452,46 +463,15 @@ void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset)
 
 void ssd1322_set_gamma(double g)
 {
-    /*
-     *    // (SSD1322 rev 1.2, P 29/60)
-     *    // Section 8.8, Gray Scale Decoder:
-     *    // "Note: Both GS0 and GS1 have no 2nd pre-charge (phase 3)
-     *    //        and current drive (phase 4), however GS1 has 1st
-     *    //        pre-charge (phase 2)."
-     *
-     *    // According to the above note, GS0 and GS1 should effectively
-     *    // be skipped in the gamma curve calculation, because GS1 is
-     *    // like the starting point so it should have a value of 0.
-     *    uint8_t gs[16] = {0};
-     *    double max_grayscale = SSD1322_GRAYSCALE_MAX_VALUE;
-     *    for (int level = 0; level <= 14; level++) {
-     *        double pre_gamma = level / 14.0;
-     *        double grayscale = round(pow(pre_gamma, g) * max_grayscale);
-     *        double limit = (grayscale > max_grayscale) ? max_grayscale : grayscale;
-     *        gs[level + 1] = (uint8_t) limit;
-}
+    // g va da 0  a 3 
+    int p = floor(g);
+    if(p > 3)
+        p = 3;
+    else if(p < 0)
+        p = 0;
+    p = 0x01 << p;
+    write_command_with_data(0x26, p); // Set Gamma command
 
-	write_command_with_data(
-    SSD1322_SET_GRAYSCALE_TABLE, // GS0 is skipped.
-    gs[0x1], gs[0x2], gs[0x3], gs[0x4], gs[0x5],
-    gs[0x6], gs[0x7], gs[0x8], gs[0x9], gs[0xA],
-    gs[0xB], gs[0xC], gs[0xD], gs[0xE], gs[0xF]
-    );
-    write_command(SSD1322_ENABLE_GRAYSCALE_TABLE);
-    */
-    uint8_t gamma_curve[15];
-    double max_grayscale = 255.0;
-    for (int level = 0; level < 15; level++) {
-        double pre_gamma = level / 14.0;
-        double grayscale = round(pow(pre_gamma, g) * max_grayscale);
-        double limit = (grayscale > max_grayscale) ? max_grayscale : grayscale;
-        gamma_curve[level] = (uint8_t) limit;
-    }
-
-    write_command(0x26); // Set Gamma command
-    for (int i = 0; i < 15; i++) {
-        write_data(gamma_curve[i]);
-    }
 }
 
 void ssd1322_set_refresh_rate(uint8_t hz)
