@@ -26,12 +26,13 @@
 #define SSD1322_DC_GPIO_LINE 5
 #define SSD1322_RESET_GPIO_LINE 6
 
-#define MAGNIFY_WIDTH    2
-#define MAGNIFY_HEIGHT   2
+#define MAGNIFY_WIDTH    1
+#define MAGNIFY_HEIGHT   1
 
 // per motivi a me oscuri, height > width. boh.
-#define ST7789_HEIGHT 320
-#define ST7789_WIDTH 240
+// ma quando si va in landoscappo (ST7789_Landscape180), *ALLORA* bisogna invertire pure queste due unita'.
+#define ST7789_HEIGHT 240 
+#define ST7789_WIDTH 320
 
 // Commands
 // see:

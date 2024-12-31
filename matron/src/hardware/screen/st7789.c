@@ -211,7 +211,7 @@ void ssd1322_init()
     // Bit 5: Page/column order. 0=normal mode, 1=reverse mode
     // Bit 6: Column address order. 0=left-to-right, 1=right-to-left
     // Bit 7: Page address order. 0=top-to-bottom, 1=bottom-to-top
- //dbg   write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
+    write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
 
 	// RGB 16-bit color mode
     write_command_with_data(0x3a, 0x55);
