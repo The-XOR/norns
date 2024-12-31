@@ -44,39 +44,10 @@ static char font_path[NUM_FONTS][32];
                         0.93333333333333, \
                         1
 
-static float _r[16] = {0,   
-
-                        // levels 1-5
-                        DIMMED_COLORS,
-
-                        // levels 6-10
-                        DIMMED_COLORS,
-                        
-                        // levels 11-15
-                        HIGHTLIGH_COLOR
-                    };
-                        
-static float _g[16] = {0,   
-                        // levels 1-5
-                       DIMMED_COLORS,
-
-                        // levels 6-10
-                       DIMMED_COLORS,
-                        
-                        // levels 11-15
-                        COLOR_OFF
-                    };
-
-static float _b[16] = {0,   
-                       // levels 1-5
-                        DIMMED_COLORS,
-
-                        // levels 6-10
-                        COLOR_OFF,
-                        
-                        // levels 11-15
-                        COLOR_OFF
-                    };             
+static float c[16] = {0,   0.066666666666667, 0.13333333333333, 0.2, 0.26666666666667, 0.33333333333333,
+                      0.4, 0.46666666666667,  0.53333333333333, 0.6, 0.66666666666667, 0.73333333333333,
+                      0.8, 0.86666666666667,  0.93333333333333, 1};
+       
 
 static cairo_operator_t ops[NUM_OPS] = {
     CAIRO_OPERATOR_OVER,
@@ -422,7 +393,7 @@ void screen_invert(int inverted){
 
 void screen_level(int z) {
     z = z < 0 ? 0 : (z > 15 ? 15 : z);
-    cairo_set_source_rgb(cr, _b[z], _g[z], _r[z]);
+    cairo_set_source_rgb(cr, c[z], c[z], c[z]);
 }
 
 void screen_line_width(double w) {

@@ -9,7 +9,7 @@ static int spidev_fd = 0;
 static bool display_dirty = false;
 static bool should_translate_color = false;
 static bool should_turn_on = true;
-static uint8_t * spidev_buffer = NULL;
+static uint16_t * spidev_buffer = NULL;
 static uint32_t * surface_buffer = NULL;
 static struct gpiod_chip * gpio_0;
 static struct gpiod_line * gpio_dc;
@@ -351,7 +351,7 @@ static void transfer2display()
 
     while((SPIDEV_BUFFER_LEN - bytes_transferred) > 0)
     {
-        transfer.tx_buf = (unsigned long) (spidev_buffer + bytes_transferred);
+        transfer.tx_buf = (unsigned long) (((uint8_t *)(spidev_buffer)) + bytes_transferred);
         transfer.len = MIN(spidev_bufsize, SPIDEV_BUFFER_LEN - bytes_transferred);
         bytes_transferred +=  transfer.len;
         if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
@@ -363,6 +363,31 @@ static void transfer2display()
 
 early_return:
     pthread_mutex_unlock(&lock);
+}
+
+// Function to convert ARGB to RGB565
+static uint16_t argb_to_rgb565(uint32_t argb) 
+{
+//    uint8_t a = (argb >> 24) & 0xFF;
+    uint8_t r = ((argb >> 16) & 0xFF ) * 0.4797;
+    uint8_t g = ((argb >> 8) & 0xFF) * 0.4700;
+    //uint8_t b = (argb & 0xFF) * 0.0503;
+    uint8_t b = 0;
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+}
+
+// Function to convert cairo surface to RGB565 format
+static void convert_cairo_to_rgb565() 
+{
+    int ptr=0;
+    for (int y = 0; y < ST7789_HEIGHT; y++) 
+    {
+        for (int x = 0; x < ST7789_WIDTH; x++) 
+        {
+            uint32_t argb = surface_buffer[ptr];
+            spidev_buffer[ptr++] = argb_to_rgb565(argb);
+        }
+    }
 }
 
 void ssd1322_refresh()
@@ -379,37 +404,10 @@ void ssd1322_refresh()
     {
         #ifdef DEBUG_DISPLAY
             int f = 133; //rand() % 255;
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
+            for( uint32_t i = 0; i < ST7789_HEIGHT*ST7789_WIDTH; i++)
                 *(spidev_buffer + i)=f;
         #else
-        if( should_translate_color )
-        {
-            // Preserve luminance of RGB when converting to grayscale. Use the
-            // closest multiple of 16 to the fraction to scale the channels'
-            // grayscale value. Use a multiple of 16 because a 4-bit grayscale
-            // value should fit into the upper nibble of the 8-bit value. The
-            // decimal approximation is out of 256: 80 + 160 + 16 = 256.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; i++)
-            {
-                const uint8x8x4_t pixel = vld4_u8((const uint8_t *) (surface_buffer + i));
-                const uint16x8_t r = vmull_u8(pixel.val[2], vdup_n_u8( 64)); // R * ~ 0.2627
-                const uint16x8_t g = vmull_u8(pixel.val[1], vdup_n_u8(160)); // G * ~ 0.6780
-                const uint16x8_t b = vmull_u8(pixel.val[0], vdup_n_u8( 32)); // B * ~ 0.0593
-                const uint8x8_t conversion = vaddhn_u16(vaddq_u16(r, g), b);
-                vst1_u8(spidev_buffer + i, vsri_n_u8(conversion, conversion, 4));
-            }
-        } else
-        {
-            // If the surface has only been drawn to, we can guarantee that RGB are
-            // all equal values representing a grayscale value. So, we can take any
-            // of those channels arbitrarily. Use the green channel just because.
-            for( uint32_t i = 0; i < SPIDEV_BUFFER_LEN; /*i += sizeof(uint8x8_t)*/i++ )
-            {
-                // VLD4 loads 4 vectors from memory. It performs a 4-way de-interleave from memory to the vectors.
-                const uint8x8x4_t ARGB = vld4_u8((const uint8_t *) surface_buffer + i);
-                vst1_u8(spidev_buffer + i, vsri_n_u8(ARGB.val[1], ARGB.val[1], 4));
-            }
-        }        
+        convert_cairo_to_rgb565();
         #endif
     } else
     {
