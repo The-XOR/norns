@@ -22,7 +22,7 @@ m.redraw = function()
     screen.level(1)
     if norns.is_shield then
       screen.move(10,40)
-      screen.text("when the not-red light")
+      screen.text("when the green light")
       screen.move(10,48)
       screen.text("stops blinking")
       screen.move(10,56)
@@ -33,7 +33,7 @@ m.redraw = function()
     end
   else
     screen.level(15)
-    screen.text("sleep?")
+    screen.text("turn off?")
   end
   --TODO do an animation here! fade the volume down
   screen.update()

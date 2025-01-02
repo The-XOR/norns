@@ -19,6 +19,7 @@ static pthread_t ssd1322_pthread_t;
 static float _r_corr = 0.4797;
 static float _g_corr = 0.4700;
 static float _b_corr = 0.0503;
+static float _bright_corr = 0.14;
 
 #define ST7789_Portrait         0xC0
 #define ST7789_Portrait180      0
@@ -422,7 +423,8 @@ void ssd1322_refresh()
 void ssd1322_set_brightness(uint8_t b)
 {
     // b= da 0 a 255
-    write_command_with_data(0x51, b);
+    // in teoria, ma non ha effetto sul display!  write_command_with_data(0x51, b);
+    _bright_corr = 0.01 + 0.001 * b;
 }
 
 void ssd1322_set_contrast(int c)
@@ -434,9 +436,9 @@ void ssd1322_set_contrast(int c)
     int g_corr = (c >> 3) & 0x07;  // bit 3,4,5 -> valori da 0 a 7
     int b_corr = (c >> 6)  & 0x07; // bit 6,7,8 -> valori da 0 a 7
 
-    _r_corr = 0.14 * r_corr;
-    _g_corr = 0.14 * g_corr;
-    _b_corr = 0.14 * b_corr;
+    _r_corr = _bright_corr * r_corr;
+    _g_corr = _bright_corr * g_corr;
+    _b_corr = _bright_corr * b_corr;
 }
 
 void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset)
@@ -471,7 +473,6 @@ void ssd1322_set_gamma(double g)
         p = 0;
     p = 0x01 << p;
     write_command_with_data(0x26, p); // Set Gamma command
-
 }
 
 void ssd1322_set_refresh_rate(uint8_t hz)

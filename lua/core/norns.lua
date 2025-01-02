@@ -183,7 +183,6 @@ norns.shutdown = function()
   pcall(cleanup)
   audio.level_dac(0)
   audio.headphone_gain(0)
-  _norns.screen_off();
   os.execute("sleep 0.5; sudo shutdown now")
 end
 
