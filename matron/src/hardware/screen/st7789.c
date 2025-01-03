@@ -14,6 +14,7 @@ static uint32_t * surface_buffer = NULL;
 static struct gpiod_chip * gpio_0;
 static struct gpiod_line * gpio_dc;
 static struct gpiod_line * gpio_reset;
+static struct gpiod_line * gpio_backlight;
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t ssd1322_pthread_t;
 static float _r_corr = 0.4797;
@@ -199,10 +200,12 @@ void ssd1322_init()
     gpio_0 = gpiod_chip_open_by_name(SSD1322_DC_AND_RESET_GPIO_CHIP);
     gpio_dc = gpiod_chip_get_line(gpio_0, SSD1322_DC_GPIO_LINE);
     gpio_reset = gpiod_chip_get_line(gpio_0, SSD1322_RESET_GPIO_LINE);
+    gpio_backlight = gpiod_chip_get_line(gpio_0, 19);
 
     // nomi ottenibili col comando gpioinfo
     gpiod_line_request_output(gpio_dc, "D/C", 0);
     gpiod_line_request_output(gpio_reset, "RST", 0);
+    gpiod_line_request_output(gpio_backlight, "GPIO19", 0);
 
     // Reset the display
     gpiod_line_set_value(gpio_reset, 1);
@@ -211,6 +214,7 @@ void ssd1322_init()
     usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 1);
     usleep(100000); // 100 ms
+    gpiod_line_set_value(gpio_backlight, 1); // accende il display
   
     // Initialization sequence
     write_command(0x11);

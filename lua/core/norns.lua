@@ -183,7 +183,7 @@ norns.shutdown = function()
   pcall(cleanup)
   audio.level_dac(0)
   audio.headphone_gain(0)
-  os.execute("sleep 0.5; sudo shutdown now")
+  os.execute("sleep 2.0; sudo shutdown now")
 end
 
 --- platform detection

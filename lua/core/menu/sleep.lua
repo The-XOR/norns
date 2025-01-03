@@ -27,6 +27,8 @@ m.redraw = function()
       screen.text("stops blinking")
       screen.move(10,56)
       screen.text("disconnect power")
+      screen.move(10,64)
+      screen.text("and va a ciapà i ratt.")
 
     else
       screen.text("sleep.")

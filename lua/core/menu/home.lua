@@ -78,6 +78,8 @@ local draw_stats = function()
   end
   screen.move(127,45)
   screen.text_right(norns.version.update)
+  screen.move(127,55)
+  screen.text_right("The XOR for Barbons")
 
   screen.level(15)
   screen.move(127,35)

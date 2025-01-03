@@ -1,24 +1,21 @@
-       Raspberry                     	   Connected 2
---------------------------------------    	-------------------
-SCHEMA			GPIO		PIN	AKA
-A1				gpio04		7        	   Encoder 1 Clock
-A2				gpio24		18       	   Encoder 2 Clock
-A3				gpio12		32       	   Encoder 3 Clock
-B1				gpio27		13       	   Encoder 1 Data
-B2				gpio23		16       	   Encoder 2 Data
-B3				gpio25		22       	   Encoder 3 Data
-K1				gpio22		15       	   Encoder 2 Switch
-K2				gpio26		37       	   Encoder 1 Switch
-K3				gpio13		33       	   Encoder 3 Switch
-CE0				SPI_CE0		24 gpio08	   LCD pin 12 (LCD_CS)
-O_RESET			gpio06		31       	   LCD pin 20 (LCD_RST)
-MOSI			SPI_MOSI	19 gpio10      LCD pin 15 (MOSI)
-MISO			SPI_MISO	21 gpio09      LCD pin 16 (MISO)
-SCK				SPI_SCLK	23 gpio11  	   LCD pin 14 (CLK)
-O_DC[RS]		gpio05		29       	   LCD pin 11 (DC)
-                +3.3V       1        	   LCD pin 17 (LCD_BL) (backlight)
-                +5V         2        	   LCD pin 39 (VSYS)
-                GND         6        	   LCD pin 28 (GND)
-                
-Nota: gli switch K1 e K2 sono INVERTITI rispetto agli encoder E1 ed E2, nel senso che all'encoder 1                
-corrisponde lo switch 2 e viceversa.
+          Raspberry                      Connected 2
+-------------------------------------  -------------------------------
+SCHEMA        GPIO        PIN   AKA
+A1            gpio04        7            Encoder 1 Clock
+A2            gpio24        18           Encoder 2 Clock
+A3            gpio12        32           Encoder 3 Clock
+B1            gpio27        13           Encoder 1 Data
+B2            gpio23        16           Encoder 2 Data
+B3            gpio25        22           Encoder 3 Data
+K1            gpio22        15           Encoder 1 Switch
+K2            gpio26        33           Encoder 2 Switch
+K3            gpio13        37           Encoder 3 Switch
+CE0           SPI_CE0       24 gpio08    LCD pin 12 (LCD_CS)
+O_RESET       gpio06        31           LCD pin 20 (LCD_RST)
+MOSI          SPI_MOSI      19 gpio10    LCD pin 15 (MOSI)
+MISO          SPI_MISO      21 gpio09    LCD pin 16 (MISO)
+SCK           SPI_SCLK      23 gpio11    LCD pin 14 (CLK)
+O_DC[RS]      gpio05        29           LCD pin 11 (DC)
+              gpio19        35           LCD pin 17 (LCD_BL) (backlight)
+              +5V           2            LCD pin 39 (VSYS)
+              GND           6            LCD pin 28 (GND)
