@@ -11,9 +11,9 @@ local sleeping = false
 
 local executable_lua, err = loadfile(_path.display_settings)
 local loaded_settings = executable_lua ~= nil and executable_lua() or {}
-local brightness = loaded_settings.brightness or 15
-local contrast = loaded_settings.contrast or 127
-local gamma = loaded_settings.gamma or 1.0
+local brightness = loaded_settings.brightness or 76
+local contrast = loaded_settings.contrast or 162
+local gamma = loaded_settings.gamma or 0
 local module_just_loaded = true
 
 screensaver.event = function()

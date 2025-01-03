@@ -44,8 +44,8 @@ m.redraw = function()
       end
       screen.text(line)
       if m.list[i+m.pos-3]=="BATTERY WARNING" then
-	screen.move(128,10*i)
-	screen.text_right(norns.state.battery_warning==1 and "on" or "off")
+        screen.move(128,10*i)
+        screen.text_right("Barbone!")
       end
     end
   end

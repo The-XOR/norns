@@ -1,6 +1,6 @@
 local map = {}
-local brightness = 50
-local contrast = 127
+local brightness = 76
+local contrast = 162
 local gamma = 0
 
 map[0] = {
@@ -8,14 +8,14 @@ map[0] = {
   name = "BRIGHTNESS",
   get = function(_) return brightness end,
   set = function(d) brightness = util.clamp(0, brightness + d, 255) end,
-  is_default = function(_) return brightness == 50 end,
+  is_default = function(_) return brightness == 76 end,
 }
 map[1] = {
   position = {x=54, y=56},
   name = "PALETTE",
   get = function(_) return contrast end,
   set = function(d) contrast = util.clamp(0, contrast + d, 511) end,
-  is_default = function(_) return contrast == 127 end,
+  is_default = function(_) return contrast == 162 end,
 }
 map[2] = {
   position = {x=98, y=56},
