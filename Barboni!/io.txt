@@ -19,3 +19,4 @@ O_DC[RS]      gpio05        29           LCD pin 11 (DC)
               gpio19        35           LCD pin 17 (LCD_BL) (backlight)
               +5V           2            LCD pin 39 (VSYS)
               GND           6            LCD pin 28 (GND)
+LED           gpio21        40           Power On led +
