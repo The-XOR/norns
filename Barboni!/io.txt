@@ -22,3 +22,30 @@ O_DC[RS]      gpio05        29           LCD pin 11 (DC)
               GND           6            LCD pin 28 (GND)
 
 LED           gpio21        40           Power On led +
+
+
+
+
+
+DISPLAY BOARD
+
+           |------------------------------------|
+           |                                    |
+           |                                    |
+           |                                    |
+           |                                    |
+           |                                    |
+           |                                    |
+           |------------------------------------|
+   3.3v --O  =1
+   GND  --O  =2
+    CS  --O  =3
+ RESET  --O  =4
+    DC  --O  =5
+  MOSI  --O  =6
+   SCK  --O  =7
+   LED  --O  =8
+  MISO  --O  =9
+ BTTN-L --O  =10
+ BTTN-R --O  =11
+
