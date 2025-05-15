@@ -205,7 +205,7 @@ void ssd1322_init()
     // nomi ottenibili col comando gpioinfo
     gpiod_line_request_output(gpio_dc, "D/C", 0);
     gpiod_line_request_output(gpio_reset, "RST", 0);
-    gpiod_line_request_output(gpio_backlight, "GPIO19", 0);
+    gpiod_line_request_output(gpio_backlight, "GPIO19", 1);
 
     // Reset the display
     gpiod_line_set_value(gpio_reset, 1);
@@ -214,7 +214,7 @@ void ssd1322_init()
     usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 1);
     usleep(100000); // 100 ms
-    gpiod_line_set_value(gpio_backlight, 1); // accende il display
+    gpiod_line_set_value(gpio_backlight, 0); // accende il display (0=on, 1=off)
   
     // Initialization sequence
     write_command(0x11);
