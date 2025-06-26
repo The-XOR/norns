@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
     osc_init();
     jack_client_init();
     ssd1322_init();
+    screen_invert(1); // ALIEXPRESS STYLE
     clock_init();
     clock_internal_init();
     clock_midi_init();
@@ -95,6 +96,8 @@ int main(int argc, char **argv) {
 
     dev_list_init();
     dev_list_add(DEV_TYPE_MIDI_VIRTUAL, NULL, "virtual");
+
+    dev_list_add(DEV_TYPE_MIDI, "/dev/snd/midiC0D0", "laMIDI");
 
     fprintf(stderr, "init dev_monitor...\n");
     dev_monitor_init();

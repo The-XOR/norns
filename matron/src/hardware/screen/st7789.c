@@ -205,7 +205,7 @@ void ssd1322_init()
     // nomi ottenibili col comando gpioinfo
     gpiod_line_request_output(gpio_dc, "D/C", 0);
     gpiod_line_request_output(gpio_reset, "RST", 0);
-    gpiod_line_request_output(gpio_backlight, "GPIO19", 0);
+    gpiod_line_request_output(gpio_backlight, "GPIO19", 1);
 
     // Reset the display
     gpiod_line_set_value(gpio_reset, 1);
@@ -214,7 +214,7 @@ void ssd1322_init()
     usleep(100000); // 100 ms
     gpiod_line_set_value(gpio_reset, 1);
     usleep(100000); // 100 ms
-    gpiod_line_set_value(gpio_backlight, 1); // accende il display
+    gpiod_line_set_value(gpio_backlight, 0); // accende il display
   
     // Initialization sequence
     write_command(0x11);
@@ -224,11 +224,13 @@ void ssd1322_init()
     // Bits 0-1: Unused
     // Bit 2: 0=LCD refresh left-to-right, 1=right-to-left
     // Bit 3: 0=RGB mode, 1=BGR mode
+
     // Bit 4: 0=LCD refresh top-to-bottom, 1=bottom-to-top
     // Bit 5: Page/column order. 0=normal mode, 1=reverse mode
     // Bit 6: Column address order. 0=left-to-right, 1=right-to-left
     // Bit 7: Page address order. 0=top-to-bottom, 1=bottom-to-top
-    write_command_with_data(0x36, ST7789_Landscape180);// Rotate the screen by 270 degrees
+    // write_command_with_data(0x36, 0x08 | ST7789_Landscape180);// Rotate the screen by 270 degrees (versione BGR)
+    write_command_with_data(0x36,  ST7789_Landscape180);// Rotate the screen by 270 degrees
 
 	// RGB 16-bit color mode
     write_command_with_data(0x3a, 0x55);

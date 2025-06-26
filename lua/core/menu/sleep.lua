@@ -22,13 +22,13 @@ m.redraw = function()
     screen.level(1)
     if norns.is_shield then
       screen.move(10,40)
-      screen.text("when the green light")
+      screen.text("when the yellow light")
       screen.move(10,48)
-      screen.text("stops blinking")
+      screen.text("goes off")
       screen.move(10,56)
       screen.text("disconnect power")
       screen.move(10,64)
-      screen.text("and va a ciapà i ratt.")
+      screen.text("and go to ciap the rats.")
 
     else
       screen.text("sleep.")
