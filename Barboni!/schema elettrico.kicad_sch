@@ -2577,7 +2577,7 @@
 							)
 						)
 					)
-					(number "2"
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2595,7 +2595,7 @@
 							)
 						)
 					)
-					(number "3"
+					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2613,7 +2613,7 @@
 							)
 						)
 					)
-					(number "4"
+					(number "6"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2631,7 +2631,7 @@
 							)
 						)
 					)
-					(number "5"
+					(number "9"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2649,7 +2649,7 @@
 							)
 						)
 					)
-					(number "6"
+					(number "7"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2667,7 +2667,7 @@
 							)
 						)
 					)
-					(number "7"
+					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2721,7 +2721,7 @@
 							)
 						)
 					)
-					(number "6"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7814,7 +7814,7 @@
 		(pin "3"
 			(uuid "a202790d-a8e6-47d3-9746-b16a7a55131e")
 		)
-		(pin "6"
+		(pin "9"
 			(uuid "9c7979c7-d63a-47c8-8b36-13f0bc4c7b59")
 		)
 		(pin "8"
