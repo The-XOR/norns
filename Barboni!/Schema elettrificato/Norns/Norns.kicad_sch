@@ -9,8 +9,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 5.08 7.62 0)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -18,14 +18,14 @@
 				)
 			)
 			(property "Value" "7404"
-				(at 3.81 -8.89 0)
+				(at 10.16 3.8802 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
 				(at 0 0 0)
 				(effects
 					(font
@@ -44,6 +44,15 @@
 				)
 			)
 			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
 				(at 0 0 0)
 				(effects
 					(font
@@ -130,7 +139,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -168,7 +177,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -206,7 +215,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -244,7 +253,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -282,7 +291,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -320,7 +329,1387 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "7404_2"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "7404"
+				(at 10.16 3.8802 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "7404_2_0_0"
+				(text "1"
+					(at -0.508 0.508 0)
+					(effects
+						(font
+							(size 2.54 2.54)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_0_1"
+				(rectangle
+					(start -6.35 6.35)
+					(end 6.35 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 3.81)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 3.81)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_1_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_2_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_3_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_4_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_5_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_2_6_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "7404_3"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "7404"
+				(at 10.16 3.8802 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "7404_3_0_0"
+				(text "1"
+					(at -0.508 0.508 0)
+					(effects
+						(font
+							(size 2.54 2.54)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_0_1"
+				(rectangle
+					(start -6.35 6.35)
+					(end 6.35 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 3.81)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 3.81)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_1_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_2_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_3_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_4_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_5_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_3_6_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "7404_4"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "7404"
+				(at 10.16 3.8802 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "7404_4_0_0"
+				(text "1"
+					(at -0.508 0.508 0)
+					(effects
+						(font
+							(size 2.54 2.54)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_0_1"
+				(rectangle
+					(start -6.35 6.35)
+					(end 6.35 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 3.81)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 3.81)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_1_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_2_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_3_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_4_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_5_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_4_6_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "7404_5"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "7404"
+				(at 10.16 3.8802 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "7404_5_0_0"
+				(text "1"
+					(at -0.508 0.508 0)
+					(effects
+						(font
+							(size 2.54 2.54)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_0_1"
+				(rectangle
+					(start -6.35 6.35)
+					(end 6.35 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 3.81)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 3.81)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_1_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_2_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_3_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_4_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_5_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "7404_5_6_1"
+				(pin input line
+					(at -12.7 0 0)
+					(length 6.35)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -345,8 +1734,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 5.08 7.62 0)
+			(property "Reference" "U2"
+				(at 10.16 6.4202 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -354,14 +1743,14 @@
 				)
 			)
 			(property "Value" "7404"
-				(at 3.81 -8.89 0)
+				(at 10.16 3.8802 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
 				(at 0 0 0)
 				(effects
 					(font
@@ -380,6 +1769,15 @@
 				)
 			)
 			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
 				(at 0 0 0)
 				(effects
 					(font
@@ -466,7 +1864,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -504,7 +1902,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -542,7 +1940,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -580,7 +1978,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -618,7 +2016,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -656,7 +2054,7 @@
 						)
 					)
 				)
-				(pin input inverted
+				(pin output inverted
 					(at 12.7 0 180)
 					(length 6.35)
 					(name "~"
@@ -1412,333 +2810,6 @@
 						)
 					)
 					(number "12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Connector:DIN-5"
-			(pin_names
-				(offset 1.016)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 3.175 5.715 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "DIN-5"
-				(at 0 -6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "5-pin DIN connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "circular DIN connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "DIN*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "DIN-5_0_1"
-				(polyline
-					(pts
-						(xy -5.08 2.54) (xy -4.318 2.54) (xy -3.175 1.905)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -5.08 -2.54) (xy -4.318 -2.54) (xy -3.175 -1.905)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center -2.794 1.524)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center -2.794 -1.524)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -0.762 -4.953) (xy -0.762 -4.191) (xy 0.762 -4.191) (xy 0.762 -4.953)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 5.08 0)
-					(mid 3.8673 -3.3444)
-					(end 0.762 -5.08)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 0 3.302)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -5.08 0)
-					(mid 0 5.0579)
-					(end 5.08 0)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.762 -5.08)
-					(mid -3.8597 -3.3379)
-					(end -5.08 0)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.794 1.524)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.794 -1.524)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 5.08 2.54) (xy 4.318 2.54) (xy 3.175 1.905)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 5.08 -2.54) (xy 4.318 -2.54) (xy 3.175 -1.905)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "DIN-5_1_1"
-				(pin passive line
-					(at -7.62 2.54 0)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 -2.54 0)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 7.62 270)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 2.54 180)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -2.54 180)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5066,6 +6137,230 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "XOR Library:MIDI_Din"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J3"
+				(at 0 -7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "MIDI_Din"
+				(at 0.0001 -10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "5-pin DIN connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "circular DIN connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "DIN*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "MIDI_Din_0_1"
+				(polyline
+					(pts
+						(xy -5.08 2.54) (xy -4.318 2.54) (xy -3.175 1.905)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.762 -4.953) (xy -0.762 -4.191) (xy 0.762 -4.191) (xy 0.762 -4.953)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 5.08 0)
+					(mid 3.8673 -3.3444)
+					(end 0.762 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -5.08 0)
+					(mid 0 5.0579)
+					(end 5.08 0)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.762 -5.08)
+					(mid -3.8597 -3.3379)
+					(end -5.08 0)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.794 1.524)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 2.54) (xy 4.318 2.54) (xy 3.175 1.905)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "MIDI_Din_1_1"
+				(circle
+					(center -2.794 1.524)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type color)
+						(color 255 0 80 1)
+					)
+				)
+				(text "Visto da dietro"
+					(at 0.254 -0.254 0)
+					(effects
+						(font
+							(size 0.8 0.8)
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 2.54 180)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "power:+3.3V"
 			(power)
 			(pin_numbers
@@ -5420,7 +6715,7 @@
 	)
 	(text "MIDI OUT"
 		(exclude_from_sim no)
-		(at 273.05 52.07 0)
+		(at 273.05 58.42 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5428,29 +6723,9 @@
 		)
 		(uuid "148d2a2b-e866-435b-9129-6e4207231b03")
 	)
-	(text "Visto da dietro"
-		(exclude_from_sim no)
-		(at 273.05 55.88 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "2fda652a-2d89-4279-8862-912a094eadad")
-	)
-	(text "Visto da dietro"
-		(exclude_from_sim no)
-		(at 273.05 121.92 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "c0536e6f-edcb-4f07-8a95-408c626e8cbc")
-	)
 	(text "MIDI IN"
 		(exclude_from_sim no)
-		(at 266.7 118.11 0)
+		(at 266.7 125.73 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5563,28 +6838,12 @@
 		(uuid "4c4b3140-f659-46f3-be25-e21e8d969688")
 	)
 	(no_connect
-		(at 273.05 58.42)
-		(uuid "53c326e1-51e5-471b-99be-ec9d95a544f9")
-	)
-	(no_connect
-		(at 267.97 212.09)
+		(at 271.78 212.09)
 		(uuid "54d8074b-903a-42d3-93e9-4442ad8672d1")
-	)
-	(no_connect
-		(at 266.7 124.46)
-		(uuid "55590a4e-f1fe-4989-b9b4-d90e92a1fe11")
 	)
 	(no_connect
 		(at 266.7 212.09)
 		(uuid "609845de-3350-4b8e-aeb0-d18469a4e7d4")
-	)
-	(no_connect
-		(at 259.08 134.62)
-		(uuid "6334b94d-747e-437d-b011-71a6df7358d0")
-	)
-	(no_connect
-		(at 274.32 134.62)
-		(uuid "6d17a3a8-28e8-49d3-9f2e-1fa08a35bce6")
 	)
 	(no_connect
 		(at 142.24 133.35)
@@ -5599,24 +6858,16 @@
 		(uuid "a0c93939-782d-4623-adb4-05bbfb136451")
 	)
 	(no_connect
-		(at 280.67 68.58)
-		(uuid "b300b10d-df03-4d0a-93dc-30f568bcc03b")
-	)
-	(no_connect
 		(at 143.51 168.91)
 		(uuid "c6d058bd-8267-456f-9a14-5b22a402a3bb")
 	)
 	(no_connect
-		(at 293.37 212.09)
+		(at 297.18 212.09)
 		(uuid "d470bd2b-828e-477d-a03a-1faa97e45cf0")
 	)
 	(no_connect
 		(at 93.98 100.33)
 		(uuid "d9141b24-a652-4822-98f6-e278ef44114c")
-	)
-	(no_connect
-		(at 265.43 68.58)
-		(uuid "d987203f-d685-400b-b8e2-e470352cf78c")
 	)
 	(no_connect
 		(at 142.24 100.33)
@@ -5633,16 +6884,6 @@
 	(no_connect
 		(at 142.24 90.17)
 		(uuid "f2f5f455-7107-4831-ac0c-355d237c9dc3")
-	)
-	(wire
-		(pts
-			(xy 262.89 63.5) (xy 265.43 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0047b04e-d4d2-4e29-aa18-9fc1ba0bb207")
 	)
 	(wire
 		(pts
@@ -5876,7 +7117,7 @@
 	)
 	(wire
 		(pts
-			(xy 278.13 129.54) (xy 278.13 149.86)
+			(xy 278.13 130.81) (xy 278.13 149.86)
 		)
 		(stroke
 			(width 0)
@@ -5893,16 +7134,6 @@
 			(type default)
 		)
 		(uuid "310444e4-1366-4182-8a37-e091c3af680c")
-	)
-	(wire
-		(pts
-			(xy 280.67 63.5) (xy 284.48 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3104608d-4909-4b79-972e-0f836035996d")
 	)
 	(wire
 		(pts
@@ -6136,7 +7367,7 @@
 	)
 	(wire
 		(pts
-			(xy 274.32 129.54) (xy 278.13 129.54)
+			(xy 274.32 130.81) (xy 278.13 130.81)
 		)
 		(stroke
 			(width 0)
@@ -6183,6 +7414,16 @@
 			(type default)
 		)
 		(uuid "5f8fb8b5-a9be-4544-98e8-a0863f8598a3")
+	)
+	(wire
+		(pts
+			(xy 280.67 63.5) (xy 284.48 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "60c91db9-f8dc-4394-a60e-8b0035b87a0c")
 	)
 	(wire
 		(pts
@@ -6256,6 +7497,16 @@
 	)
 	(wire
 		(pts
+			(xy 262.89 63.5) (xy 265.43 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6fdad3d3-006e-4cc0-8eb1-aef5606bf7d6")
+	)
+	(wire
+		(pts
 			(xy 204.47 63.5) (xy 201.93 63.5)
 		)
 		(stroke
@@ -6303,16 +7554,6 @@
 			(type default)
 		)
 		(uuid "784ce5cf-eeac-4e0d-a2ea-ab5650bf0d60")
-	)
-	(wire
-		(pts
-			(xy 251.46 129.54) (xy 251.46 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "79973403-8d36-46c1-ae18-94cf45f037b5")
 	)
 	(wire
 		(pts
@@ -6836,7 +8077,7 @@
 	)
 	(wire
 		(pts
-			(xy 259.08 129.54) (xy 251.46 129.54)
+			(xy 259.08 130.81) (xy 251.46 130.81)
 		)
 		(stroke
 			(width 0)
@@ -7497,6 +8738,85 @@
 		)
 	)
 	(symbol
+		(lib_id "XOR Library:MIDI_Din")
+		(at 273.05 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "084dc6bd-b54f-4823-9bca-9800e653423e")
+		(property "Reference" "J1"
+			(at 273.05 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "MIDI_Din"
+			(at 273.0501 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+			(at 273.05 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+			(at 273.05 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5-pin DIN connector"
+			(at 273.05 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
+			(at 273.05 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "cff3111f-b6fc-45ca-a00a-9a168f3cc189")
+		)
+		(pin "1"
+			(uuid "0e4ed9c6-6931-482f-8824-0460f5ec60e3")
+		)
+		(instances
+			(project ""
+				(path "/89367c47-a65e-4fea-b422-e56b03d01070"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C_Polarized")
 		(at 339.09 90.17 0)
 		(unit 1)
@@ -7523,7 +8843,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Radial_D6.3mm_H11.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm"
 			(at 340.0552 93.98 0)
 			(effects
 				(font
@@ -7702,92 +9022,6 @@
 			(project ""
 				(path "/89367c47-a65e-4fea-b422-e56b03d01070"
 					(reference "#PWR032")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:DIN-5")
-		(at 273.05 66.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "11005243-b032-42cd-b4b1-f6e721754ee6")
-		(property "Reference" "J3"
-			(at 273.05 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DIN-5"
-			(at 273.0501 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical"
-			(at 273.05 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
-			(at 273.05 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "5-pin DIN connector"
-			(at 273.05 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
-			(at 273.05 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "4"
-			(uuid "b87fecb3-c046-42bf-a692-35a060741995")
-		)
-		(pin "2"
-			(uuid "fa0c9fbc-88e7-467b-958a-e22a3aacd29d")
-		)
-		(pin "5"
-			(uuid "ad7c4399-7dbc-4414-9d74-0ff94d239460")
-		)
-		(pin "3"
-			(uuid "247f79ec-9cbe-4abd-82a6-b5ce1ceae744")
-		)
-		(pin "1"
-			(uuid "9d728db2-29f7-4604-af22-f84039f61827")
-		)
-		(instances
-			(project "Norns"
-				(path "/89367c47-a65e-4fea-b422-e56b03d01070"
-					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -7994,19 +9228,17 @@
 		)
 	)
 	(symbol
-		(lib_name "7404_1")
+		(lib_name "7404_5")
 		(lib_id "74xx_IEEE:7404")
-		(at 280.67 212.09 0)
-		(mirror y)
+		(at 284.48 212.09 0)
 		(unit 6)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "13eaf629-2a64-454c-bfdf-25cc95bfa514")
 		(property "Reference" "U2"
-			(at 270.51 205.6698 0)
+			(at 294.64 205.6698 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8014,7 +9246,7 @@
 			)
 		)
 		(property "Value" "7404"
-			(at 270.51 208.2098 0)
+			(at 294.64 208.2098 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8022,7 +9254,7 @@
 			)
 		)
 		(property "Footprint" "Package_DIP:DIP-14_W7.62mm"
-			(at 280.67 212.09 0)
+			(at 284.48 212.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8031,7 +9263,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 280.67 212.09 0)
+			(at 284.48 212.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8040,7 +9272,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 280.67 212.09 0)
+			(at 284.48 212.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8049,7 +9281,7 @@
 			)
 		)
 		(property "Sim.Type" ""
-			(at 280.67 212.09 0)
+			(at 284.48 212.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8255,7 +9487,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 280.67 222.25 0)
+		(at 284.48 222.25 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8264,7 +9496,7 @@
 		(fields_autoplaced yes)
 		(uuid "171604cd-1ac5-451f-a6a4-2ea3d2279afb")
 		(property "Reference" "#PWR043"
-			(at 280.67 228.6 0)
+			(at 284.48 228.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8273,7 +9505,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 280.67 227.33 0)
+			(at 284.48 227.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8281,7 +9513,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 280.67 222.25 0)
+			(at 284.48 222.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8290,7 +9522,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 280.67 222.25 0)
+			(at 284.48 222.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8299,7 +9531,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 280.67 222.25 0)
+			(at 284.48 222.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8666,94 +9898,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:DIN-5")
-		(at 266.7 132.08 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "2005f512-2e27-4d60-8b3f-ff31e3480852")
-		(property "Reference" "J2"
-			(at 266.6999 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DIN-5"
-			(at 266.6999 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical"
-			(at 266.7 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
-			(at 266.7 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "5-pin DIN connector"
-			(at 266.7 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
-			(at 266.7 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "4"
-			(uuid "6240f6fd-0793-468e-b12d-dfff2356ce92")
-		)
-		(pin "2"
-			(uuid "6409fbc6-f923-4903-8fee-f840004b85b8")
-		)
-		(pin "5"
-			(uuid "b8133098-559a-4c07-a9ef-81b2e6647a76")
-		)
-		(pin "3"
-			(uuid "7c14057a-53e2-471c-8a49-c5262479e000")
-		)
-		(pin "1"
-			(uuid "e6916a00-3820-4b4f-b143-97ef80932b25")
-		)
-		(instances
-			(project "Norns"
-				(path "/89367c47-a65e-4fea-b422-e56b03d01070"
-					(reference "J2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R_US")
 		(at 259.08 63.5 90)
 		(unit 1)
@@ -8780,7 +9924,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 259.334 62.484 90)
 			(effects
 				(font
@@ -9165,7 +10309,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "324e0785-41ae-4f9f-a0e3-b2ce3a8d2c51")
 		(property "Reference" "J7"
 			(at 118.11 80.01 0)
@@ -9183,8 +10326,8 @@
 				)
 			)
 		)
-		(property "Footprint" "RPI_Hat:RPI_Hat_B+_NoCamera"
-			(at 99.06 87.63 0)
+		(property "Footprint" "Raspoberro"
+			(at 109.22 77.47 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -9338,7 +10481,7 @@
 		)
 	)
 	(symbol
-		(lib_name "7404_1")
+		(lib_name "7404_3")
 		(lib_id "74xx_IEEE:7404")
 		(at 171.45 135.89 0)
 		(unit 3)
@@ -9480,7 +10623,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 252.476 134.366 90)
 			(effects
 				(font
@@ -9558,7 +10701,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 283.464 59.436 90)
 			(effects
 				(font
@@ -10000,7 +11143,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 208.534 142.494 90)
 			(effects
 				(font
@@ -10434,7 +11577,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 352.806 78.994 90)
 			(effects
 				(font
@@ -11048,7 +12191,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 280.67 201.93 0)
+		(at 284.48 201.93 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11057,7 +12200,7 @@
 		(fields_autoplaced yes)
 		(uuid "6f4cfec6-cdc3-4e46-b0f6-7af200162135")
 		(property "Reference" "#PWR044"
-			(at 280.67 205.74 0)
+			(at 284.48 205.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11066,7 +12209,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 280.67 196.85 0)
+			(at 284.48 196.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11074,7 +12217,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 280.67 201.93 0)
+			(at 284.48 201.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11083,7 +12226,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 280.67 201.93 0)
+			(at 284.48 201.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11092,7 +12235,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 280.67 201.93 0)
+			(at 284.48 201.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11140,7 +12283,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 222.504 152.654 90)
 			(effects
 				(font
@@ -11202,7 +12345,7 @@
 		(dnp no)
 		(uuid "784d00ad-fb12-45ff-b064-c6dd7d71baa6")
 		(property "Reference" "R7"
-			(at 191.77 133.35 90)
+			(at 187.96 130.81 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11217,7 +12360,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 187.706 134.874 90)
 			(effects
 				(font
@@ -11521,7 +12664,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Radial_D6.3mm_H11.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm"
 			(at 351.4852 181.61 0)
 			(effects
 				(font
@@ -12770,6 +13913,85 @@
 		)
 	)
 	(symbol
+		(lib_id "XOR Library:MIDI_Din")
+		(at 266.7 133.35 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "aca5c411-3301-4309-9a46-e8418cc1fe17")
+		(property "Reference" "J2"
+			(at 266.7 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "MIDI_Din"
+			(at 266.7001 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+			(at 266.7 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+			(at 266.7 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5-pin DIN connector"
+			(at 266.7 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
+			(at 266.7 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "30934648-0735-4c6e-ac8f-6195042aa9e9")
+		)
+		(pin "1"
+			(uuid "97d3c066-ab0c-4eb2-b0ab-64ffffb1ae7d")
+		)
+		(instances
+			(project ""
+				(path "/89367c47-a65e-4fea-b422-e56b03d01070"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
 		(at 243.84 53.34 0)
 		(unit 1)
@@ -13142,7 +14364,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 364.236 166.624 90)
 			(effects
 				(font
@@ -13392,6 +14614,7 @@
 		)
 	)
 	(symbol
+		(lib_name "7404_2")
 		(lib_id "74xx_IEEE:7404")
 		(at 217.17 63.5 0)
 		(unit 1)
@@ -13621,16 +14844,14 @@
 		(lib_name "7404_1")
 		(lib_id "74xx_IEEE:7404")
 		(at 276.86 167.64 0)
-		(mirror y)
 		(unit 4)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "d68a7de4-99e2-45c3-815e-65e872498dca")
 		(property "Reference" "U2"
-			(at 266.7 161.2198 0)
+			(at 287.02 161.2198 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13638,7 +14859,7 @@
 			)
 		)
 		(property "Value" "7404"
-			(at 266.7 163.7598 0)
+			(at 287.02 163.7598 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14061,7 +15282,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 58.166 129.794 90)
 			(effects
 				(font
@@ -14399,19 +15620,17 @@
 		)
 	)
 	(symbol
-		(lib_name "7404_1")
+		(lib_name "7404_4")
 		(lib_id "74xx_IEEE:7404")
 		(at 254 212.09 0)
-		(mirror y)
 		(unit 5)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "f326f600-8fa9-4d32-9a41-9f201d5a435e")
 		(property "Reference" "U2"
-			(at 243.84 205.6698 0)
+			(at 264.16 205.6698 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14419,7 +15638,7 @@
 			)
 		)
 		(property "Value" "7404"
-			(at 243.84 208.2098 0)
+			(at 264.16 208.2098 0)
 			(effects
 				(font
 					(size 1.27 1.27)
