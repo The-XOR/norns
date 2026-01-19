@@ -37,8 +37,8 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 1.0,
-          "height": 2.0,
+          "drill": 0.95,
+          "height": 1.95,
           "width": 1.7
         },
         "silk_line_width": 0.1524,
@@ -58,12 +58,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        [
-          "missing_courtyard|149705000|63705000|e7ea1701-6a5a-42d5-b13b-203b1d985428|00000000-0000-0000-0000-000000000000",
-          ""
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
