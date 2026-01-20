@@ -43,3 +43,4 @@ maiden-repl/maiden-repl
 .DS_Store
 ._.DS_Store
 /Barboni\!/Schema elettrificato/Norns/Norns-backups
+*.FCBak
