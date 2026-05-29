@@ -6463,16 +6463,10 @@
 		(uuid "9fe90691-2f48-4256-8d52-33b36b17ff6a")
 	)
 	(junction
-		(at 227.33 143.51)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b386fded-7ba1-4fe6-be13-f696a2b69038")
-	)
-	(junction
 		(at 240.03 143.51)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c7fcf2a9-8103-491b-b1b1-959f6d57ae6b")
+		(uuid "a50d003d-da4f-4077-8cb3-835d39a470b2")
 	)
 	(junction
 		(at 213.36 107.95)
@@ -6676,7 +6670,7 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 143.51) (xy 233.68 143.51)
+			(xy 234.95 143.51) (xy 240.03 143.51)
 		)
 		(stroke
 			(width 0)
@@ -6703,16 +6697,6 @@
 			(type default)
 		)
 		(uuid "16948f2a-7b0c-4e34-a4d9-de77b5aa74a7")
-	)
-	(wire
-		(pts
-			(xy 227.33 143.51) (xy 228.6 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "17226ed2-4def-4a20-8ead-aded6f5ee38c")
 	)
 	(wire
 		(pts
@@ -6853,16 +6837,6 @@
 			(type default)
 		)
 		(uuid "41a0d26a-6f61-4f67-8bc0-7735e63b2ca0")
-	)
-	(wire
-		(pts
-			(xy 227.33 143.51) (xy 226.06 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "44a6a4ab-d277-4bbc-b584-538d50be0f60")
 	)
 	(wire
 		(pts
@@ -13909,7 +13883,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148")
-		(at 229.87 143.51 180)
+		(at 231.14 143.51 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13919,7 +13893,7 @@
 		(dnp no)
 		(uuid "e788d9fa-a4d8-4296-9a35-a23c9eff7d51")
 		(property "Reference" "D2"
-			(at 229.87 149.86 0)
+			(at 231.14 149.86 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13929,7 +13903,7 @@
 			)
 		)
 		(property "Value" "1N4148"
-			(at 230.378 146.812 0)
+			(at 231.648 146.812 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13939,7 +13913,7 @@
 			)
 		)
 		(property "Footprint" "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal"
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13950,7 +13924,7 @@
 			)
 		)
 		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/1N4148_1N4448.pdf"
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13961,7 +13935,7 @@
 			)
 		)
 		(property "Description" "100V 0.15A standard switching diode, DO-35"
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13972,7 +13946,7 @@
 			)
 		)
 		(property "Sim.Device" "D"
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13983,7 +13957,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13994,7 +13968,7 @@
 			)
 		)
 		(property "Sim.Type" ""
-			(at 229.87 143.51 0)
+			(at 231.14 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
