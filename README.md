@@ -1,0 +1,49 @@
+# Trapanaorecchie
+Versione vergognosa e barbona dello stilosissimo monome norns.
+
+Funzionante e compatibile al 100%, con vere porte MIDI e un uscita cuffia che non esitiamo a definire "molto utile".
+
+L'aspetto l'e' quel che l'e', ma fatto com'e' con tutti pezzi di recupero, di piu' non si poteva fare.
+
+## quick reference
+
+```
+git clone https://github.com/The-XOR/norns.git
+cd norns
+git submodule update --init --recursive
+./waf configure --release
+./waf build --release
+```
+
+(NB: the `--release` flag creates builds specifically for armv8/cortex-a53 instruction set, meaning optimized for rpi3 and compatible with rpi4. It also enables aggressive compiler optimizations. Omit flag if you need debug symbols or to build for a different architecture. It does need to supplied to both configuration and build steps.)
+
+## documentation
+- [user docs](https://monome.org/docs/norns)
+- [API docs](https://monome.org/docs/norns/api)
+- [building and execution](readme-setup.md)
+- [discussion and help](https://llllllll.co)
+
+## related
+### supporting repositories
+- [maiden](https://github.com/The-XOR/maiden/) | editing interface
+- [softcut](https://github.com/monome/softcut-lib) | sample-cutting editor part of `matron`
+
+### tools
+- [norns disk image](https://github.com/The-XOR/norns-image) | raspbian-based disk image
+- [monome linux kernel](https://github.com/monome/linux/) | custom, monome-flavored linux kernel
+- [DIY shield instructions](https://github.com/monome/norns-shield) | the DIY open-source hardware variant
+
+## acknowledgments
+
+`matron` (control system) and `crone` (audio system) were created by [@catfact](https://github.com/catfact). `maiden` (editor) was created by [@ngwese](https://github.com/ngwese). Each grew with contributions from [@artfwo](https://github.com/artfwo), [@antonhornquist](https://github.com/antonhornquist), [@simonvanderveldt](https://github.com/simonvanderveldt),[@ranch-verdin](https://github.com/ranch-verdin), [@pq](https://github.com/pq), [@markwheeler](https://github.com/markwheeler), [@csboling](https://github.com/csboling) and many others.
+
+norns was initiated by [@tehn](https://github.com/tehn) (monome).
+
+## la fotogalleria...
+
+... che lo mostra in tutto il suo splendore. Il colore e' quello pentecostale, a ricordare le ristrettezze economiche che hanno dato i natali.
+
+![e uno](Barboni!/fotognomica/foto1.jpg)
+
+![e due](Barboni!/fotognomica/foto2.jpg)
+
