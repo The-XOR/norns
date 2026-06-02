@@ -5,9 +5,10 @@ m.key = function(n,z)
     _menu.set_page("HOME")
   elseif n==3 and z==1 then
     m.sleep = true
+    if _menu.m.TAPE.rec.sel == 3 then
+      audio.tape_record_stop()
+    end
     _menu.redraw()
-    -- TODO
-    --if m.tape.rec.sel == TAPE_REC_STOP then audio.tape_record_stop() end
     norns.shutdown()
   end
 end
@@ -21,17 +22,20 @@ m.redraw = function()
     screen.level(1)
     if norns.is_shield then
       screen.move(10,40)
-      screen.text("when the not-red light")
+      screen.text("when the yellow light")
       screen.move(10,48)
-      screen.text("stops blinking")
+      screen.text("goes off")
       screen.move(10,56)
       screen.text("disconnect power")
+      screen.move(10,64)
+      screen.text("and go to ciap the rats.")
+
     else
       screen.text("sleep.")
     end
   else
     screen.level(15)
-    screen.text("sleep?")
+    screen.text("turn off?")
   end
   --TODO do an animation here! fade the volume down
   screen.update()

@@ -163,27 +163,20 @@ m.redraw = function()
 end
 
 m.init = function()
-	m.stage = "cancel"
-	screen.text_center("this function is not for barbons")
-	screen.update()
+  m.install = "stable"
+  m.alt = _menu.alt
 
+  m.stage = "init"
+  m.message = "checking for update..."
+  _menu.redraw()
 
+  local ping = util.os_capture("ping -c 1 github.com | grep failure")
 
---  m.install = "stable"
---  m.alt = _menu.alt
---
---  m.stage = "init"
---  m.message = "checking for update..."
---  _menu.redraw()
---
---  local ping = util.os_capture("ping -c 1 github.com | grep failure")
---
---  if not ping == ''  then
---    m.message = "need internet."
---  elseif norns.disk < 400 then
---    m.message = "disk full. need 400M."
---  else check_newest() end
-  
+  if not ping == ''  then
+    m.message = "need internet."
+  elseif norns.disk < 400 then
+    m.message = "disk full. need 400M."
+  else check_newest() end
 end
 
 m.deinit = function() end

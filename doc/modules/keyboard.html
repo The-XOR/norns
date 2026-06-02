@@ -48,11 +48,13 @@
   <li><a href="../modules/core.crow.quote.html">core.crow.quote</a></li>
   <li><a href="../modules/encoders.html">encoders</a></li>
   <li><a href="../modules/engine.html">engine</a></li>
+  <li><a href="../modules/gamepad.html">gamepad</a></li>
   <li><a href="../modules/grid.html">grid</a></li>
   <li><a href="../modules/hid.html">hid</a></li>
   <li><strong>keyboard</strong></li>
   <li><a href="../modules/metro.html">metro</a></li>
   <li><a href="../modules/midi.html">midi</a></li>
+  <li><a href="../modules/norns.html">norns</a></li>
   <li><a href="../modules/osc.html">osc</a></li>
   <li><a href="../modules/params.control.html">params.control</a></li>
   <li><a href="../modules/paramset.html">paramset</a></li>
@@ -76,14 +78,17 @@
   <li><a href="../modules/lib.Graph.html">lib.Graph</a></li>
   <li><a href="../modules/lib.intonation.html">lib.intonation</a></li>
   <li><a href="../modules/Lattice.html">Lattice</a></li>
+  <li><a href="../modules/lib.lfo.html">lib.lfo</a></li>
   <li><a href="../modules/lib.listselect.html">lib.listselect</a></li>
   <li><a href="../modules/lib.MusicUtil.html">lib.MusicUtil</a></li>
   <li><a href="../modules/lib.pattern.html">lib.pattern</a></li>
+  <li><a href="../modules/lib.reflection.html">lib.reflection</a></li>
   <li><a href="../modules/lib.sequins.html">lib.sequins</a></li>
   <li><a href="../modules/lib.tabutil.html">lib.tabutil</a></li>
   <li><a href="../modules/lib.test.luaunit.html">lib.test.luaunit</a></li>
   <li><a href="../modules/lib.textentry.html">lib.textentry</a></li>
   <li><a href="../modules/lib.textentry_kbd.html">lib.textentry_kbd</a></li>
+  <li><a href="../modules/lib.timeline.html">lib.timeline</a></li>
   <li><a href="../modules/lib.UI.html">lib.UI</a></li>
   <li><a href="../modules/lib.util.html">lib.util</a></li>
   <li><a href="../modules/lib.voice.html">lib.voice</a></li>
@@ -102,11 +107,11 @@
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#code">code (key, value)</a></td>
-	<td class="summary">key code callback, script should redefine</td>
+	<td class="summary">key code callback, script should redefine.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#char">char (ch)</a></td>
-	<td class="summary">key character callback, script should redefine</td>
+	<td class="summary">key character callback, script should redefine.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#shift">shift ()</a></td>
@@ -123,6 +128,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#meta">meta ()</a></td>
 	<td class="summary">return META state</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#code_to_char">code_to_char (code)</a></td>
+	<td class="summary">convert a keyboard code to a printable character.</td>
 	</tr>
 </table>
 <h2><a href="#Tables">Tables</a></h2>
@@ -145,16 +154,23 @@
     <strong>code (key, value)</strong>
     </dt>
     <dd>
-    key code callback, script should redefine
+    key code callback, script should redefine.
+ use this primarily for responding to physical key presses ('LEFTSHIFT',
+ 'ENTER', 'F7', etc) not printable characters, as it does not adjust to
+ the setting of the user's keyboard layout, including national variant.
+ if you want to detect the character, use <a href="../modules/keyboard.html#char">char</a> or <a href="../modules/keyboard.html#code_to_char">code_to_char</a>.
+
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">key</span>
-
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            a code representing the physical key pressed.
         </li>
         <li><span class="parameter">value</span>
-
+            <span class="types"><span class="type">number</span></span>
+            0 = released, 1 = pressed, 2 = pressed and held.
         </li>
     </ul>
 
@@ -168,13 +184,18 @@
     <strong>char (ch)</strong>
     </dt>
     <dd>
-    key character callback, script should redefine
+    key character callback, script should redefine.
+ will only be called for printable characters such as letters, numbers
+ and punctuation - and space. will take account of the setting of the user's keyboard
+ layout, including national variant.
+
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">ch</span>
-
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            the printable character intended to be generated.
         </li>
     </ul>
 
@@ -239,6 +260,38 @@
 
 
 </dd>
+    <dt>
+    <a name = "code_to_char"></a>
+    <strong>code_to_char (code)</strong>
+    </dt>
+    <dd>
+    convert a keyboard code to a printable character.
+ the output will be based on the setting of they user's keyboard
+ layout and the state of the modifier keys currently pressed
+ (eg a 'SHIFT' key).
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">code</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+            a code representing a physical key,
+     as passed into <a href="../modules/keyboard.html#code">code</a>.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+        a string, or nil if no conversion is possible.
+    </ol>
+
+
+
+
+</dd>
 </dl>
     <h2 class="section-header "><a name="Tables"></a>Tables</h2>
 
@@ -264,7 +317,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2021-10-08 15:48:35 </i>
+<i style="float:right;">Last updated 2023-11-17 11:40:11 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

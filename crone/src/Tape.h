@@ -267,6 +267,13 @@ namespace crone {
                       size_t maxFrames = JACK_MAX_FRAMES, // <-- ridiculous big number
                       int sampleRate = 48000,
                       int bitDepth = 24) {
+                
+                if (SfStream::isRunning) {
+                    std::cout << "Tape Writer::open(): stream is running; no action was taken" << std::endl;
+                    return false;
+                }
+
+
                 SF_INFO sf_info;
                 int short_mask;
 
@@ -425,6 +432,11 @@ namespace crone {
 
             // from any thread
             bool open(const std::string &path) {
+                if (SfStream::isRunning) {
+                    std::cout << "Tape Reader::open(): stream is running; no action was taken" << std::endl;
+                    return false;
+                }
+
                 SF_INFO sfInfo;
 
                 if ((this->file = sf_open(path.c_str(), SFM_READ, &sfInfo)) == NULL) {

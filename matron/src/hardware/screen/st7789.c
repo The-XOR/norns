@@ -1,0 +1,498 @@
+#include "ssd1322.h"
+
+#include <string.h>
+
+#include "events.h"
+#include "event_types.h"
+
+static int spidev_fd = 0;
+static bool display_dirty = false;
+static bool should_translate_color = false;
+static bool should_turn_on = true;
+static uint16_t * spidev_buffer = NULL;
+static uint32_t * surface_buffer = NULL;
+static struct gpiod_chip * gpio_0;
+static struct gpiod_line * gpio_dc;
+static struct gpiod_line * gpio_reset;
+static struct gpiod_line * gpio_backlight;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t ssd1322_pthread_t;
+static float _r_corr = 0.4797;
+static float _g_corr = 0.4700;
+static float _b_corr = 0.0503;
+static float _bright_corr = 0.14;
+
+#define ST7789_Portrait         0xC0
+#define ST7789_Portrait180      0
+#define ST7789_Landscape        0xA0
+#define ST7789_Landscape180     0x60
+
+#define SPIDEV_BUFFER_LEN      (ST7789_HEIGHT * ST7789_WIDTH * sizeof(uint16_t )) // 2 bytes per pixel
+#define SURFACE_BUFFER_LEN      (ST7789_HEIGHT * ST7789_WIDTH * sizeof(uint32_t ))
+#define MIN(a,b)    ((a)<(b) ? (a) : (b))
+
+int open_spi() 
+{
+    int spi_fd = open(SPIDEV_0_0_PATH, O_RDWR | O_SYNC);
+    if( spi_fd < 0 )
+    {
+        fprintf(stderr, "(screen) couldn't open %s\n", SPIDEV_0_0_PATH);
+        return -1;
+    }
+    
+ 	uint8_t mode = SPI_MODE_0;
+    uint8_t bits_per_word = 8;
+    uint32_t speed_hz = 40000000;
+
+    if (ioctl(spi_fd, SPI_IOC_WR_MODE, &mode) < 0 ||
+        ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0 
+        || ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed_hz) < 0) {
+        fprintf(stderr, "could not set SPI WR settings via IOC\n");
+        close(spi_fd);
+        spi_fd = -1;
+    }
+    return spi_fd;
+}
+
+int ssd1322_write_command(uint8_t command, uint8_t data_len, ...) 
+{
+    va_list args;
+    uint8_t cmd_buf[1];
+    uint8_t data_buf[256];
+    struct spi_ioc_transfer cmd_transfer = {0};
+    struct spi_ioc_transfer data_transfer = {0};
+
+    pthread_mutex_lock(&lock);
+
+    if( spidev_fd <= 0 ){
+        fprintf(stderr, "%s: spidev not yet opened\n", __func__);
+        goto fail;
+    }
+
+    gpiod_line_set_value(gpio_dc, 0);
+
+    cmd_buf[0] = command;
+    cmd_transfer.tx_buf = (unsigned long) cmd_buf;
+    cmd_transfer.len = (uint32_t) sizeof(cmd_buf);
+
+    if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &cmd_transfer) < 0 ){
+        fprintf(stderr, "%s: could not send command-message.\n", __func__);
+        goto fail;
+    }
+
+    if( data_len > 0 ){
+        gpiod_line_set_value(gpio_dc, 1);
+
+        va_start(args, data_len);
+
+        for( uint8_t i = 0; i < data_len; i++ ){
+            data_buf[i] = va_arg(args, int);
+        }
+
+        va_end(args);
+
+        data_transfer.tx_buf = (unsigned long) data_buf;
+        data_transfer.len = (uint32_t) data_len;
+
+        if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &data_transfer) < 0 ){
+            fprintf(stderr, "%s: could not send data-message.\n", __func__);
+            goto fail;
+        }
+    }
+
+    pthread_mutex_unlock(&lock);
+    return 0;
+    fail:
+    pthread_mutex_unlock(&lock);
+    return -1;
+}
+
+int write_data(uint8_t data) 
+{
+    struct spi_ioc_transfer data_transfer = {0};
+    uint8_t data_buf[1];
+
+    pthread_mutex_lock(&lock);
+
+    if (spidev_fd <= 0) {
+        fprintf(stderr, "%s: spidev not yet opened\n", __func__);
+        pthread_mutex_unlock(&lock);
+        return -1;
+    }
+
+    gpiod_line_set_value(gpio_dc, 1);
+
+    data_buf[0] = data;
+    data_transfer.tx_buf = (unsigned long) data_buf;
+    data_transfer.len = (uint32_t) sizeof(data_buf);
+
+    if (ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &data_transfer) < 0) {
+        fprintf(stderr, "%s: could not send data-message.\n", __func__);
+        pthread_mutex_unlock(&lock);
+        return -1;
+    }
+
+    pthread_mutex_unlock(&lock);
+    return 0;
+}
+
+#ifndef NUMARGS
+#define NUMARGS(...)  (sizeof((int[]){__VA_ARGS__}) / sizeof(int))
+#endif
+#define write_command_with_data(x, ...) (ssd1322_write_command(x, NUMARGS(__VA_ARGS__), __VA_ARGS__))
+#define write_command(x) (ssd1322_write_command(x, 0, 0))
+
+static void* ssd1322_thread_run(void * p) 
+{
+    (void)p;
+
+    static struct timespec ts = 
+	{
+        .tv_sec = 0,
+        .tv_nsec = 16666666, // 60Hz
+    };
+
+    while( spidev_buffer )
+	{
+        if( display_dirty )
+		{
+            ssd1322_refresh();
+            display_dirty = false;
+        }
+
+        // If this event happens right before ssd1322_refresh(),
+        // there is quite a bit of flashing. Possibly from being
+        // at a weird sync point with the hardware refresh.
+        event_post(event_data_new(EVENT_SCREEN_REFRESH));
+
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, NULL);
+    }
+
+    return NULL;
+}
+
+void ssd1322_init() 
+{
+    if( pthread_mutex_init(&lock, NULL) != 0 ){
+        fprintf(stderr, "%s: pthread_mutex_init failed\n", __func__);
+        return;
+    }
+
+    surface_buffer = calloc(SURFACE_BUFFER_LEN, 1);
+    if( surface_buffer == NULL ){
+        fprintf(stderr, "%s: couldn't allocate surface_buffer\n", __func__);
+        return;
+    }
+
+    spidev_buffer = calloc(SPIDEV_BUFFER_LEN, 1);
+    if( spidev_buffer == NULL ){
+        fprintf(stderr, "%s: couldn't allocate spidev_buffer\n", __func__);
+        return;
+    }
+
+    spidev_fd = open_spi();
+    if( spidev_fd < 0 )
+	{
+        fprintf(stderr, "%s: couldn't open %s.\n", __func__, SPIDEV_0_0_PATH);
+        return;
+    }
+
+    gpio_0 = gpiod_chip_open_by_name(SSD1322_DC_AND_RESET_GPIO_CHIP);
+    gpio_dc = gpiod_chip_get_line(gpio_0, SSD1322_DC_GPIO_LINE);
+    gpio_reset = gpiod_chip_get_line(gpio_0, SSD1322_RESET_GPIO_LINE);
+    gpio_backlight = gpiod_chip_get_line(gpio_0, 19);
+
+    // nomi ottenibili col comando gpioinfo
+    gpiod_line_request_output(gpio_dc, "D/C", 0);
+    gpiod_line_request_output(gpio_reset, "RST", 0);
+    gpiod_line_request_output(gpio_backlight, "GPIO19", 1);
+
+    // Reset the display
+    gpiod_line_set_value(gpio_reset, 1);
+    usleep(100000); // 100 ms
+    gpiod_line_set_value(gpio_reset, 0);
+    usleep(100000); // 100 ms
+    gpiod_line_set_value(gpio_reset, 1);
+    usleep(100000); // 100 ms
+    gpiod_line_set_value(gpio_backlight, 0); // accende il display
+  
+    // Initialization sequence
+    write_command(0x11);
+    usleep(500000); 
+
+    // MADCTL parameters (page 212)
+    // Bits 0-1: Unused
+    // Bit 2: 0=LCD refresh left-to-right, 1=right-to-left
+    // Bit 3: 0=RGB mode, 1=BGR mode
+
+    // Bit 4: 0=LCD refresh top-to-bottom, 1=bottom-to-top
+    // Bit 5: Page/column order. 0=normal mode, 1=reverse mode
+    // Bit 6: Column address order. 0=left-to-right, 1=right-to-left
+    // Bit 7: Page address order. 0=top-to-bottom, 1=bottom-to-top
+    // write_command_with_data(0x36, 0x08 | ST7789_Landscape180);// Rotate the screen by 270 degrees (versione BGR)
+    write_command_with_data(0x36,  ST7789_Landscape180);// Rotate the screen by 270 degrees
+
+	// RGB 16-bit color mode
+    write_command_with_data(0x3a, 0x55);
+
+    write_command_with_data(0xB2, 0x0c, 0x0c, 0, 0x33, 0x33);
+    write_command_with_data(0xB7, 0x35);
+	write_command_with_data(0xbb,0x28);
+	write_command_with_data(0xc0,0x3c);
+	write_command_with_data(0xc2,0x01);
+	write_command_with_data(0xc3,0x0b);
+	write_command_with_data(0xc4,0x20);
+	write_command_with_data(0xc6,0x0f);
+    write_command_with_data(0xd0, 0xa4, 0xa1);
+
+	write_command_with_data(0xe0,0xd0,0x01,0x08,0x0f,0x11,0x2a,0x36,0x55,0x44,0x3a,0x0b,0x06,0x11, 0x20);
+	write_command_with_data(0xe1,0xd0,0x02,0x07,0x0a,0x0b,0x18,0x34,0x43,0x4a,0x2b,0x1b,0x1c,0x22,0x1f);
+	write_command_with_data(0x55,0xB0);
+
+	// caset / raset
+    write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
+    write_command_with_data(0x2b, 0, 0, (ST7789_HEIGHT - 1) >> 8, (ST7789_HEIGHT - 1) & 0xFF  );
+
+    write_command(0x29);
+    usleep(100000); 
+
+    /*
+     *    // Flips the screen orientation if the device is a norns shield.
+     *    if( platform() != PLATFORM_CM3 ){
+     *        write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x04, 0x11);
+}
+else{
+    write_command_with_data(SSD1322_SET_DUAL_COMM_LINE_MODE, 0x16, 0x11);
+}
+*/
+
+    // Do not turn display on until the first update has been called,
+    // otherwise previous GDDRAM (or noise) will display before the
+    // "hello" startup screen.
+
+    // Set high thread priority to avoid flashing.
+    static struct sched_param param;
+    param.sched_priority = sched_get_priority_max(SCHED_OTHER);
+
+    // Start thread.
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&attr, &param);
+    pthread_create(&ssd1322_pthread_t, &attr, &ssd1322_thread_run, NULL);
+    pthread_attr_destroy(&attr);
+}
+
+void ssd1322_deinit()
+{
+    if( spidev_fd > 0 )
+	{
+        // Drive RST low to turn off screen.
+        gpiod_line_set_value(gpio_reset, 0);
+
+        // Destroy file descriptors and handles.
+        pthread_mutex_destroy(&lock);
+        gpiod_line_release(gpio_reset);
+        gpiod_line_release(gpio_dc);
+        gpiod_chip_close(gpio_0);
+        close(spidev_fd);
+
+        if(spidev_buffer != NULL)
+        {
+            free(spidev_buffer);
+            spidev_buffer = NULL;
+        }
+        if(surface_buffer != NULL)
+        {
+            free(surface_buffer);
+            surface_buffer = NULL;
+        }
+
+    }
+}
+
+void ssd1322_update(cairo_surface_t * surface_pointer, bool surface_may_have_color)
+{
+    pthread_mutex_lock(&lock);
+
+    should_translate_color = surface_may_have_color;
+
+    if( surface_buffer != NULL && surface_pointer != NULL ){
+        const uint32_t surface_w = cairo_image_surface_get_width(surface_pointer);
+        const uint32_t surface_h = cairo_image_surface_get_height(surface_pointer);
+        cairo_format_t surface_f = cairo_image_surface_get_format(surface_pointer);
+
+        if( surface_w != ST7789_WIDTH || surface_h != ST7789_HEIGHT || surface_f != CAIRO_FORMAT_ARGB32 ){
+            fprintf(stderr, "%s: %ux%u = invalid surface size\n", __func__, surface_w, surface_h);
+            goto early_return;
+        }
+        memcpy(surface_buffer, cairo_image_surface_get_data(surface_pointer), SURFACE_BUFFER_LEN);
+    } else
+    {
+        fprintf(stderr, "%s: surface_buffer (%p) surface_pointer (%p)\n", __func__, surface_buffer, surface_pointer);
+    }
+
+    display_dirty = true;
+
+early_return:
+    pthread_mutex_unlock(&lock);
+}
+
+static void transfer2display()
+{
+    struct spi_ioc_transfer transfer = {0};
+    pthread_mutex_unlock(&lock);
+
+	// caset / raset
+    write_command_with_data(0x2a, 0, 0, (ST7789_WIDTH - 1) >> 8, (ST7789_WIDTH - 1) & 0xFF  );
+    write_command_with_data(0x2b, 0, 0, (ST7789_HEIGHT - 1) >> 8, (ST7789_HEIGHT - 1) & 0xFF  );
+
+    if( should_turn_on )
+	{
+        write_command(0x29);
+        should_turn_on = 0;
+    }
+    write_command(0x2c);
+
+    pthread_mutex_lock(&lock);
+    gpiod_line_set_value(gpio_dc, 1);
+    const uint32_t spidev_bufsize = 8192; // Max is defined in /boot/config.txt
+    int bytes_transferred=0;
+
+    while((SPIDEV_BUFFER_LEN - bytes_transferred) > 0)
+    {
+        transfer.tx_buf = (unsigned long) (((uint8_t *)(spidev_buffer)) + bytes_transferred);
+        transfer.len = MIN(spidev_bufsize, SPIDEV_BUFFER_LEN - bytes_transferred);
+        bytes_transferred +=  transfer.len;
+        if( ioctl(spidev_fd, SPI_IOC_MESSAGE(1), &transfer) < 0 ){
+            fprintf(stderr, "%s: SPI data transfer %d of %d failed.\n",__func__, bytes_transferred,SPIDEV_BUFFER_LEN);
+            goto early_return;
+        }
+
+    }
+
+early_return:
+    pthread_mutex_unlock(&lock);
+}
+
+// Function to convert ARGB to RGB565
+static uint16_t argb_to_rgb565(uint32_t argb) 
+{
+//    uint8_t a = (argb >> 24) & 0xFF;
+    uint8_t r = ((argb >> 16) & 0xFF ) * _r_corr;
+    uint8_t g = ((argb >> 8) & 0xFF) * _g_corr;
+    uint8_t b = (argb & 0xFF) * _b_corr;
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+}
+
+// Function to convert cairo surface to RGB565 format
+static void convert_cairo_to_rgb565() 
+{
+    int ptr=0;
+    for (int y = 0; y < ST7789_HEIGHT; y++) 
+    {
+        for (int x = 0; x < ST7789_WIDTH; x++) 
+        {
+            uint32_t argb = surface_buffer[ptr];
+            spidev_buffer[ptr++] = argb_to_rgb565(argb);
+        }
+    }
+}
+
+void ssd1322_refresh()
+{
+    if( spidev_fd <= 0 )
+    {
+        fprintf(stderr, "%s: spidev not yet opened.\n", __func__);
+        return;
+    }
+
+    pthread_mutex_lock(&lock);
+    //#define DEBUG_DISPLAY
+    if( spidev_buffer != NULL && surface_buffer != NULL )
+    {
+        #ifdef DEBUG_DISPLAY
+            int f = 133; //rand() % 255;
+            for( uint32_t i = 0; i < ST7789_HEIGHT*ST7789_WIDTH; i++)
+                *(spidev_buffer + i)=f;
+        #else
+        convert_cairo_to_rgb565();
+        #endif
+    } else
+    {
+        fprintf(stderr, "%s: spidev_buffer (%p) surface_buffer (%p)\n", __func__, spidev_buffer, surface_buffer);
+    }
+ 
+    transfer2display();
+}
+
+void ssd1322_set_brightness(uint8_t b)
+{
+    // b= da 0 a 255
+    // in teoria, ma non ha effetto sul display!  write_command_with_data(0x51, b);
+    _bright_corr = 0.01 + 0.001 * b;
+}
+
+void ssd1322_set_contrast(int c)
+{
+    // implementato come controllo di palette    
+    //c: da 0 a 511
+// bit 0,1,2=livello R, bit 3,4,5=livello G, bit 6,7,8=livello B
+    int r_corr = c & 0x07;  // bit 0,1,2 -> valori da 0 a 7
+    int g_corr = (c >> 3) & 0x07;  // bit 3,4,5 -> valori da 0 a 7
+    int b_corr = (c >> 6)  & 0x07; // bit 6,7,8 -> valori da 0 a 7
+
+    _r_corr = _bright_corr * r_corr;
+    _g_corr = _bright_corr * g_corr;
+    _b_corr = _bright_corr * b_corr;
+}
+
+void ssd1322_set_display_mode(ssd1322_display_mode_t mode_offset)
+{
+    switch(mode_offset)
+    {
+        case SSD1322_DISPLAY_MODE_ALL_OFF:
+            write_command(0x28);
+            break;
+
+        case SSD1322_DISPLAY_MODE_ALL_ON:
+            write_command(0x29);
+            break;
+
+        case SSD1322_DISPLAY_MODE_NORMAL:
+            write_command(0x20);
+            break;
+
+        case SSD1322_DISPLAY_MODE_INVERT:
+            write_command(0x21);
+            break;
+    }
+}
+
+void ssd1322_set_gamma(double g)
+{
+    // g va da 0  a 3 
+    int p = floor(g);
+    if(p > 3)
+        p = 3;
+    else if(p < 0)
+        p = 0;
+    p = 0x01 << p;
+    write_command_with_data(0x26, p); // Set Gamma command
+}
+
+void ssd1322_set_refresh_rate(uint8_t hz)
+{
+    hz=hz+0;
+	// non implementato
+}
+
+uint8_t* ssd1322_resize_buffer(size_t size)
+{
+    spidev_buffer = realloc(spidev_buffer, size);
+    return (uint8_t *)spidev_buffer;
+}
+
+#undef NUMARGS
+#undef write_command
+#undef write_command_with_data

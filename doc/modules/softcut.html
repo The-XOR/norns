@@ -47,11 +47,13 @@
   <li><a href="../modules/core.crow.quote.html">core.crow.quote</a></li>
   <li><a href="../modules/encoders.html">encoders</a></li>
   <li><a href="../modules/engine.html">engine</a></li>
+  <li><a href="../modules/gamepad.html">gamepad</a></li>
   <li><a href="../modules/grid.html">grid</a></li>
   <li><a href="../modules/hid.html">hid</a></li>
   <li><a href="../modules/keyboard.html">keyboard</a></li>
   <li><a href="../modules/metro.html">metro</a></li>
   <li><a href="../modules/midi.html">midi</a></li>
+  <li><a href="../modules/norns.html">norns</a></li>
   <li><a href="../modules/osc.html">osc</a></li>
   <li><a href="../modules/params.control.html">params.control</a></li>
   <li><a href="../modules/paramset.html">paramset</a></li>
@@ -75,14 +77,17 @@
   <li><a href="../modules/lib.Graph.html">lib.Graph</a></li>
   <li><a href="../modules/lib.intonation.html">lib.intonation</a></li>
   <li><a href="../modules/Lattice.html">Lattice</a></li>
+  <li><a href="../modules/lib.lfo.html">lib.lfo</a></li>
   <li><a href="../modules/lib.listselect.html">lib.listselect</a></li>
   <li><a href="../modules/lib.MusicUtil.html">lib.MusicUtil</a></li>
   <li><a href="../modules/lib.pattern.html">lib.pattern</a></li>
+  <li><a href="../modules/lib.reflection.html">lib.reflection</a></li>
   <li><a href="../modules/lib.sequins.html">lib.sequins</a></li>
   <li><a href="../modules/lib.tabutil.html">lib.tabutil</a></li>
   <li><a href="../modules/lib.test.luaunit.html">lib.test.luaunit</a></li>
   <li><a href="../modules/lib.textentry.html">lib.textentry</a></li>
   <li><a href="../modules/lib.textentry_kbd.html">lib.textentry_kbd</a></li>
+  <li><a href="../modules/lib.timeline.html">lib.timeline</a></li>
   <li><a href="../modules/lib.UI.html">lib.UI</a></li>
   <li><a href="../modules/lib.util.html">lib.util</a></li>
   <li><a href="../modules/lib.voice.html">lib.voice</a></li>
@@ -142,7 +147,7 @@
 	<td class="summary">set loop mode.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#fade_time">fade_time (voice, pos)</a></td>
+	<td class="name" nowrap><a href="#fade_time">fade_time (voice, fade_time)</a></td>
 	<td class="summary">set fade time.</td>
 	</tr>
 	<tr>
@@ -172,7 +177,7 @@
 	<td class="summary">specify buffer used by voice.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#voice_sync">voice_sync (src, dst, offset)</a></td>
+	<td class="name" nowrap><a href="#voice_sync">voice_sync (dst, src, offset)</a></td>
 	<td class="summary">synchronize two voices.</td>
 	</tr>
 	<tr>
@@ -604,7 +609,7 @@
 </dd>
     <dt>
     <a name = "fade_time"></a>
-    <strong>fade_time (voice, pos)</strong>
+    <strong>fade_time (voice, fade_time)</strong>
     </dt>
     <dd>
     set fade time.
@@ -616,9 +621,9 @@
             <span class="types"><span class="type">int</span></span>
          : voice index
         </li>
-        <li><span class="parameter">pos</span>
+        <li><span class="parameter">fade_time</span>
             <span class="types"><span class="type">number</span></span>
-         : loop start position in seconds
+         : crossfade time in seconds
         </li>
     </ul>
 
@@ -781,7 +786,7 @@
 </dd>
     <dt>
     <a name = "voice_sync"></a>
-    <strong>voice_sync (src, dst, offset)</strong>
+    <strong>voice_sync (dst, src, offset)</strong>
     </dt>
     <dd>
     synchronize two voices.
@@ -790,13 +795,13 @@
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">src</span>
-            <span class="types"><span class="type">int</span></span>
-         : source voice index
-        </li>
         <li><span class="parameter">dst</span>
             <span class="types"><span class="type">int</span></span>
          : destination voice index
+        </li>
+        <li><span class="parameter">src</span>
+            <span class="types"><span class="type">int</span></span>
+         : source voice index
         </li>
         <li><span class="parameter">offset</span>
             <span class="types"><span class="type">number</span></span>
@@ -1635,7 +1640,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">file</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          : input file path
         </li>
         <li><span class="parameter">start_src</span>
@@ -1684,7 +1689,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">file</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          : input file path
         </li>
         <li><span class="parameter">start_src</span>
@@ -1725,7 +1730,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">file</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          : output file path
         </li>
         <li><span class="parameter">start</span>
@@ -1758,7 +1763,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">file</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          : output file path
         </li>
         <li><span class="parameter">start</span>
@@ -1925,7 +1930,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.5">table</a></span>
         table of parameter states for each voice
     </ol>
 
@@ -1961,7 +1966,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2021-10-08 15:48:35 </i>
+<i style="float:right;">Last updated 2023-11-17 11:40:11 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

@@ -4,10 +4,6 @@
 #include <lualib.h>
 #include <sys/queue.h>
 
-#define MAGNIFY_WIDTH    2
-#define MAGNIFY_HEIGHT   2
-
-
 typedef enum _matron_io_type {
   IO_SCREEN,
   IO_INPUT,

@@ -47,11 +47,13 @@
   <li><a href="../modules/core.crow.quote.html">core.crow.quote</a></li>
   <li><a href="../modules/encoders.html">encoders</a></li>
   <li><a href="../modules/engine.html">engine</a></li>
+  <li><a href="../modules/gamepad.html">gamepad</a></li>
   <li><a href="../modules/grid.html">grid</a></li>
   <li><a href="../modules/hid.html">hid</a></li>
   <li><a href="../modules/keyboard.html">keyboard</a></li>
   <li><a href="../modules/metro.html">metro</a></li>
   <li><a href="../modules/midi.html">midi</a></li>
+  <li><a href="../modules/norns.html">norns</a></li>
   <li><a href="../modules/osc.html">osc</a></li>
   <li><a href="../modules/params.control.html">params.control</a></li>
   <li><a href="../modules/paramset.html">paramset</a></li>
@@ -75,14 +77,17 @@
   <li><a href="../modules/lib.Graph.html">lib.Graph</a></li>
   <li><a href="../modules/lib.intonation.html">lib.intonation</a></li>
   <li><a href="../modules/Lattice.html">Lattice</a></li>
+  <li><a href="../modules/lib.lfo.html">lib.lfo</a></li>
   <li><a href="../modules/lib.listselect.html">lib.listselect</a></li>
   <li><strong>lib.MusicUtil</strong></li>
   <li><a href="../modules/lib.pattern.html">lib.pattern</a></li>
+  <li><a href="../modules/lib.reflection.html">lib.reflection</a></li>
   <li><a href="../modules/lib.sequins.html">lib.sequins</a></li>
   <li><a href="../modules/lib.tabutil.html">lib.tabutil</a></li>
   <li><a href="../modules/lib.test.luaunit.html">lib.test.luaunit</a></li>
   <li><a href="../modules/lib.textentry.html">lib.textentry</a></li>
   <li><a href="../modules/lib.textentry_kbd.html">lib.textentry_kbd</a></li>
+  <li><a href="../modules/lib.timeline.html">lib.timeline</a></li>
   <li><a href="../modules/lib.UI.html">lib.UI</a></li>
   <li><a href="../modules/lib.util.html">lib.util</a></li>
   <li><a href="../modules/lib.voice.html">lib.voice</a></li>
@@ -117,6 +122,15 @@
 	<tr>
 	<td class="name" nowrap><a href="#generate_chord">generate_chord (root_num, chord_type[, inversion])</a></td>
 	<td class="summary">Generate chord from a root note.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#generate_chord_roman">generate_chord_roman (root_num, scale_type, roman_chord_type)</a></td>
+	<td class="summary">Generate a chord using Roman chord notation for a given root note and scale.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#generate_chord_scale_degree">generate_chord_scale_degree (root_num, scale_type, degree[, seventh])</a></td>
+	<td class="summary">Generate a chord from a scale degree, for a given root note and key, using the
+ system of tonal harmony from the European common-practice period.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#chord_types_for_note">chord_types_for_note (note_num, key_root, key_type)</a></td>
@@ -194,7 +208,7 @@
          MIDI note number (0-127) where scale will begin.
         </li>
         <li><span class="parameter">scale_type</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          String defining scale type (eg, "major", "aeolian" or "neapolitan major"), see class for full list.
         </li>
         <li><span class="parameter">octaves</span>
@@ -265,7 +279,7 @@
          MIDI note number (0-127) for chord.
         </li>
         <li><span class="parameter">chord_type</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          String defining chord type (eg, "major", "minor 7" or "sus4"), see class for full list.
         </li>
         <li><span class="parameter">inversion</span>
@@ -283,6 +297,91 @@
     </ol>
 
 
+
+
+</dd>
+    <dt>
+    <a name = "generate_chord_roman"></a>
+    <strong>generate_chord_roman (root_num, scale_type, roman_chord_type)</strong>
+    </dt>
+    <dd>
+    Generate a chord using Roman chord notation for a given root note and scale.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">root_num</span>
+            <span class="types"><span class="type">integer</span></span>
+         MIDI note number (0-127) defining the key.
+        </li>
+        <li><span class="parameter">scale_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         String defining scale type (eg, "Major", "Dorian".)
+        </li>
+        <li><span class="parameter">roman_chord_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         Roman-numeral-style string defining chord type (eg, "V", "iv7" or "III+")
+    including limited bass notes (e.g. "iv6-9") and lowercase-letter inversion notation (e.g. "IIb" for first inversion)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">{integer...}</span></span>
+        Array of MIDI note numbers.
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "generate_chord_scale_degree"></a>
+    <strong>generate_chord_scale_degree (root_num, scale_type, degree[, seventh])</strong>
+    </dt>
+    <dd>
+    Generate a chord from a scale degree, for a given root note and key, using the
+ system of tonal harmony from the European common-practice period.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">root_num</span>
+            <span class="types"><span class="type">integer</span></span>
+         MIDI note number (0-127) defining the key.
+        </li>
+        <li><span class="parameter">scale_type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         String defining scale type. Not all scales are supported; valid values
+    are "Major" (or "Ionian"), "Natural Minor" (or "Minor" or "Aeolian"), "Harmonic Minor",
+    "Melodic Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", or "Locrian".
+        </li>
+        <li><span class="parameter">degree</span>
+            <span class="types"><span class="type">integer</span></span>
+         Number between 1-7 selecting the degree of the chord.
+        </li>
+        <li><span class="parameter">seventh</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Return the 7th chord if set to true (optional)
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">{integer...}</span></span>
+        Array of MIDI note numbers.
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+    </ul>
 
 
 </dd>
@@ -305,7 +404,7 @@
          MIDI note number (0-127) for root of key.
         </li>
         <li><span class="parameter">key_type</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
          String defining key type (eg, "major", "aeolian" or "neapolitan major"), see class for full list.
         </li>
     </ul>
@@ -407,7 +506,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
         Name string (eg, "C#3").
     </ol>
 
@@ -670,7 +769,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2021-10-08 15:48:35 </i>
+<i style="float:right;">Last updated 2023-11-17 11:40:11 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
