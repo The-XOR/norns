@@ -4,6 +4,12 @@
 	(generator_version "10.0")
 	(uuid "89367c47-a65e-4fea-b422-e56b03d01070")
 	(paper "A4")
+	(title_block
+		(title "Trapanaorecchie")
+		(date "2026-06-05")
+		(rev "1.0")
+		(comment 1 "Una libera reinterpretazione del Monome Norns")
+	)
 	(lib_symbols
 		(symbol "7404_1"
 			(exclude_from_sim no)
