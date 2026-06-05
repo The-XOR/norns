@@ -8751,7 +8751,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm"
+		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
 			(at 242.2652 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -9249,7 +9249,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm"
+		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
 			(at 240.9952 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -11109,7 +11109,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_DIP:DIP-8_W7.62mm_LongPads"
+		(property "Footprint" "Package_DIP:DIP-8_W7.62mm"
 			(at 190.754 118.11 0)
 			(hide yes)
 			(show_name no)
